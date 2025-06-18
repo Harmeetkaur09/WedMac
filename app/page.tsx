@@ -18,7 +18,7 @@ export default function HomePage() {
             Minimalistic & Modern
           </h1>
           <p className="text-xl md:text-2xl mb-12 opacity-90">
-            Turn your room with panto into a lot more minimalist
+            Turn your room with WedMac India into a lot more minimalist
             <br />
             and modern with ease and speed
           </p>

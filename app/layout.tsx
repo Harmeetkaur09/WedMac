@@ -8,7 +8,7 @@ import Footer from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Panto - Makeup Artist Platform",
+  title: "WedMac India - Makeup Artist Platform",
   description: "Make Your Interior More Minimalistic & Modern",
     generator: 'v0.dev'
 }
