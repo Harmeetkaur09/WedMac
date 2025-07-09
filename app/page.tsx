@@ -1,278 +1,367 @@
+import Header from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Star, ArrowRight } from "lucide-react"
+import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Search Form */}
-      <section className="relative h-screen flex items-center justify-center text-center text-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/80 to-purple-600/80"></div>
-        <Image src="/images/hero-bg.png" alt="Hero Background" fill className="object-cover -z-10" />
+            <><Header />
+<div className="min-h-screen">
+      {/* Navigation Header */}
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Make Your Interior More
-            <br />
-            Minimalistic & Modern
-          </h1>
-          <p className="text-xl md:text-2xl mb-12 opacity-90">
-            Turn your room with WedMac India into a lot more minimalist
-            <br />
-            and modern with ease and speed
-          </p>
 
-          {/* Search Form */}
-          <div className="bg-white rounded-lg p-6 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">LOCATION</label>
-                <Input placeholder="Type" className="w-full" />
-              </div>
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">MAKEUP ARTIST TYPE</label>
-                <Input placeholder="Type" className="w-full" />
-              </div>
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">DATE</label>
-                <Input placeholder="Date" className="w-full" />
-              </div>
-              <div className="text-left">
-                <label className="block text-sm font-medium text-gray-700 mb-2">TIME</label>
-                <Input placeholder="Time" className="w-full" />
-              </div>
-            </div>
-            <Button className="w-full mt-6 bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg font-semibold">
-              Search
-            </Button>
-          </div>
-        </div>
-      </section>
+<section className="relative h-screen pt-32 text-center text-white">
+  {/* Background Image and Overlay */}
+  <div className="absolute inset-0">
+    <Image
+      src="/images/hero.jpg"
+      alt="Hero Background"
+      fill
+      className="object-cover object-top -z-10"
+    />
+    <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+  </div>
 
-      {/* Portfolio Grid Section */}
-      <section className="py-16 bg-gray-50">
+  {/* Centered Heading Text */}
+  <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+    <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+      Make Your Interior More
+      <br />
+      Minimalistic & Modern
+    </h1>
+    <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+      Turn your room with WedMac India into a lot more minimalist
+      <br />
+      and modern with ease and speed
+    </p>
+  </div>
+</section>
+<section className=" py-12 -mt-16 relative z-30 px-4">
+  <div className="max-w-6xl mx-auto bg-white rounded-lg p-6 shadow-lg">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="text-left">
+        <label className="block text-sm font-medium text-gray-700 mb-2">LOCATION</label>
+        <Input placeholder="Type" className="w-full" />
+      </div>
+      <div className="text-left">
+        <label className="block text-sm font-medium text-gray-700 mb-2">MAKEUP ARTIST TYPE</label>
+        <Input placeholder="Type" className="w-full" />
+      </div>
+      <div className="text-left">
+        <label className="block text-sm font-medium text-gray-700 mb-2">DATE</label>
+        <Input placeholder="Date" className="w-full" />
+      </div>
+      <div className="text-left">
+        <label className="block text-sm font-medium text-gray-700 mb-2">TIME</label>
+        <Input placeholder="Time" className="w-full" />
+      </div>
+    </div>
+    <Button className="w-full mt-6 bg-[#FF577F] hover:bg-pink-600 text-white py-3 text-lg font-semibold">
+      Search
+    </Button>
+  </div>
+</section>
+
+
+
+      {/* Portfolio Grid Section - Masonry Layout */}
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Large Image */}
-            <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer">
-              <Image
-                src="/placeholder.svg?height=600&width=600"
-                alt="Bridal Makeup"
-                width={600}
-                height={600}
-                className="w-full h-full object-cover rounded-lg"
-              />
-              <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full flex items-center space-x-2">
-                <span className="text-sm font-medium">Bridal Makeup</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Small Images */}
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="relative group cursor-pointer">
-                <Image
-                  src="/placeholder.svg?height=300&width=300"
+          <div className="grid grid-cols-12 gap-6 max-w-7xl mx-auto">
+            {/* Large Image - Left Side */}
+            <div className="col-span-12 md:col-span-6 relative group cursor-pointer">
+              <div className="relative h-[600px] overflow-hidden rounded-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500&h=600&fit=crop"
                   alt="Bridal Makeup"
-                  width={300}
-                  height={300}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full flex items-center space-x-2">
-                  <span className="text-xs font-medium">Bridal Makeup</span>
-                  <ArrowRight className="w-3 h-3" />
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <div className="absolute bottom-6 left-6 bg-white px-6 py-3 rounded-full flex items-center space-x-3 shadow-lg">
+                  <span className="text-sm font-semibold text-gray-800">Bridal Makeup</span>
+                  <ArrowRight className="w-4 h-4 text-rose-500" />
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Right Side Grid */}
+            <div className="col-span-12 md:col-span-6 grid grid-cols-2 gap-6">
+              {/* Top Row */}
+              <div className="relative group cursor-pointer">
+                <div className="relative h-[285px] overflow-hidden rounded-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=240&h=285&fit=crop"
+                    alt="Party Makeup"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full flex items-center space-x-2 shadow-md">
+                    <span className="text-xs font-semibold text-gray-800">Party Makeup</span>
+                    <ArrowRight className="w-3 h-3 text-rose-500" />
+                  </div>
+                </div>
+              </div>
+              <div className="relative group cursor-pointer">
+                <div className="relative h-[285px] overflow-hidden rounded-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=240&h=285&fit=crop"
+                    alt="Light Makeup"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full flex items-center space-x-2 shadow-md">
+                    <span className="text-xs font-semibold text-gray-800">Light Makeup</span>
+                    <ArrowRight className="w-3 h-3 text-rose-500" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Row */}
+              <div className="relative group cursor-pointer">
+                <div className="relative h-[285px] overflow-hidden rounded-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1594736797933-d0601ba2fe65?w=240&h=285&fit=crop"
+                    alt="Evening Makeup"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full flex items-center space-x-2 shadow-md">
+                    <span className="text-xs font-semibold text-gray-800">Evening Makeup</span>
+                    <ArrowRight className="w-3 h-3 text-rose-500" />
+                  </div>
+                </div>
+              </div>
+              <div className="relative group cursor-pointer">
+                <div className="relative h-[285px] overflow-hidden rounded-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=240&h=285&fit=crop"
+                    alt="Fashion Makeup"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-full flex items-center space-x-2 shadow-md">
+                    <span className="text-xs font-semibold text-gray-800">Fashion Makeup</span>
+                    <ArrowRight className="w-3 h-3 text-rose-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Artist Profiles Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Artist Profiles</h2>
-            <div className="flex justify-center space-x-8 text-sm">
-              <span className="text-pink-500 border-b-2 border-pink-500 pb-2">Latest</span>
-              <span className="text-gray-500">Portfolio</span>
-              <span className="text-gray-500">Artist</span>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">Artist Profiles</h2>
+            <div className="flex justify-center space-x-12 text-lg">
+              <span className="text-rose-500 border-b-3 border-rose-500 pb-2 font-semibold">Latest</span>
+              <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Portfolio</span>
+              <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Artist</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((artist) => (
-              <div key={artist} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="grid grid-cols-2 gap-2 p-4">
-                  <Image
-                    src="/placeholder.svg?height=200&width=150"
-                    alt="Artist Work"
-                    width={150}
-                    height={200}
-                    className="rounded-lg object-cover"
-                  />
-                  <div className="space-y-2">
-                    <Image
-                      src="/placeholder.svg?height=95&width=150"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              { name: "Avneet Kaur", rating: 5, image: "https://images.unsplash.com/photo-1494790108755-2616c96c002c?w=300&h=400&fit=crop" },
+              { name: "Priya Sharma", rating: 5, image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop" },
+              { name: "Anita Singh", rating: 5, image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=300&h=400&fit=crop" }
+            ].map((artist, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 group">
+                <div className="grid grid-cols-2 gap-3 p-4">
+                  <div className="relative">
+                    <img
+                      src={artist.image}
                       alt="Artist Work"
-                      width={150}
-                      height={95}
-                      className="rounded-lg object-cover"
-                    />
-                    <Image
-                      src="/placeholder.svg?height=95&width=150"
+                      className="w-full h-48 rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="space-y-3">
+                    <img
+                      src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=150&h=95&fit=crop"
                       alt="Artist Work"
-                      width={150}
-                      height={95}
-                      className="rounded-lg object-cover"
-                    />
+                      className="w-full h-[90px] rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img
+                      src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=150&h=95&fit=crop"
+                      alt="Artist Work"
+                      className="w-full h-[90px] rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <Image
-                      src="/placeholder.svg?height=50&width=50"
-                      alt="Avneet Kaur"
-                      width={50}
-                      height={50}
-                      className="w-12 h-12 rounded-full mr-4"
-                    />
+                  <div className="flex items-center mb-6">
+                    <img
+                      src={artist.image}
+                      alt={artist.name}
+                      className="w-14 h-14 rounded-full mr-4 border-2 border-rose-100" />
                     <div>
-                      <h3 className="font-semibold">Avneet Kaur</h3>
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
+                      <h3 className="text-lg font-semibold text-gray-800">{artist.name}</h3>
+                      <div className="flex text-yellow-400 mt-1">
+                        {[...Array(artist.rating)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-current" />
                         ))}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex space-x-2">
-                    <Button variant="outline" className="flex-1">
+                  <div className="flex space-x-3">
+                    <Button variant="outline" className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50">
                       Book Now
                     </Button>
-                    <Button className="flex-1 bg-pink-500 hover:bg-pink-600">View Profile</Button>
+                    <Button className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white">
+                      View Profile
+                    </Button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="text-center mt-8">
-            <Button variant="outline" className="text-pink-500 border-pink-500">
-              View All
+          <div className="text-center mt-12">
+            <Button variant="outline" className="text-rose-500 border-rose-500 hover:bg-rose-50 px-8 py-3 text-lg">
+              View All Artists
             </Button>
           </div>
         </div>
       </section>
 
       {/* Wedmac India Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="grid grid-cols-2 gap-4">
-              <Image
-                src="/placeholder.svg?height=300&width=300"
-                alt="Office Space"
-                width={300}
-                height={300}
-                className="rounded-lg object-cover"
-              />
-              <Image
-                src="/placeholder.svg?height=300&width=300"
-                alt="Team Meeting"
-                width={300}
-                height={300}
-                className="rounded-lg object-cover"
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+            {/* Left Side - Multiple Images */}
+            <div className="space-y-6">
+              {/* Top Image */}
+              <div className="relative overflow-hidden rounded-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=200&fit=crop"
+                  alt="Team Meeting"
+                  className="w-full h-48 object-cover" />
+                <div className="absolute top-6 left-6 bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                  WEDMAC
+                </div>
+              </div>
+
+              {/* Bottom Row - Two Images */}
+              <div className="grid grid-cols-2 gap-6">
+                <img
+                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=240&h=200&fit=crop"
+                  alt="Office Space"
+                  className="w-full h-48 object-cover rounded-2xl" />
+                <img
+                  src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=240&h=200&fit=crop"
+                  alt="Business Meeting"
+                  className="w-full h-48 object-cover rounded-2xl" />
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-4xl font-bold mb-6">Wedmac India</h2>
-              <p className="text-gray-600 mb-6">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
+            {/* Right Side - Content */}
+            <div className="space-y-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800">Wedmac India</h2>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                We are India's premier beauty and makeup service platform, connecting you with the most talented
+                makeup artists across the country. Our mission is to make professional beauty services accessible
+                and affordable for everyone, whether it's for your special day or everyday glam.
               </p>
-              <Button className="bg-pink-500 hover:bg-pink-600 text-white">Learn More</Button>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                With over 1000+ verified artists and 50,000+ happy customers, we've established ourselves as
+                the most trusted beauty service platform in India.
+              </p>
+              <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold rounded-xl">
+                Learn More About Us
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
       {/* Help Us With Your Details Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-8">Help Us With Your Details</h2>
-          <div className="max-w-2xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <Input placeholder="Your Name" className="bg-white text-gray-900" />
-              <Input placeholder="Your Number" className="bg-white text-gray-900" />
-              <Input placeholder="Makeup Type" className="bg-white text-gray-900" />
+      <section className="py-20 bg-gradient-to-br from-purple-600 via-pink-500 to-rose-500 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">Help Us With Your Details</h2>
+          <p className="text-xl mb-12 opacity-90">Get personalized recommendations from our beauty experts</p>
+          <div className="max-w-3xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Input placeholder="Your Name" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
+              <Input placeholder="Your Number" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
+              <Input placeholder="Makeup Type" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
             </div>
-            <Button className="bg-white text-pink-500 hover:bg-gray-100 px-8 py-3">Submit</Button>
+            <Button className="bg-white text-rose-500 hover:bg-gray-100 px-12 py-4 text-lg font-semibold rounded-xl shadow-lg">
+              Get Recommendations
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Deals Of The Month Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold mb-6">Deals Of The Month</h2>
-              <p className="text-gray-600 mb-8">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+            <div className="space-y-8">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800">Deals Of The Month</h2>
+              <p className="text-gray-600 text-lg leading-relaxed">
+                Don't miss out on our exclusive monthly deals! Get up to 50% off on premium makeup services
+                from top-rated artists. Limited time offer with special packages designed just for you.
               </p>
-              <Button className="bg-pink-500 hover:bg-pink-600 text-white mb-8">Shop Now</Button>
+              <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold rounded-xl">
+                Shop Now
+              </Button>
 
-              <div>
-                <p className="text-lg font-semibold mb-4">Hurry, Before It's Too Late!</p>
-                <div className="flex space-x-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">02</div>
-                    <div className="text-sm text-gray-500">Days</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">06</div>
-                    <div className="text-sm text-gray-500">Hrs</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">05</div>
-                    <div className="text-sm text-gray-500">Mins</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">30</div>
-                    <div className="text-sm text-gray-500">Sec</div>
-                  </div>
+              <div className="space-y-4">
+                <p className="text-xl font-bold text-gray-800">Hurry, Before It's Too Late!</p>
+                <div className="flex space-x-6">
+                  {[
+                    { value: "02", label: "Days" },
+                    { value: "06", label: "Hrs" },
+                    { value: "05", label: "Mins" },
+                    { value: "30", label: "Sec" }
+                  ].map((time, index) => (
+                    <div key={index} className="text-center bg-gray-50 rounded-xl p-4 min-w-[80px]">
+                      <div className="text-3xl font-bold text-rose-500">{time.value}</div>
+                      <div className="text-sm text-gray-500 font-medium">{time.label}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Image
-                src="/placeholder.svg?height=300&width=200"
-                alt="Fashion Model"
-                width={200}
-                height={300}
-                className="rounded-lg object-cover"
-              />
-              <div className="space-y-4">
-                <Image
-                  src="/placeholder.svg?height=140&width=200"
+            {/* Right Side with Navigation */}
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-6">
+                <img
+                  src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=200&h=300&fit=crop"
                   alt="Fashion Model"
-                  width={200}
-                  height={140}
-                  className="rounded-lg object-cover"
-                />
-                <div className="bg-pink-100 p-4 rounded-lg text-center">
-                  <p className="text-pink-600 font-semibold">30% OFF</p>
+                  className="w-full h-80 object-cover rounded-2xl" />
+                <div className="space-y-6">
+                  <img
+                    src="https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?w=200&h=140&fit=crop"
+                    alt="Fashion Model"
+                    className="w-full h-36 object-cover rounded-2xl" />
+                  <div className="bg-gradient-to-br from-rose-100 to-pink-100 p-6 rounded-2xl text-center border border-rose-200">
+                    <p className="text-3xl font-bold text-rose-600">30% OFF</p>
+                    <p className="text-rose-500 text-sm mt-1">Special Offer</p>
+                  </div>
                 </div>
+              </div>
+
+              {/* Navigation Arrows */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-xl border-rose-200 hover:bg-rose-50"
+              >
+                <ChevronLeft className="w-5 h-5 text-rose-500" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-xl border-rose-200 hover:bg-rose-50"
+              >
+                <ChevronRight className="w-5 h-5 text-rose-500" />
+              </Button>
+
+              {/* Dots Indicator */}
+              <div className="flex justify-center space-x-3 mt-6">
+                <div className="w-3 h-3 bg-rose-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
               </div>
             </div>
           </div>
@@ -280,65 +369,75 @@ export default function HomePage() {
       </section>
 
       {/* Bottom Gallery Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <Image
-                key={item}
-                src="/placeholder.svg?height=400&width=300"
-                alt="Fashion Model"
-                width={300}
-                height={400}
-                className="rounded-lg object-cover w-full"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {[
+              "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&h=400&fit=crop",
+              "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=300&h=400&fit=crop",
+              "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=300&h=400&fit=crop",
+              "https://images.unsplash.com/photo-1594736797933-d0601ba2fe65?w=300&h=400&fit=crop"
+            ].map((src, index) => (
+              <div key={index} className="relative group overflow-hidden rounded-2xl">
+                <img
+                  src={src}
+                  alt="Beauty Portfolio"
+                  className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Wedmac Testimonials Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="text-pink-500 text-sm uppercase tracking-wide mb-2">WHAT OUR CLIENTS SAY ABOUT US</p>
-            <h2 className="text-4xl font-bold">Wedmac</h2>
+          <div className="text-center mb-16">
+            <p className="text-rose-500 text-sm uppercase tracking-wider mb-4 font-semibold">WHAT OUR CLIENTS SAY ABOUT US</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800">Wedmac</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
-              { name: "Bang Upin", image: "/placeholder.svg?height=400&width=300" },
-              { name: "Ibuk Sukijan", image: "/placeholder.svg?height=400&width=300" },
-              { name: "Mpok Ina", image: "/placeholder.svg?height=400&width=300" },
+              {
+                name: "Priya Sharma",
+                image: "https://images.unsplash.com/photo-1494790108755-2616c96c002c?w=300&h=400&fit=crop",
+                review: "Amazing service! The makeup artist was professional and the results were stunning. Highly recommended for bridal makeup."
+              },
+              {
+                name: "Anita Verma",
+                image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop",
+                review: "Perfect experience from booking to the final look. The artist understood exactly what I wanted and delivered beyond expectations."
+              },
+              {
+                name: "Kavya Singh",
+                image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=300&h=400&fit=crop",
+                review: "Outstanding makeup service! Long-lasting, beautiful results and very reasonable pricing. Will definitely book again."
+              },
             ].map((client, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <Image
-                  src={client.image || "/placeholder.svg"}
+              <div key={index} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                <img
+                  src={client.image}
                   alt={client.name}
-                  width={300}
-                  height={400}
-                  className="w-full h-64 object-cover"
-                />
+                  className="w-full h-64 object-cover" />
                 <div className="p-6">
                   <div className="flex items-center mb-4">
-                    <Image
-                      src="/placeholder.svg?height=50&width=50"
+                    <img
+                      src={client.image}
                       alt={client.name}
-                      width={50}
-                      height={50}
-                      className="w-12 h-12 rounded-full mr-4"
-                    />
+                      className="w-12 h-12 rounded-full mr-4 border-2 border-rose-100" />
                     <div>
-                      <h3 className="font-semibold">{client.name}</h3>
-                      <div className="flex text-yellow-400">
+                      <h3 className="font-semibold text-gray-800">{client.name}</h3>
+                      <div className="flex text-yellow-400 mt-1">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-current" />
                         ))}
                       </div>
                     </div>
                   </div>
-                  <p className="text-gray-600 text-sm">
-                    "Pelayanan sangat memuaskan, hasil makeup sangat bagus dan tahan lama. Sangat recommended!"
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    "{client.review}"
                   </p>
                 </div>
               </div>
@@ -346,6 +445,74 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </div>
-  )
-}
+
+      {/* Footer */}
+      <footer className="bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold">Contact</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5" />
+                  <span>123 Beauty Street, Mumbai, India</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5" />
+                  <span>+91 98765 43210</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5" />
+                  <span>hello@wedmac.com</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold">Links</h3>
+              <div className="space-y-2">
+                <a href="#" className="block hover:text-rose-200 transition-colors">About Us</a>
+                <a href="#" className="block hover:text-rose-200 transition-colors">Services</a>
+                <a href="#" className="block hover:text-rose-200 transition-colors">Portfolio</a>
+                <a href="#" className="block hover:text-rose-200 transition-colors">Contact</a>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold">Newsletter</h3>
+              <p className="text-rose-100">Subscribe to get updates on new offers and services</p>
+              <div className="flex space-x-2">
+                <Input placeholder="Your email" className="bg-white/10 border-white/20 text-white placeholder:text-rose-200" />
+                <Button className="bg-white text-rose-500 hover:bg-rose-50">Subscribe</Button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold">Follow Us</h3>
+              <p className="text-rose-100">Stay connected with us on social media</p>
+              <div className="flex space-x-4">
+                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
+                  <span className="sr-only">Facebook</span>
+                  f
+                </Button>
+                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
+                  <span className="sr-only">Instagram</span>
+                  @
+                </Button>
+                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
+                  <span className="sr-only">Twitter</span>
+                  t
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/20 mt-12 pt-8 text-center">
+            <p className="text-rose-100">&copy; 2024 Wedmac India. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div></>
+  );
+};
+

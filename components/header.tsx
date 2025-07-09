@@ -1,50 +1,63 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-pink-500 text-white text-center py-2 text-sm">
+      <div className="bg-[#FF577F] left-0 right-0 fixed z-50 text-white text-center py-2 text-sm">
         Get $20 Off Your First Purchase - Shop Now & Save!
       </div>
 
       {/* Main Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-gray-900">
-            WedMac India
-          </Link>
+        <nav className="fixed top-9 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
+          <div className=" mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              {/* Logo (optional Link to home) */}
+              <Link href="/" className="text-2xl font-bold text-rose-500">
+                WedMac India
+              </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/service" className="text-gray-700 hover:text-pink-500">
-              Service
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-pink-500">
-              About Us
-            </Link>
-            <Link href="/portfolio" className="text-gray-700 hover:text-pink-500">
-              Portfolio
-            </Link>
-            <Link href="/makeup-artist-pages" className="text-gray-700 hover:text-pink-500">
-              Makeup Artist Pages
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-pink-500">
-              Contact
-            </Link>
-            <Link href="/faq" className="text-gray-700 hover:text-pink-500">
-              FAQ
-            </Link>
-          </nav>
+              {/* Navigation Links */}
+              <div className="hidden md:flex items-center space-x-8">
+                <Link href="/" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  Home
+                </Link>
+                <Link href="/about" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  About Us
+                </Link>
+                <Link href="/portfolio" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  Portfolio
+                </Link>
+                <Link href="/makeup-artist" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  Wedmac Makeup Artist
+                </Link>
+                <Link href="/contact" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  Contact
+                </Link>
+                <Link href="/faq" className="text-gray-700 hover:text-rose-500 transition-colors">
+                  FAQ
+                </Link>
 
-          <div className="flex items-center space-x-4">
-            <Button className="bg-pink-500 hover:bg-pink-600 text-white">Login</Button>
-            <Button variant="outline" className="text-pink-500 border-pink-500 hover:bg-pink-50">
-              Join
-            </Button>
+                {/* Buttons */}
+                <div className="flex items-center space-x-4">
+                  <Link href="/login">
+                    <Button variant="outline" className="bg-[#FF577F] h-8 px-6 hover:bg-rose-600 text-white">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button className="bg-[#FF577F] hover:bg-rose-600 h-8 px-6 text-white">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </nav>
       </header>
     </>
-  )
+  );
 }

@@ -10,6 +10,15 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		 maxWidth: {
+        '6.5xl': '75rem', // 1280px; adjust as needed between 6xl (72rem) and 7xl (80rem)
+      },
+	  fontFamily: {
+          gilroy: ['Gilroy', 'sans-serif'],
+		 inter: ['var(--font-inter)', 'sans-serif'],
+  poppins: ['var(--font-poppins)', 'sans-serif'],
+      },
+		
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
