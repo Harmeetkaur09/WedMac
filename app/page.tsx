@@ -2,7 +2,7 @@ import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image"
-import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin } from "lucide-react";
+import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin, Bookmark, ArrowUpRight } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -164,52 +164,95 @@ export default function HomePage() {
               { name: "Priya Sharma", rating: 5, image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop" },
               { name: "Anita Singh", rating: 5, image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=300&h=400&fit=crop" }
             ].map((artist, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 group">
-                <div className="grid grid-cols-2 gap-3 p-4">
-                  <div className="relative">
-                    <img
-                      src={artist.image}
-                      alt="Artist Work"
-                      className="w-full h-48 rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="space-y-3">
-                    <img
-                      src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=150&h=95&fit=crop"
-                      alt="Artist Work"
-                      className="w-full h-[90px] rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <img
-                      src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=150&h=95&fit=crop"
-                      alt="Artist Work"
-                      className="w-full h-[90px] rounded-xl object-cover group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="flex items-center mb-6">
-                    <img
-                      src={artist.image}
-                      alt={artist.name}
-                      className="w-14 h-14 rounded-full mr-4 border-2 border-rose-100" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{artist.name}</h3>
-                      <div className="flex text-yellow-400 mt-1">
-                        {[...Array(artist.rating)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-current" />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3">
-                    <Button variant="outline" className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50">
-                      Book Now
-                    </Button>
-                    <Button className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white">
-                      View Profile
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                   <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                               <div className="flex gap-2 p-4 h-[250px]">
+                                 
+                                 {/* Image 1: Takes full height of container */}
+                                 <Image
+                                   src="/images/search1.png"
+                                   alt="Artist Work"
+                                   width={250}
+                                   height={220}
+                                   className="rounded-lg object-cover w-[65%] h-full"
+                                 />
+             
+                                 {/* Images 2 and 3 stacked vertically */}
+                                 <div className="flex flex-col gap-2 w-[35%]">
+                                   {/* Image 2: Taller */}
+                                   <Image
+                                     src="/images/search2.png"
+                                     alt="Artist Work"
+                                     width={100}
+                                     height={120}
+                                     className="rounded-lg object-cover w-full h-[130px]"
+                                   />
+                                   {/* Image 3: Shorter */}
+                                   <Image
+                                     src="/images/search3.png"
+                                     alt="Artist Work"
+                                     width={100}
+                                     height={90}
+                                     className="rounded-lg object-cover w-full h-[88px]"
+                                   />
+                                 </div>
+                               </div>
+             
+             
+                               <div className="pr-4 pl-4 pb-4 pt-0">
+                                <div className="flex items-start justify-between mb-4">
+               <div className="flex items-center">
+                 <Image
+                   src="/placeholder.svg?height=50&width=50"
+                   alt="Avneet Kaur"
+                   width={50}
+                   height={50}
+                   className="w-14 h-14 rounded-full mr-4"
+                 />
+                 <div>
+                   <h3 className="font-semibold">Avneet Kaur</h3>
+                   <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
+                   <div className="flex items-center text-sm text-gray-500">
+                     <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                     <span>Delhi</span>
+                     <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                       4.5
+                     </span>
+                   </div>
+                 </div>
+               </div>
+             
+               {/* Save Profile Icon */}
+               <button className="text-[#FF577F] hover:text-pink-600 transition">
+                <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
+             
+               </button>
+             </div>
+             
+             
+                                 <div className="flex space-x-2">
+                                   {/* Book Now button with hover effect and icon transition */}
+                                   <Button
+                                     variant="outline"
+                                     className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                                   >
+                                     <span className="flex items-center gap-1">
+                                       Book Now
+                                       <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                     </span>
+                                   </Button>
+             
+                                   {/* View Profile button */}
+                                   <Button
+                                     className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
+                                   >
+                                     View Profile
+                                     <ArrowUpRight className="w-4 h-4" />
+                                   </Button>
+                                 </div>
+             
+             
+                               </div>
+                             </div>
             ))}
           </div>
 
@@ -234,7 +277,7 @@ export default function HomePage() {
                   alt="Team Meeting"
                   className="w-full h-48 object-cover" />
                 <div className="absolute top-6 left-6 bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                  WEDMAC
+                  
                 </div>
               </div>
 
@@ -272,23 +315,29 @@ export default function HomePage() {
       </section>
 
       {/* Help Us With Your Details Section */}
-      <section className="py-20 bg-gradient-to-br from-purple-600 via-pink-500 to-rose-500 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Help Us With Your Details</h2>
-          <p className="text-xl mb-12 opacity-90">Get personalized recommendations from our beauty experts</p>
-          <div className="max-w-3xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Input placeholder="Your Name" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
-              <Input placeholder="Your Number" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
-              <Input placeholder="Makeup Type" className="bg-white/90 text-gray-900 h-14 rounded-xl border-0 backdrop-blur-sm" />
-            </div>
-            <Button className="bg-white text-rose-500 hover:bg-gray-100 px-12 py-4 text-lg font-semibold rounded-xl shadow-lg">
-              Get Recommendations
-            </Button>
-          </div>
-        </div>
-      </section>
+<section className="py-8 bg-[url('/images/banner.jpg')] bg-cover bg-center text-white relative overflow-hidden">
+  <div className="absolute inset-0 "></div> {/* Optional overlay */}
+  <div className="max-w-6xl mx-auto px-4 text-start relative z-10">
+    <h2 className="text-4xl md:text-5xl text-[#FF577F] font-bold mb-4">
+      Help Us With Your Details
+    </h2>
+    <p className="text-xl mb-12 text-black opacity-90">
+      Get personalized recommendations from our beauty experts
+    </p>
+
+    <div className="flex flex-col md:flex-row gap-4 flex-wrap items-center">
+      <Input placeholder="Your Name" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-1/5" />
+      <Input placeholder="Your Number" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-1/5" />
+      <Input placeholder="Makeup Type" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-1/5" />
+      <Button className="bg-[#FF577F] text-white hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg w-full md:w-1/5">
+        Submit
+      </Button>
+    </div>
+  </div>
+</section>
+
+
+
 
       {/* Deals Of The Month Section */}
       <section className="py-20 bg-white">
