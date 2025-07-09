@@ -496,71 +496,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <div className="space-y-4">
-              <h3 className="text-2xl font-bold">Contact</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <MapPin className="w-5 h-5" />
-                  <span>123 Beauty Street, Mumbai, India</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5" />
-                  <span>+91 98765 43210</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5" />
-                  <span>hello@wedmac.com</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">Links</h3>
-              <div className="space-y-2">
-                <a href="#" className="block hover:text-rose-200 transition-colors">About Us</a>
-                <a href="#" className="block hover:text-rose-200 transition-colors">Services</a>
-                <a href="#" className="block hover:text-rose-200 transition-colors">Portfolio</a>
-                <a href="#" className="block hover:text-rose-200 transition-colors">Contact</a>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">Newsletter</h3>
-              <p className="text-rose-100">Subscribe to get updates on new offers and services</p>
-              <div className="flex space-x-2">
-                <Input placeholder="Your email" className="bg-white/10 border-white/20 text-white placeholder:text-rose-200" />
-                <Button className="bg-white text-rose-500 hover:bg-rose-50">Subscribe</Button>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">Follow Us</h3>
-              <p className="text-rose-100">Stay connected with us on social media</p>
-              <div className="flex space-x-4">
-                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
-                  <span className="sr-only">Facebook</span>
-                  f
-                </Button>
-                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
-                  <span className="sr-only">Instagram</span>
-                  @
-                </Button>
-                <Button variant="outline" size="icon" className="border-white/20 text-white hover:bg-white/10">
-                  <span className="sr-only">Twitter</span>
-                  t
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/20 mt-12 pt-8 text-center">
-            <p className="text-rose-100">&copy; 2024 Wedmac India. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+     
     </div></>
   );
 };
