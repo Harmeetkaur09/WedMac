@@ -361,7 +361,7 @@ export default function HomePage() {
 
         {/* Wedmac India Section */}
         <section className="py-12 ">
-          <div className=" pr-4">
+<div className="px-4 md:px-0 md:pr-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
              <div className="flex flex-col lg:flex-row gap-6">
   {/* Top Image on the Left */}
@@ -458,25 +458,26 @@ export default function HomePage() {
 
 
   {/* Timer */}
-  <div className="flex space-x-6">
-    {[
-      { value: "02", label: "Days" },
-      { value: "06", label: "Hrs" },
-      { value: "05", label: "Mins" },
-      { value: "30", label: "Sec" }
-    ].map((time, index) => (
-      <div key={index} className="flex flex-col items-center">
-        <div className="bg-white shadow-lg rounded-xl px-4 py-5 min-w-[80px] text-center">
-          <div className="text-4xl font-[400] font-digital tracking-widest">
-            {time.value}
-          </div>
-        </div>
-        <div className="mt-2 text-md text-gray-600 font-medium tracking-wide">
-          {time.label}
+ <div className="grid grid-cols-2 md:flex md:space-x-6 gap-4">
+  {[
+    { value: "02", label: "Days" },
+    { value: "06", label: "Hrs" },
+    { value: "05", label: "Mins" },
+    { value: "30", label: "Sec" },
+  ].map((time, index) => (
+    <div key={index} className="flex flex-col items-center">
+      <div className="bg-white shadow-lg rounded-xl px-4 py-5 min-w-[80px] text-center">
+        <div className="text-4xl font-[400] font-digital tracking-widest">
+          {time.value}
         </div>
       </div>
-    ))}
-  </div>
+      <div className="mt-2 text-md text-gray-600 font-medium tracking-wide">
+        {time.label}
+      </div>
+    </div>
+  ))}
+</div>
+
   <div className="flex items-center justify-end gap-3 mb-10">
     {/* Left Icon */}
     <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100">

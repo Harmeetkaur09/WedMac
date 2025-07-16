@@ -1,46 +1,50 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Menu, X } from "lucide-react"; // icons
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-[#FF577F] left-0 right-0 fixed z-50 text-white text-center py-2 text-sm">
+      <div className="bg-[#FF577F] fixed left-0 right-0 z-50 text-white text-center py-2 text-sm">
         Get $20 Off Your First Purchase - Shop Now & Save!
       </div>
 
       {/* Main Header */}
       <header className="bg-white shadow-sm">
         <nav className="fixed top-9 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
-          <div className=" mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
-              {/* Logo (optional Link to home) */}
+              {/* Logo */}
               <Link href="/" className="text-2xl font-bold text-rose-500">
                 WedMac India
               </Link>
 
-              {/* Navigation Links */}
+              {/* Desktop Menu */}
               <div className="hidden md:flex items-center space-x-8">
-                <Link href="/" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/" className="text-gray-700 hover:text-rose-500">
                   Home
                 </Link>
-                <Link href="/about" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/about" className="text-gray-700 hover:text-rose-500">
                   About Us
                 </Link>
-                <Link href="/portfolio" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/portfolio" className="text-gray-700 hover:text-rose-500">
                   Portfolio
                 </Link>
-                <Link href="/makeup-artist" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/makeup-artist" className="text-gray-700 hover:text-rose-500">
                   Wedmac Makeup Artist
                 </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/contact" className="text-gray-700 hover:text-rose-500">
                   Contact
                 </Link>
-                <Link href="/faq" className="text-gray-700 hover:text-rose-500 transition-colors">
+                <Link href="/faq" className="text-gray-700 hover:text-rose-500">
                   FAQ
                 </Link>
 
-                {/* Buttons */}
                 <div className="flex items-center space-x-4">
                   <Link href="/login">
                     <Button variant="outline" className="bg-[#FF577F] h-8 px-6 hover:bg-rose-600 text-white">
@@ -54,8 +58,53 @@ export default function Header() {
                   </Link>
                 </div>
               </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden text-gray-700"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {menuOpen && (
+            <div className="md:hidden px-4 pt-4 pb-6 space-y-3 bg-white shadow-lg border-t border-gray-200">
+              <Link href="/" className="block text-gray-700 hover:text-rose-500">
+                Home
+              </Link>
+              <Link href="/about" className="block text-gray-700 hover:text-rose-500">
+                About Us
+              </Link>
+              <Link href="/portfolio" className="block text-gray-700 hover:text-rose-500">
+                Portfolio
+              </Link>
+              <Link href="/makeup-artist" className="block text-gray-700 hover:text-rose-500">
+                Wedmac Makeup Artist
+              </Link>
+              <Link href="/contact" className="block text-gray-700 hover:text-rose-500">
+                Contact
+              </Link>
+              <Link href="/faq" className="block text-gray-700 hover:text-rose-500">
+                FAQ
+              </Link>
+
+              <div className="pt-4 flex flex-col space-y-2">
+                <Link href="/login">
+                  <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </nav>
       </header>
     </>
