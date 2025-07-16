@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Star, MapPin, ChevronLeft, ChevronRight, ArrowUpRight, Bookmark } from "lucide-react"
+import Link from "next/link";
 
 export default function MakeupArtistPagesPage() {
   return (
@@ -221,7 +222,7 @@ export default function MakeupArtistPagesPage() {
         className="w-14 h-14 rounded-full mr-4"
       />
       <div>
-        <h3 className="font-semibold">Avneet Kaur</h3>
+        <h3 className="font-semibold font-inter">Avneet Kaur</h3>
         <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
         <div className="flex items-center text-sm text-gray-500">
           <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
@@ -254,12 +255,12 @@ export default function MakeupArtistPagesPage() {
                         </Button>
   
                         {/* View Profile button */}
-                        <Button
-                          className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
-                        >
-                          View Profile
-                          <ArrowUpRight className="w-4 h-4" />
-                        </Button>
+                       <Link href="/makeup-artist-detail" className="flex-1">
+  <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+    View Profile
+    <ArrowUpRight className="w-4 h-4" />
+  </Button>
+</Link>
                       </div>
   
   

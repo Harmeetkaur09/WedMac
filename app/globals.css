@@ -97,3 +97,9 @@
 .accordion-trigger > svg {
   display: none !important;
 }
+@font-face {
+  font-family: 'Digital';
+  src: url('/fonts/digital/DigitalNumbers-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

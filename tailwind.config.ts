@@ -17,6 +17,7 @@ const config: Config = {
           gilroy: ['Gilroy', 'sans-serif'],
 		 inter: ['var(--font-inter)', 'sans-serif'],
   poppins: ['var(--font-poppins)', 'sans-serif'],
+   digital: ['Digital', 'monospace'],
       },
 		
   		colors: {
