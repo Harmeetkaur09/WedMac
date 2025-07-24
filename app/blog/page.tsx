@@ -131,6 +131,11 @@ export default function BlogPage() {
                            </p>
                          </div>
                        </section>
+                          <section className="py-12 -mt-20 relative z-30 px-4">
+    <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
+     <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Blog</h1>
+    </div>
+  </section>
 
       {/* Main Content */}
       <section className="py-16 px-4">

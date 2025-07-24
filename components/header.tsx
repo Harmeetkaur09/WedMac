@@ -70,41 +70,42 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Dropdown */}
-          {menuOpen && (
-            <div className="md:hidden px-4 pt-4 pb-6 space-y-3 bg-white shadow-lg border-t border-gray-200">
-              <Link href="/" className="block text-gray-700 hover:text-rose-500">
-                Home
-              </Link>
-              <Link href="/about" className="block text-gray-700 hover:text-rose-500">
-                About Us
-              </Link>
-              <Link href="/portfolio" className="block text-gray-700 hover:text-rose-500">
-                Portfolio
-              </Link>
-              <Link href="/makeup-artist" className="block text-gray-700 hover:text-rose-500">
-                Wedmac Makeup Artist
-              </Link>
-              <Link href="/contact" className="block text-gray-700 hover:text-rose-500">
-                Contact
-              </Link>
-              <Link href="/faq" className="block text-gray-700 hover:text-rose-500">
-                FAQ
-              </Link>
+         {menuOpen && (
+  <div className="md:hidden px-4 pt-4 pb-6 space-y-3 bg-white shadow-lg border-t border-gray-200">
+    <Link href="/" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Home
+    </Link>
+    <Link href="/about" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      About Us
+    </Link>
+    <Link href="/portfolio" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Portfolio
+    </Link>
+    <Link href="/makeup-artist" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Wedmac Makeup Artist
+    </Link>
+    <Link href="/contact" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Contact
+    </Link>
+    <Link href="/faq" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      FAQ
+    </Link>
 
-              <div className="pt-4 flex flex-col space-y-2">
-                <Link href="/login">
-                  <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
-                    Sign Up
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
+    <div className="pt-4 flex flex-col space-y-2">
+      <Link href="/login" onClick={() => setMenuOpen(false)}>
+        <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
+          Login
+        </Button>
+      </Link>
+      <Link href="/signup" onClick={() => setMenuOpen(false)}>
+        <Button className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
+          Sign Up
+        </Button>
+      </Link>
+    </div>
+  </div>
+)}
+
         </nav>
       </header>
     </>

@@ -34,6 +34,11 @@ export default function ContactPage() {
       </p>
     </div>
   </section>
+    <section className="py-12 -mt-20 relative z-30 px-4">
+    <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
+     <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Contact Us</h1>
+    </div>
+  </section>
 
       {/* Contact Form Section */}
 <section className="py-10 bg-white">
