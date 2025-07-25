@@ -8,10 +8,96 @@ import { Badge } from "@/components/ui/badge"
 import { Star, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, BadgeCheck, MessageCircle, ArrowUpRight } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link";
-import { useState } from "react"
+import { useParams } from "next/navigation"
+import { useState, useEffect,  } from "react"
+import toast, { Toaster } from 'react-hot-toast'
+import BookModal from "./BookModal"
+interface ArtistDetail {
+  location: any
+  id: number
+  full_name: string
+  city: string
+  state: string
+bio: string
+  rating: number
+  experience_years: number
+  services: string[]
+  profile_image: string | null
+  about: string
+  instagram_url: string
+  starting_price: number
+}
 
 export default function MakeupArtistDetailPage() {
+
     const [activeTab, setActiveTab] = useState("review")
+      const [helpName, setHelpName] = useState('')
+  const [helpMobile, setHelpMobile] = useState('')
+  const [helpMessage, setHelpMessage] = useState('')
+  const [helpErrors, setHelpErrors] = useState<{ name?: string; mobile?: string }>({})
+  const [helpLoading, setHelpLoading] = useState(false)
+    const { id } = useParams()
+  const [artist, setArtist]         = useState<ArtistDetail | null>(null)
+  const [loading, setLoading]       = useState(true)
+  const [showModal, setShowModal] = useState(false)
+
+  useEffect(() => {
+    if (!id) return
+
+    fetch(`https://wedmac-services.onrender.com/api/artists/artist/${id}/`)
+      .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok")
+        return res.json()
+      })
+      .then((data: ArtistDetail) => setArtist(data))
+      .catch(() => toast.error("Failed to load artist details"))
+      .finally(() => setLoading(false))
+
+  }, [id])
+
+  if (loading) {
+    return <p className="text-center py-20">Loading...</p>
+  }
+  if (!artist) {
+    return <p className="text-center py-20">Artist not found</p>
+  }
+
+  const handleHelpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const nameRegex = /^[A-Za-z ]+$/
+    const mobileRegex = /^\d{10}$/
+    const newErrors: { name?: string; mobile?: string } = {}
+
+    if (!helpName.trim()) newErrors.name = 'Name is required.'
+    else if (!nameRegex.test(helpName.trim())) newErrors.name = 'Name can only contain letters and spaces.'
+    if (!helpMobile.trim()) newErrors.mobile = 'Mobile number is required.'
+    else if (!mobileRegex.test(helpMobile.trim())) newErrors.mobile = 'Mobile number must be exactly 10 digits.'
+
+    if (Object.keys(newErrors).length) {
+      setHelpErrors(newErrors)
+      return
+    }
+
+    setHelpLoading(true)
+    setHelpErrors({})
+    try {
+      const res = await fetch('https://wedmac-services.onrender.com/api/public/contact-us/', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: helpName, mobile: helpMobile, message: helpMessage }),
+      })
+      if (!res.ok) throw new Error('Network response was not ok')
+      toast.success('Form submitted successfully!')
+      setHelpName('')
+      setHelpMobile('')
+      setHelpMessage('')
+    } catch (err) {
+      console.error(err)
+      toast.error('Submission failed. Please try again.')
+    } finally {
+      setHelpLoading(false)
+    }
+  }
+
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
@@ -69,16 +155,16 @@ export default function MakeupArtistDetailPage() {
 
                                         <div className="md:w-2/3 pt-6  pr-8">
                                             <div className="flex items-center gap-2 mb-2">
-                                                <h3 className="text-2xl font-inter font-bold">Avneet Kaur</h3>
+                                                <h3 className="text-2xl font-inter font-bold">{artist.full_name}</h3>
                                                 <div className="flex items-center gap-1 text-sm text-pink-600 font-inter">
                                                     <Image src="/images/verify.svg" alt="Verified" width={16} height={16} className="w-8 h-8" />
                                                     Verified
                                                 </div>
 
                                             </div>
-                                            <p className="text-[#8D8D8D] text-md mb-2">New Delhi, India</p>
-                                            <p className="text-[#8D8D8D] font-[600] text-md mb-2">covid vaccinated</p>
-                                            <p className="text-[#8D8D8D] text-md mb-2">Get 10% off on your first booking</p>
+                                            <p className="text-[#8D8D8D] text-md mb-2">{artist.location.city},{artist.location.state}</p>
+                                            {/* <p className="text-[#8D8D8D] font-[600] text-md mb-2">covid vaccinated</p>
+                                            <p className="text-[#8D8D8D] text-md mb-2">Get 10% off on your first booking</p> */}
 
 
 
@@ -99,25 +185,15 @@ export default function MakeupArtistDetailPage() {
                                                     <Facebook className="w-4 h-4" />
                                                     Facebook
                                                 </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-                                                >
-                                                    <MessageCircle className="w-4 h-4" />
-                                                    WhatsApp
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-                                                >
-                                                    <Phone className="w-4 h-4" />
-                                                    Call
-                                                </Button>
+                                              
                                             </div>
                                             <div className="flex gap-2 mb-4">
-                                                <Button className="bg-pink-500 hover:bg-pink-600 text-white w-[400px]">
-                                                    Book Now
-                                                </Button>
+                                              <Button
+        onClick={() => setShowModal(true)}
+        className="w-full bg-[#FF577F] text-white"
+      >
+        Book Now
+      </Button>
                                             </div>
                                         </div>
                                     </div>
@@ -127,15 +203,10 @@ export default function MakeupArtistDetailPage() {
                             {/* About Section */}
                             <div>
                                 <div className="border border-[#D5D5D5] rounded-xl p-8">
-                                    <h2 className="text-3xl font-inter font-[600] mb-6">About Avneet Kaur</h2>
+                                    <h2 className="text-3xl font-inter font-[600] mb-6">About {artist.full_name}</h2>
                                     <div className="prose prose-lg max-w-none">
                                         <p className=" font-inter font-[400] text-[#00000099] text-sm leading-relaxed mb-6">
-                                            Avneet Kaur specializes in professional bridal makeup, formal, and recreational. Trained at Lakmé,
-                                            as well as she has been working as a professional makeup artist for the past 4 years. She has worked
-                                            with several celebrities throughout her website as presented to you individually during the course
-                                            of your visit to her website respectively. She has been trained by one of the most renowned makeup
-                                            artists in the country CHANDNI SINGH, hence all the techniques and skills have been passed on to
-                                            her.
+                                            {artist.bio}
                                         </p>
                                     </div>
                                 </div>
@@ -324,7 +395,7 @@ export default function MakeupArtistDetailPage() {
                                                     <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
                                                     <span>Delhi</span>
                                                     <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                                                        4.5
+                                                       {artist.rating}
                                                     </span>
                                                 </div>
                                             </div>
@@ -403,37 +474,55 @@ export default function MakeupArtistDetailPage() {
             </section>
 
             {/* Contact Form Banner */}
-           <section
-  className="py-6 px-4 bg-[url('/images/banner-help.jpg')] bg-cover bg-center bg-no-repeat"
->
-  <div className="max-w-2xl mx-auto">
-    <h2 className="text-4xl font-bold text-white mb-1 text-center">
-      Help Us With Your Details
-    </h2>
-    <p className="text-sm text-white text-center">
-      Our executives will call you to understand your requirements to find suitable vendors
-    </p>
-    <div className="p-2">
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <Input placeholder="Your Name" className="rounded-none" />
-        <Input placeholder="Your Mobile" className="rounded-none" />
-        <Input placeholder="Your City" className="rounded-none" />
-      </div>
-      <Textarea
-        placeholder="Write here your Doubt"
-        className="mb-6 rounded-none"
-        rows={4}
-      />
-
-      {/* Submit Button aligned left */}
-      <div className="text-left">
-        <Button className="bg-pink-500 w-40 hover:bg-pink-600 rounded-none text-white px-6">
-          Submit
-        </Button>
-      </div>
-    </div>
-  </div>
-</section>
+          <section className="py-6 px-4 bg-[url('/images/banner-help.jpg')] bg-cover bg-center bg-no-repeat relative">
+        <div className="absolute inset-0 " />
+        <div className="relative max-w-2xl mx-auto text-center text-white">
+          <h2 className="text-4xl font-bold mb-1">Help Us With Your Details</h2>
+          <p className="text-sm mb-6">
+            Our executives will call you to understand your requirements to find suitable vendors
+          </p>
+          <form onSubmit={handleHelpSubmit} className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Input
+                  placeholder="Your Name"
+                  className="rounded-none"
+                  value={helpName}
+                  onChange={(e) => setHelpName(e.target.value)}
+                />
+                {helpErrors.name && <p className="text-red-500 text-sm mt-1">{helpErrors.name}</p>}
+              </div>
+              <div>
+                <Input
+                  placeholder="Your Mobile"
+                  className="rounded-none"
+                  value={helpMobile}
+                  onChange={(e) => setHelpMobile(e.target.value)}
+                />
+                {helpErrors.mobile && <p className="text-red-500 text-sm mt-1">{helpErrors.mobile}</p>}
+              </div>
+            </div>
+            <div>
+              <Textarea
+                placeholder="Write here your Doubt"
+                className="mb-2 rounded-none"
+                rows={4}
+                value={helpMessage}
+                onChange={(e) => setHelpMessage(e.target.value)}
+              />
+            </div>
+            <div className="text-left">
+              <Button
+                type="submit"
+                disabled={helpLoading}
+                className="bg-pink-500 w-40 hover:bg-pink-600 rounded-none text-white px-6"
+              >
+                {helpLoading ? 'Submitting...' : 'Submit'}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </section>
 
 
 
@@ -542,7 +631,12 @@ export default function MakeupArtistDetailPage() {
                 </div>
             </section>
 
-       
+         { showModal && (
+       <BookModal
+         artistId={Number(id)}
+         onClose={() => setShowModal(false)}
+       />
+     )}
         </div>
     )
 }

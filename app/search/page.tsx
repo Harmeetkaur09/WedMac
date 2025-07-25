@@ -105,7 +105,7 @@ export default function SearchPage() {
               </div>
 
               {/* Date Filter */}
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <h3 className="font-[400] font-inter mb-3">Date</h3>
                 <input type="date" className="w-full p-2 border rounded-md" defaultValue="2024-03-15" />
               </div>
@@ -127,7 +127,7 @@ export default function SearchPage() {
                     </Label>
                   </div>
                 </RadioGroup>
-              </div>
+              </div> */}
 
 
 
@@ -148,7 +148,7 @@ export default function SearchPage() {
               </div>
 
               {/* Style Filter */}
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <h3 className="font-[400] font-inter mb-3">Style</h3>
                 <RadioGroup defaultValue="minimal">
                   {["Minimal", "Colorful"].map((style) => (
@@ -158,7 +158,7 @@ export default function SearchPage() {
                     </div>
                   ))}
                 </RadioGroup>
-              </div>
+              </div> */}
 
               {/* Products Filter */}
               <div className="mb-6">

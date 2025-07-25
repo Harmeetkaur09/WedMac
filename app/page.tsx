@@ -1,3 +1,4 @@
+"use client"
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,7 +6,29 @@ import Image from "next/image"
 import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin, Bookmark, ArrowUpRight, ArrowLeft } from "lucide-react";
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
 
+import toast, { Toaster } from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+
+
+interface ArtistCard {
+  id: number;
+  full_name: string;
+  profile_photo_url: string | null;
+  location: string;
+  average_rating: number;
+  total_ratings: number;
+  makeup_types: string[];
+  portfolio_photos: string[];
+}
+
 export default function HomePage() {
+   const [helpName, setHelpName] = useState('')
+  const [helpMobile, setHelpMobile] = useState('')
+  const [helpMessage, setHelpMessage] = useState('')
+  const [helpErrors, setHelpErrors] = useState<{ name?: string; mobile?: string }>({})
+  const [helpLoading, setHelpLoading] = useState(false)
+      const [artists, setArtists] = useState<ArtistCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const testimonials = [
     {
       name: "Bang Upin",
@@ -32,6 +55,52 @@ export default function HomePage() {
         "Sangat terjangkau untuk kantong saya yang tidak terlalu banyak",
     },
   ];
+  const handleHelpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const nameRegex = /^[A-Za-z ]+$/
+    const mobileRegex = /^\d{10}$/
+    const newErrors: { name?: string; mobile?: string } = {}
+
+    if (!helpName.trim()) newErrors.name = 'Name is required.'
+    else if (!nameRegex.test(helpName.trim())) newErrors.name = 'Name can only contain letters and spaces.'
+    if (!helpMobile.trim()) newErrors.mobile = 'Mobile number is required.'
+    else if (!mobileRegex.test(helpMobile.trim())) newErrors.mobile = 'Mobile number must be exactly 10 digits.'
+
+    if (Object.keys(newErrors).length) {
+      setHelpErrors(newErrors)
+      return
+    }
+
+    setHelpLoading(true)
+    setHelpErrors({})
+    try {
+      const res = await fetch('https://wedmac-services.onrender.com/api/public/contact-us/', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: helpName, mobile: helpMobile, message: helpMessage }),
+      })
+      if (!res.ok) throw new Error('Network response was not ok')
+      toast.success('Form submitted successfully!')
+      setHelpName('')
+      setHelpMobile('')
+      setHelpMessage('')
+    } catch (err) {
+      console.error(err)
+      toast.error('Submission failed. Please try again.')
+    } finally {
+      setHelpLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    fetch('https://wedmac-services.onrender.com/api/artists/cards/')
+      .then(res => res.json())
+      .then((data: ArtistCard[]) => {
+        setArtists(data.slice(0, 3)); // latest 3
+      })
+      .catch(err => toast.error('Failed to load artists'))
+      .finally(() => setLoading(false));
+  }, []);
   return (
     <><Header />
       <div className="min-h-screen">
@@ -254,122 +323,114 @@ export default function HomePage() {
              </section>
 
         {/* Artist Profiles Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">Artist Profiles</h2>
-              <div className="flex justify-center space-x-12 text-lg">
-                <span className="text-rose-500 border-b-3 border-rose-500 pb-2 font-semibold">Latest</span>
-                <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Portfolio</span>
-                <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Artist</span>
+                 {/* Artist Profiles Section */}
+<section className="py-20 bg-white">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">Artist Profiles</h2>
+      <div className="flex justify-center space-x-12 text-lg">
+        <span className="text-rose-500 border-b-3 border-rose-500 pb-2 font-semibold">Latest</span>
+        {/* <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Portfolio</span>
+        <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Artist</span> */}
+      </div>
+    </div>
+
+    {loading ? (
+      <p className="text-center">Loading...</p>
+    ) : (
+ <div
+        className={
+          artists.length < 3
+            ? "flex justify-center gap-8 max-w-6xl mx-auto"
+            : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+        }
+      >        {artists.map((artist) => (
+          <div key={artist.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+            {/* Portfolio Grid — exactly your original flex layout */}
+            <div className="flex gap-2 p-4 h-[250px]">
+              {/* Left large */}
+              <Image
+                src={artist.portfolio_photos[0] || "/images/search1.png"}
+                alt="Artist Work"
+                width={250}
+                height={220}
+                className="rounded-lg object-cover w-[65%] h-full"
+              />
+              {/* Right two stacked */}
+              <div className="flex flex-col gap-2 w-[35%]">
+                <Image
+                  src={artist.portfolio_photos[1] || "/images/search2.png"}
+                  alt="Artist Work"
+                  width={100}
+                  height={120}
+                  className="rounded-lg object-cover w-full h-[130px]"
+                />
+                <Image
+                  src={artist.portfolio_photos[2] || "/images/search3.png"}
+                  alt="Artist Work"
+                  width={100}
+                  height={90}
+                  className="rounded-lg object-cover w-full h-[88px]"
+                />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {[
-                { name: "Avneet Kaur", rating: 5, image: "https://images.unsplash.com/photo-1494790108755-2616c96c002c?w=300&h=400&fit=crop" },
-                { name: "Priya Sharma", rating: 5, image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=400&fit=crop" },
-                { name: "Anita Singh", rating: 5, image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=300&h=400&fit=crop" }
-              ].map((artist, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                  <div className="flex gap-2 p-4 h-[250px]">
-
-                    {/* Image 1: Takes full height of container */}
-                    <Image
-                      src="/images/search1.png"
-                      alt="Artist Work"
-                      width={250}
-                      height={220}
-                      className="rounded-lg object-cover w-[65%] h-full"
-                    />
-
-                    {/* Images 2 and 3 stacked vertically */}
-                    <div className="flex flex-col gap-2 w-[35%]">
-                      {/* Image 2: Taller */}
-                      <Image
-                        src="/images/search2.png"
-                        alt="Artist Work"
-                        width={100}
-                        height={120}
-                        className="rounded-lg object-cover w-full h-[130px]"
-                      />
-                      {/* Image 3: Shorter */}
-                      <Image
-                        src="/images/search3.png"
-                        alt="Artist Work"
-                        width={100}
-                        height={90}
-                        className="rounded-lg object-cover w-full h-[88px]"
-                      />
+            {/* Info & Avatar — matches your original */}
+            <div className="pr-4 pl-4 pb-4 pt-0">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center">
+                  <Image
+                    src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
+                    alt={artist.full_name}
+                    width={56}
+                    height={56}
+                    className="w-14 h-14 rounded-full mr-4"
+                  />
+                  <div>
+                    <h3 className="font-semibold">{artist.full_name}</h3>
+                    <p className="text-sm text-[#8D8D8D]">{artist?.makeup_types || "-"}</p>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                      <span>{artist.location}</span>
+                      <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                        {artist.average_rating.toFixed(1)}
+                      </span>
                     </div>
-                  </div>
-
-
-                  <div className="pr-4 pl-4 pb-4 pt-0">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center">
-                        <Image
-                          src="/placeholder.svg?height=50&width=50"
-                          alt="Avneet Kaur"
-                          width={50}
-                          height={50}
-                          className="w-14 h-14 rounded-full mr-4"
-                        />
-                        <div>
-                          <h3 className="font-semibold">Avneet Kaur</h3>
-                          <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                            <span>Delhi</span>
-                            <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                              4.5
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Save Profile Icon */}
-                      <button className="text-[#FF577F] hover:text-pink-600 transition">
-                        <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
-
-                      </button>
-                    </div>
-
-
-                    <div className="flex space-x-2">
-                      {/* Book Now button with hover effect and icon transition */}
-                      <Button
-                        variant="outline"
-                        className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                      >
-                        <span className="flex items-center gap-1">
-                          Book Now
-                          <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                        </span>
-                      </Button>
-
-                      {/* View Profile button */}
-                      <Button
-                        className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
-                      >
-                        View Profile
-                        <ArrowUpRight className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="text-center mt-12">
-              <Button  className="text-rose-500 bg-transparent hover:bg-transparent px-8 py-3 text-lg">
-                View All <ArrowRight className="w-8 h-1"></ArrowRight>
-              </Button>
+                <button className="text-[#FF577F] hover:text-pink-600 transition">
+                  <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
+                </button>
+              </div>
+
+              {/* Buttons — unchanged */}
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                >
+                  <span className="flex items-center gap-1">
+                    Book Now
+                    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  </span>
+                </Button>
+
+                <Button
+                  className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
+                >
+                  View Profile
+                  <ArrowUpRight className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </section>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
 
         {/* Wedmac India Section */}
         <section className="py-12 ">
@@ -423,8 +484,8 @@ export default function HomePage() {
         </section>
 
         {/* Help Us With Your Details Section */}
-        <section className="py-12 bg-[url('/images/banner.jpg')] bg-cover bg-center text-white relative overflow-hidden">
-          <div className="absolute inset-0 "></div> {/* Optional overlay */}
+      <section className="py-12 bg-[url('/images/banner.jpg')] bg-cover bg-center text-white relative overflow-hidden">
+          <div className="absolute inset-0 " />
           <div className="max-w-4xl mx-auto px-4 text-start relative z-10">
             <h2 className="text-4xl md:text-5xl text-[#FF577F] font-bold mb-4">
               Help Us With Your Details
@@ -433,16 +494,46 @@ export default function HomePage() {
               Get personalized recommendations from our beauty experts
             </p>
 
-            <div className="flex flex-col md:flex-row gap-4 flex-wrap items-center">
-              <Input placeholder="Your Name" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-[22%]" />
-              <Input placeholder="Your Number" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-[22%]" />
-              <Input placeholder="Makeup Type" className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full md:w-[22%]" />
-              <Button className="bg-[#FF577F] text-white hover:bg-pink-400 px-8 py-4 text-lg font-semibold shadow-lg w-full md:w-[22%]">
-                Submit
-              </Button>
-            </div>
+            <form onSubmit={handleHelpSubmit} className="flex flex-col md:flex-row gap-4 flex-wrap items-start">
+              <div className="w-full md:w-[22%]">
+                <Input
+                  placeholder="Your Name"
+                  className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
+                  value={helpName}
+                  onChange={(e) => setHelpName(e.target.value)}
+                />
+                {helpErrors.name && <p className="text-red-500 text-sm mt-1">{helpErrors.name}</p>}
+              </div>
+              <div className="w-full md:w-[22%]">
+                <Input
+                  placeholder="Your Number"
+                  className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
+                  value={helpMobile}
+                  onChange={(e) => setHelpMobile(e.target.value)}
+                />
+                {helpErrors.mobile && <p className="text-red-500 text-sm mt-1">{helpErrors.mobile}</p>}
+              </div>
+              <div className="w-full md:w-[22%]">
+                <Input
+                  placeholder="Your Message"
+                  className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
+                  value={helpMessage}
+                  onChange={(e) => setHelpMessage(e.target.value)}
+                />
+              </div>
+              <div className="w-full md:w-[22%]">
+                <Button
+                  type="submit"
+                  disabled={helpLoading}
+                  className="bg-[#FF577F] text-white hover:bg-pink-400 px-8 py-4 text-lg font-semibold shadow-lg w-full"
+                >
+                  {helpLoading ? 'Submitting...' : 'Submit'}
+                </Button>
+              </div>
+            </form>
           </div>
         </section>
+
 
 
 

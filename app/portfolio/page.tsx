@@ -1,10 +1,36 @@
+"use client"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Star, ArrowRight, ArrowUpRight, Bookmark, MapPin, Images, ArrowLeft } from "lucide-react"
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
+import toast, { Toaster } from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+
+
+interface ArtistCard {
+  id: number;
+  full_name: string;
+  profile_photo_url: string | null;
+  location: string;
+  average_rating: number;
+  total_ratings: number;
+  makeup_types: string[];
+  portfolio_photos: string[];
+}
 
 
 export default function PortfolioPage() {
+       const [artists, setArtists] = useState<ArtistCard[]>([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      fetch('https://wedmac-services.onrender.com/api/artists/cards/')
+        .then(res => res.json())
+        .then((data: ArtistCard[]) => {
+          setArtists(data.slice(0, 3)); // latest 3
+        })
+        .catch(err => toast.error('Failed to load artists'))
+        .finally(() => setLoading(false));
+    }, []);
   const testimonials = [
   {
     name: "Bang Upin",
@@ -325,6 +351,10 @@ export default function PortfolioPage() {
       <h2 className="text-4xl font-gilroy font-bold mb-1">Our Makeup</h2>
       <h2 className="text-4xl font-gilroy font-bold text-pink-500">Artist</h2>
     </div>
+     {loading ? (
+      <p className="text-center">Loading...</p>
+    ) : (
+
 
     <div className="relative gap-2">
       {/* Left Circle Arrow */}
@@ -332,33 +362,35 @@ export default function PortfolioPage() {
   <ArrowLeft className="w-5 h-5" />
 </button>
 
-     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((artist) => (
-              <div key={artist} className="bg-white rounded-lg shadow-lg overflow-hidden">
+     <div
+            className={
+              artists.length < 3
+                ? "flex justify-center gap-8 max-w-6xl mx-auto"
+                : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+            }
+          >        {artists.map((artist) => (
+              <div key={artist.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                {/* Portfolio Grid — exactly your original flex layout */}
                 <div className="flex gap-2 p-4 h-[250px]">
-
-                  {/* Image 1: Takes full height of container */}
+                  {/* Left large */}
                   <Image
-                    src="/images/search1.png"
+                    src={artist.portfolio_photos[0] || "/images/search1.png"}
                     alt="Artist Work"
                     width={250}
                     height={220}
                     className="rounded-lg object-cover w-[65%] h-full"
                   />
-
-                  {/* Images 2 and 3 stacked vertically */}
+                  {/* Right two stacked */}
                   <div className="flex flex-col gap-2 w-[35%]">
-                    {/* Image 2: Taller */}
                     <Image
-                      src="/images/search2.png"
+                      src={artist.portfolio_photos[1] || "/images/search2.png"}
                       alt="Artist Work"
                       width={100}
                       height={120}
                       className="rounded-lg object-cover w-full h-[130px]"
                     />
-                    {/* Image 3: Shorter */}
                     <Image
-                      src="/images/search3.png"
+                      src={artist.portfolio_photos[2] || "/images/search3.png"}
                       alt="Artist Work"
                       width={100}
                       height={90}
@@ -366,41 +398,38 @@ export default function PortfolioPage() {
                     />
                   </div>
                 </div>
-
-
+    
+                {/* Info & Avatar — matches your original */}
                 <div className="pr-4 pl-4 pb-4 pt-0">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center">
                       <Image
-                        src="/images/fdprofile.png?height=50&width=50"
-                        alt="Avneet Kaur"
-                        width={50}
-                        height={50}
+                        src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
+                        alt={artist.full_name}
+                        width={56}
+                        height={56}
                         className="w-14 h-14 rounded-full mr-4"
                       />
                       <div>
-                        <h3 className="font-semibold">Avneet Kaur</h3>
-                        <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
+                        <h3 className="font-semibold">{artist.full_name}</h3>
+                        <p className="text-sm text-[#8D8D8D]">{artist.makeup_types}</p>
                         <div className="flex items-center text-sm text-gray-500">
                           <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                          <span>Delhi</span>
+                          <span>{artist.location}</span>
                           <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                            4.5
+                            {artist.average_rating.toFixed(1)}
                           </span>
                         </div>
                       </div>
                     </div>
-
-                    {/* Save Profile Icon */}
+    
                     <button className="text-[#FF577F] hover:text-pink-600 transition">
                       <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
-
                     </button>
                   </div>
-
-
+    
+                  {/* Buttons — unchanged */}
                   <div className="flex space-x-2">
-                    {/* Book Now button with hover effect and icon transition */}
                     <Button
                       variant="outline"
                       className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
@@ -410,8 +439,7 @@ export default function PortfolioPage() {
                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       </span>
                     </Button>
-
-                    {/* View Profile button */}
+    
                     <Button
                       className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
                     >
@@ -419,18 +447,18 @@ export default function PortfolioPage() {
                       <ArrowUpRight className="w-4 h-4" />
                     </Button>
                   </div>
-
-
                 </div>
               </div>
             ))}
           </div>
+          
 
       {/* Right Circle Arrow */}
      <button className="hidden md:flex absolute right-0 -mr-20 top-1/2 transform -translate-y-1/2 bg-white text-[#FF577F] p-2 rounded-full shadow-md hover:bg-pink-600 z-10">
   <ArrowRight className="w-5 h-5" />
 </button>
     </div>
+  )}
   </div>
 </section>
 
