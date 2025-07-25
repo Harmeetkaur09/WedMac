@@ -8,6 +8,9 @@ import HoverShuffleImage from "@/components/common/HoverShuffleImage";
 
 import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
+import Link from "next/link";
+import BookModal from "./makeup-artist/details/[id]/BookModal";
+import { useParams } from "next/navigation";
 
 
 interface ArtistCard {
@@ -29,6 +32,10 @@ export default function HomePage() {
   const [helpLoading, setHelpLoading] = useState(false)
       const [artists, setArtists] = useState<ArtistCard[]>([]);
   const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false)
+        const { id } = useParams()
+    
+  
   const testimonials = [
     {
       name: "Bang Upin",
@@ -406,23 +413,26 @@ export default function HomePage() {
 
               {/* Buttons — unchanged */}
               <div className="flex space-x-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                >
-                  <span className="flex items-center gap-1">
-                    Book Now
-                    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                  </span>
-                </Button>
-
-                <Button
-                  className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
-                >
-                  View Profile
-                  <ArrowUpRight className="w-4 h-4" />
-                </Button>
-              </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowModal(true)}
+                      className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                    >
+                      <span className="flex items-center gap-1">
+                        Book Now
+                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                      </span>
+                    </Button>
+                       <Link href={`/makeup-artist/details/${artist.id}`}  className="flex-1">
+    
+                    <Button
+                      className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
+                    >
+                      View Profile
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Button>
+                    </Link>
+                  </div>
             </div>
           </div>
         ))}
@@ -713,6 +723,12 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
+           { showModal && (
+               <BookModal
+                 artistId={Number(id)}
+                 onClose={() => setShowModal(false)}
+               />
+             )}
 
       </div></>
   );

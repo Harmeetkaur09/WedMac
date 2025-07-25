@@ -5,7 +5,9 @@ import { Star, ArrowRight, ArrowUpRight, Bookmark, MapPin, Images, ArrowLeft } f
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
 import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
-
+import BookModal from "../makeup-artist/details/[id]/BookModal";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 
 interface ArtistCard {
   id: number;
@@ -22,6 +24,10 @@ interface ArtistCard {
 export default function PortfolioPage() {
        const [artists, setArtists] = useState<ArtistCard[]>([]);
     const [loading, setLoading] = useState(true);
+    const { id } = useParams()
+  const [showModal, setShowModal] = useState(false)
+
+
     useEffect(() => {
       fetch('https://wedmac-services.onrender.com/api/artists/cards/')
         .then(res => res.json())
@@ -432,6 +438,7 @@ export default function PortfolioPage() {
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
+                      onClick={() => setShowModal(true)}
                       className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
                     >
                       <span className="flex items-center gap-1">
@@ -439,6 +446,7 @@ export default function PortfolioPage() {
                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       </span>
                     </Button>
+                       <Link href={`/makeup-artist/details/${artist.id}`}  className="flex-1">
     
                     <Button
                       className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
@@ -446,6 +454,7 @@ export default function PortfolioPage() {
                       View Profile
                       <ArrowUpRight className="w-4 h-4" />
                     </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -461,6 +470,12 @@ export default function PortfolioPage() {
   )}
   </div>
 </section>
+   { showModal && (
+       <BookModal
+         artistId={Number(id)}
+         onClose={() => setShowModal(false)}
+       />
+     )}
 
     </div>
   )

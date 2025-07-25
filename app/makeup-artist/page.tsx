@@ -9,7 +9,8 @@ import { Star, MapPin, ChevronLeft, ChevronRight, ArrowUpRight, Bookmark } from 
 import Link from "next/link";
 import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
-
+import BookModal from "./details/[id]/BookModal"
+import { useParams } from "next/navigation"
 
 interface ArtistCard {
   id: number;
@@ -28,6 +29,9 @@ export default function MakeupArtistPagesPage() {
       const [loading, setLoading] = useState(true);
         const [makeupTypes, setMakeupTypes] = useState<string[]>([])
   const [products, setProducts]       = useState<string[]>([])
+      const { id } = useParams()
+  const [showModal, setShowModal] = useState(false)
+
      useEffect(() => {
     // fetch latest 3 artists
     fetch('https://wedmac-services.onrender.com/api/artists/cards/')
@@ -280,6 +284,8 @@ export default function MakeupArtistPagesPage() {
                 <div className="flex space-x-2">
                   <Button
                     variant="outline"
+                    onClick={() => setShowModal(true)}
+
                     className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
                   >
                     <span className="flex items-center gap-1">
@@ -327,6 +333,12 @@ export default function MakeupArtistPagesPage() {
             </div>
           </div>
         </div>
+           { showModal && (
+       <BookModal
+         artistId={Number(id)}
+         onClose={() => setShowModal(false)}
+       />
+     )}
     </div>
   )
 }
