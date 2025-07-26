@@ -20,7 +20,9 @@ interface ArtistCard {
   average_rating: number;
   total_ratings: number;
   makeup_types: string[];
-  portfolio_photos: string[];
+  portfolio_photos: {
+    file_url: string;
+  }[];
 }
 
 
@@ -226,7 +228,7 @@ export default function MakeupArtistPagesPage() {
               <div className="flex gap-2 p-4 h-[250px]">
                 {/* Left large */}
                 <Image
-                  src={artist.portfolio_photos[0] || "/images/search1.png"}
+                  src={ artist.portfolio_photos[0]?.file_url|| "/images/search1.png"}
                   alt="Artist Work"
                   width={250}
                   height={220}
@@ -235,14 +237,14 @@ export default function MakeupArtistPagesPage() {
                 {/* Right two stacked */}
                 <div className="flex flex-col gap-2 w-[35%]">
                   <Image
-                    src={artist.portfolio_photos[1] || "/images/search2.png"}
+                    src={ artist.portfolio_photos[1]?.file_url || "/images/search2.png"}
                     alt="Artist Work"
                     width={100}
                     height={120}
                     className="rounded-lg object-cover w-full h-[130px]"
                   />
                   <Image
-                    src={artist.portfolio_photos[2] || "/images/search3.png"}
+                    src={ artist.portfolio_photos[2]?.file_url || "/images/search3.png"}
                     alt="Artist Work"
                     width={100}
                     height={90}

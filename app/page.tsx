@@ -21,8 +21,11 @@ interface ArtistCard {
   average_rating: number;
   total_ratings: number;
   makeup_types: string[];
-  portfolio_photos: string[];
+  portfolio_photos: {
+    file_url: string;
+  }[];
 }
+
 
 export default function HomePage() {
    const [helpName, setHelpName] = useState('')
@@ -354,33 +357,41 @@ export default function HomePage() {
       >        {artists.map((artist) => (
           <div key={artist.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Portfolio Grid — exactly your original flex layout */}
-            <div className="flex gap-2 p-4 h-[250px]">
-              {/* Left large */}
-              <Image
-                src={artist.portfolio_photos[0] || "/images/search1.png"}
-                alt="Artist Work"
-                width={250}
-                height={220}
-                className="rounded-lg object-cover w-[65%] h-full"
-              />
-              {/* Right two stacked */}
-              <div className="flex flex-col gap-2 w-[35%]">
-                <Image
-                  src={artist.portfolio_photos[1] || "/images/search2.png"}
-                  alt="Artist Work"
-                  width={100}
-                  height={120}
-                  className="rounded-lg object-cover w-full h-[130px]"
-                />
-                <Image
-                  src={artist.portfolio_photos[2] || "/images/search3.png"}
-                  alt="Artist Work"
-                  width={100}
-                  height={90}
-                  className="rounded-lg object-cover w-full h-[88px]"
-                />
-              </div>
-            </div>
+           <div className="flex gap-2 p-4 h-[250px]">
+  {/* Left Large Image */}
+  <Image
+    src={
+      artist.portfolio_photos[0]?.file_url || "/images/search1.png"
+    }
+    alt="Artist Work"
+    width={250}
+    height={220}
+    className="rounded-lg object-cover w-[65%] h-full"
+  />
+
+  {/* Right two stacked */}
+  <div className="flex flex-col gap-2 w-[35%]">
+    <Image
+      src={
+        artist.portfolio_photos[1]?.file_url || "/images/search2.png"
+      }
+      alt="Artist Work"
+      width={100}
+      height={120}
+      className="rounded-lg object-cover w-full h-[130px]"
+    />
+    <Image
+      src={
+        artist.portfolio_photos[2]?.file_url || "/images/search3.png"
+      }
+      alt="Artist Work"
+      width={100}
+      height={90}
+      className="rounded-lg object-cover w-full h-[88px]"
+    />
+  </div>
+</div>
+
 
             {/* Info & Avatar — matches your original */}
             <div className="pr-4 pl-4 pb-4 pt-0">
@@ -412,27 +423,26 @@ export default function HomePage() {
               </div>
 
               {/* Buttons — unchanged */}
-              <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowModal(true)}
-                      className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                    >
-                      <span className="flex items-center gap-1">
-                        Book Now
-                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                      </span>
-                    </Button>
+               <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowModal(true)}
+
+                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                  >
+                    <span className="flex items-center gap-1">
+                      Book Now
+                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </span>
+                  </Button>
+  
                        <Link href={`/makeup-artist/details/${artist.id}`}  className="flex-1">
-    
-                    <Button
-                      className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1"
-                    >
-                      View Profile
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Button>
-                    </Link>
-                  </div>
+  <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+    View Profile
+    <ArrowUpRight className="w-4 h-4" />
+  </Button>
+</Link>
+                </div>
             </div>
           </div>
         ))}
