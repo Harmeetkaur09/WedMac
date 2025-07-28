@@ -69,7 +69,7 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen pt-32 text-center text-white">
+      <section className="relative h-[90vh] pt-32 text-center text-white">
         {/* Background Image and Overlay */}
         <div className="absolute inset-0">
           <Image

@@ -10,7 +10,8 @@ import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import BookModal from "./makeup-artist/details/[id]/BookModal";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import router from "next/router";
 
 
 interface ArtistCard {
@@ -25,9 +26,24 @@ interface ArtistCard {
     file_url: string;
   }[];
 }
+interface MakeupType {
+  value: string;
+  label: string;
+}
+interface StateOption {
+  value: string;
+  label: string;
+}
+
+interface CityOption {
+  value: string;
+  label: string;
+}
 
 
 export default function HomePage() {
+    const [selected, setSelected] = useState("All")
+  const tabs = ["All", "Delhi", "Mumbai", "Pune"]
    const [helpName, setHelpName] = useState('')
   const [helpMobile, setHelpMobile] = useState('')
   const [helpMessage, setHelpMessage] = useState('')
@@ -37,8 +53,39 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false)
         const { id } = useParams()
-    
-  
+  const [makeupTypes, setMakeupTypes] = useState<MakeupType[]>([]);
+
+
+  const [selectedType, setSelectedType] = useState<string>("");
+
+      const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+    const stateOptions: StateOption[] = [
+    { value: 'Delhi', label: 'Delhi' },
+    { value: 'Mumbai', label: 'Mumbai' },
+    { value: 'Pune', label: 'Pune' }
+  ];
+  const [states] = useState<StateOption[]>(stateOptions);
+  const [selectedState, setSelectedState] = useState<string>("");
+
+  // City options by state
+  const cityByState: Record<string, CityOption[]> = {
+    Delhi: [
+      { value: 'New Delhi', label: 'New Delhi' },
+      { value: 'Rohini', label: 'Rohini' }
+    ],
+    Mumbai: [
+      { value: 'Andheri', label: 'Andheri' },
+      { value: 'Bandra', label: 'Bandra' }
+    ],
+    Pune: [
+      { value: 'Shivaji Nagar', label: 'Shivaji Nagar' },
+      { value: 'Kalyani Nagar', label: 'Kalyani Nagar' }
+    ]
+  };
+  const router = useRouter();
+  const [cities, setCities] = useState<CityOption[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>("");
   const testimonials = [
     {
       name: "Bang Upin",
@@ -65,6 +112,41 @@ export default function HomePage() {
         "Sangat terjangkau untuk kantong saya yang tidak terlalu banyak",
     },
   ];
+     useEffect(() => {
+    fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=makeup_types')
+      .then(res => res.json())
+      .then((data: any[]) => {
+        // Normalize data from API shape [{id,name,description}]
+        const types: MakeupType[] = (data || []).map(item => {
+          if (typeof item === 'string') {
+            return { value: item, label: capitalize(item) };
+          } else if (item && typeof item.name === 'string') {
+            return { value: item.name, label: item.name };
+          }
+          return null;
+        }).filter((mt): mt is MakeupType => mt !== null);
+        setMakeupTypes(types);
+      })
+      .catch(err => console.error('Failed to load makeup types', err));
+  }, []);
+
+    useEffect(() => {
+    if (selectedState && cityByState[selectedState]) {
+      setCities(cityByState[selectedState]);
+    } else {
+      setCities([]);
+      setSelectedCity('');
+    }
+  }, [selectedState]);
+
+  // Handle search
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (selectedType) params.append("type", selectedType);
+    if (selectedState) params.append("state", selectedState);
+    if (selectedCity) params.append("city", selectedCity);
+    router.push(`/search`);
+  };
   const handleHelpSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const nameRegex = /^[A-Za-z ]+$/
@@ -117,7 +199,7 @@ export default function HomePage() {
         {/* Navigation Header */}
 
 
-        <section className="relative h-screen pt-32 text-center text-white">
+        <section className="relative h-[90vh] pt-32 text-center text-white">
           {/* Background Image and Overlay */}
           <div className="absolute inset-0">
             <Image
@@ -143,50 +225,87 @@ export default function HomePage() {
             </p>
           </div>
         </section>
-      <section className="py-12 -mt-20 relative z-30 px-4">
-  <div className="max-w-6xl mx-auto bg-white rounded-lg p-6 shadow-lg">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      
-      {/* Dropdown for Makeup Type */}
-      <div className="text-left border-r">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Select Makeup Type</label>
-        <select className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500">
-          <option value="">Select type</option>
-          <option value="bridal">Bridal</option>
-          <option value="party">Party</option>
-          <option value="fashion">Fashion</option>
-          <option value="editorial">Editorial</option>
-        </select>
-      </div>
+      <section className="py-10 -mt-28 relative z-30 px-4">
+          <div className="max-w-6xl mx-auto bg-white rounded-lg p-6 shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Makeup Type */}
+              <div className="text-left border-r">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Makeup Type
+                </label>
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                >
+                  <option value="">All Types</option>
+                  {makeupTypes.map((mt) => (
+                    <option key={mt.value} value={mt.value}>
+                      {mt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-      {/* City Input */}
-      <div className="text-left border-r ">
-        <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-        <Input placeholder="Enter city" className="w-60 border-none focus:outline-none focus:ring-2 focus:ring-pink-500" />
-      </div>
+              {/* State */}
+              <div className="text-left border-r">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  State
+                </label>
+                 <select
+                  value={selectedState}
+                  onChange={e => setSelectedState(e.target.value)}
+                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                >
+                  <option value="">Select State</option>
+                  {states.map(st => (
+                    <option key={st.value} value={st.value}>
+                      {st.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-      {/* State Input */}
-      <div className="text-left">
-        <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
-        <Input placeholder="Enter state" className="w-60 border-none focus:outline-none focus:ring-2 focus:ring-pink-500" />
-      </div>
+              {/* City */}
+              <div className="text-left border-r">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  City
+                </label>
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  disabled={!cities.length}
+                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
+                >
+                  <option value="">Select City</option>
+                  {cities.map((ct) => (
+                    <option key={ct.value} value={ct.value}>
+                      {ct.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-      {/* Search Button */}
-      <Button className="w-full mt-6 bg-[#FF577F] hover:bg-pink-600 text-white py-3 text-lg font-semibold">
-        Search
-      </Button>
-
-    </div>
-  </div>
-</section>
+              {/* Search Button */}
+              <div className="flex items-end">
+                <Button
+                  onClick={handleSearch}
+                  className="w-full bg-[#FF577F] hover:bg-pink-600 text-white py-3 text-lg font-semibold"
+                >
+                  Search
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
 
 
 
         {/* Portfolio Grid Section - Masonry Layout */}
-        <section className="py-10">
+        <section className="py-1">
                <div className="container mx-auto px-4">
-                 <div className="hidden border border-[#D5D5D5] p-4 rounded-lg lg:grid grid-cols-4 auto-rows-fr gap-4 h-[430px]"
+                 <div className="hidden border border-[#D5D5D5] p-4 rounded-lg lg:grid grid-cols-4 auto-rows-fr gap-4 h-[550px]"
        >
                    {/* Image 1: Left large vertical */}
        
@@ -195,9 +314,9 @@ export default function HomePage() {
                      {/* Image 1 - wider */}
                      <div className="relative w-[100%] group">
                        <HoverShuffleImage
-                         primarySrc="/images/protfolio1.jpg"
+                         primarySrc="/images/img4.jpeg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/protfolio6.jpg"
+                         secondarySrc="/images/img2.jpeg"
                        />
                    <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -214,9 +333,9 @@ export default function HomePage() {
                      {/* Image 3 */}
                      <div className="relative w-[70%] group">
                        <HoverShuffleImage
-                         primarySrc="/images/protfolio3.jpg"
+                         primarySrc="/images/img26.jpg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/protfolio1.jpg"
+                         secondarySrc="/images/img19.jpg"
                        />
                 <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -230,9 +349,9 @@ export default function HomePage() {
                      {/* Image 4 */}
                      <div className="relative w-[30%] overflow-hidden group">
                        <HoverShuffleImage
-                         primarySrc="/images/protfolio4.jpg"
+                         primarySrc="/images/img8.jpg"
                          alt="Light Makeup"
-                         secondarySrc="/images/protfolio5.jpg"
+                         secondarySrc="/images/img6.jpg"
                        />
                  <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -249,7 +368,7 @@ export default function HomePage() {
        
                    {/* Image 5: Below image 1 and 2 (landscape) */}
                     <div className="col-span-1 row-span-2 relative group cursor-pointer">
-                     <HoverShuffleImage primarySrc="/images/protfolio2.jpg" alt="Bridal Makeup"  secondarySrc="/images/protfolio6.jpg" />
+                     <HoverShuffleImage primarySrc="/images/img20.jpg" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
                     <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
            <span>Bridal Makeup</span>
@@ -268,9 +387,9 @@ export default function HomePage() {
                      {/* Image 7 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/protfolio4.jpg"
+                         primarySrc="/images/img5.jpeg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/protfolio1.jpg"
+                         secondarySrc="/images/img14.jpg"
                        />
                        <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -284,8 +403,8 @@ export default function HomePage() {
                      {/* Image 8 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/protfolio5.jpg"
-                         secondarySrc="/images/protfolio3.jpg"
+                         primarySrc="/images/img1.jpeg"
+                         secondarySrc="/images/img21.jpg"
                          alt="Bridal Makeup"
                          
                        />
@@ -334,16 +453,34 @@ export default function HomePage() {
 
         {/* Artist Profiles Section */}
                  {/* Artist Profiles Section */}
-<section className="py-20 bg-white">
+<section className="py-8 bg-white">
   <div className="container mx-auto px-4">
-    <div className="text-center mb-16">
+    <div className="text-center mb-6">
       <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">Artist Profiles</h2>
-      <div className="flex justify-center space-x-12 text-lg">
-        <span className="text-rose-500 border-b-3 border-rose-500 pb-2 font-semibold">Latest</span>
-        {/* <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Portfolio</span>
-        <span className="text-gray-500 hover:text-rose-500 cursor-pointer transition-colors">Artist</span> */}
-      </div>
+      <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
+      {tabs.map((tab) => (
+        <div
+          key={tab}
+          className="relative cursor-pointer"
+          onClick={() => setSelected(tab)}
+        >
+          {selected === tab && (
+            <div className="absolute item-center -top-2.5  left-1/2 -translate-x-1/2 w-10 h-10  bg-white shadow-md z-0 px-11 py-6 rounded-[25px] text-sm font-medium transition-colors "></div>
+          )}
+          <span
+            className={`relative z-10 px-2 font-[400] transition-colors ${
+              selected === tab
+                ? "text-rose-500"
+                : "text-black hover:text-rose-500 "
+            }`}
+          >
+            {tab}
+          </span>
+        </div>
+      ))}
     </div>
+    </div>
+    <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
 
     {loading ? (
       <p className="text-center">Loading...</p>
@@ -448,17 +585,26 @@ export default function HomePage() {
         ))}
       </div>
     )}
+ <div className="mt-10 text-center">
+    <Link
+      href="/search"
+      className="text-rose-500 font-semibold hover:underline text-lg"
+    >
+      View All →
+    </Link>
+  </div>
+
   </div>
 </section>
 
 
         {/* Wedmac India Section */}
-        <section className="py-12 ">
+        <section className="py-20 ">
 <div className="px-4 md:px-0 md:pr-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
              <div className="flex flex-col lg:flex-row gap-6">
   {/* Top Image on the Left */}
- <div className="relative overflow-hidden w-full place-content-end lg:w-2/3">
+ <div className="relative overflow-hidden w-full lg:w-2/3 flex items-center justify-center">
   <img
     src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=200&fit=crop"
     alt="Team Meeting"
@@ -472,7 +618,7 @@ export default function HomePage() {
     <img
       src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=240&h=200&fit=crop"
       alt="Office Space"
-      className="w-full h-[160px] object-cover rounded-md"
+      className="w-full h-[230px] object-cover rounded-md"
     />
     <img
       src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=240&h=200&fit=crop"
@@ -494,9 +640,11 @@ export default function HomePage() {
                   With over 1000+ verified artists and 50,000+ happy customers, we've established ourselves as
                   the most trusted beauty service platform in India.
                 </p>
-               <p className="flex items-center gap-1 text-[#ff577f] text-sm font-semibold">
-  More Info <ArrowRight className="w-5 h-5" />
-</p>
+            <Link href="/about">
+  <div className="flex items-center gap-1 text-[#ff577f] text-sm font-semibold cursor-pointer hover:underline">
+    More Info <ArrowRight className="w-5 h-5" />
+  </div>
+</Link>
 
               </div>
             </div>
@@ -645,15 +793,15 @@ export default function HomePage() {
         </section>
 
         {/* Bottom Gallery Section */}
-        <section className="py-2 ">
+        <section className="py-4 ">
           <div className="container mx-auto border border-[#D5D5D5] rounded-xl p-4">
             <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">WHAT OUR CUSTOMERS HAVE TO SAY</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {[
-                "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=300&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=300&h=400&fit=crop",
-                "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=300&h=400&fit=crop",
+                "/images/img12.jpg",
+                "/images/img2.jpeg",
+                "/images/img23.jpg",
+                "/images/img4.jpeg",
               ].map((src, index) => (
                 <div key={index} className="relative group overflow-hidden rounded-2xl">
                   <img
@@ -668,7 +816,7 @@ export default function HomePage() {
         </section>
 
         {/* Wedmac Testimonials Section */}
-        <section className="py-8 bg-white">
+        <section className="py-12 bg-white md:mb-20">
           <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
             <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
               What Client Said About

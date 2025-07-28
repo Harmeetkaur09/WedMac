@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X } from "lucide-react"; // icons
+import Image from "next/image";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,29 +21,37 @@ export default function Header() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
-              <Link href="/" className="text-2xl font-bold text-rose-500">
-                WedMac India
-              </Link>
+           <Link href="/" className="block w-[140px] h-auto relative">
+  <Image
+    src="/images/website_logo.png"
+    alt="Website Logo"
+    width={140}
+    height={50}
+    className="object-contain"
+    priority
+  />
+</Link>
+
 
               {/* Desktop Menu */}
               <div className="hidden md:flex items-center space-x-8">
                 <Link href="/" className="text-gray-700 hover:text-rose-500">
                   Home
                 </Link>
-                <Link href="/about" className="text-gray-700 hover:text-rose-500">
-                  About Us
-                </Link>
-                <Link href="/portfolio" className="text-gray-700 hover:text-rose-500">
-                  Portfolio
-                </Link>
                 <Link href="/makeup-artist" className="text-gray-700 hover:text-rose-500">
                   Wedmac Makeup Artist
                 </Link>
-                <Link href="/contact" className="text-gray-700 hover:text-rose-500">
-                  Contact
+                <Link href="/about" className="text-gray-700 hover:text-rose-500">
+                  About Us
+                </Link>
+                <Link href="/blog" className="text-gray-700 hover:text-rose-500">
+                  Blog
                 </Link>
                 <Link href="/faq" className="text-gray-700 hover:text-rose-500">
                   FAQ
+                </Link>
+                <Link href="/contact" className="text-gray-700 hover:text-rose-500">
+                  Contact
                 </Link>
 
                 <div className="flex items-center space-x-4">
@@ -75,20 +84,20 @@ export default function Header() {
     <Link href="/" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
       Home
     </Link>
-    <Link href="/about" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
-      About Us
-    </Link>
-    <Link href="/portfolio" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
-      Portfolio
-    </Link>
     <Link href="/makeup-artist" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
       Wedmac Makeup Artist
     </Link>
-    <Link href="/contact" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
-      Contact
+    <Link href="/about" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      About Us
+    </Link>
+      <Link href="/blog" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Blog
     </Link>
     <Link href="/faq" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
       FAQ
+    </Link>
+    <Link href="/contact" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
+      Contact
     </Link>
 
     <div className="pt-4 flex flex-col space-y-2">

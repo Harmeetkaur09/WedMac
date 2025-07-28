@@ -49,7 +49,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen pt-32 text-center text-white">
+      <section className="relative h-[90vh] pt-32 text-center text-white">
         {/* Background Image and Overlay */}
         <div className="absolute inset-0">
           <Image
@@ -206,7 +206,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 bg-gray-50">
+      {/* <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-left font-gilroy mb-4">MEET OUR TEAM</h2>
           <p className="text-left text-gray-600 mb-12 font-gilroy">
@@ -227,21 +227,18 @@ export default function AboutPage() {
       <h3 className="font-bold font-gilroy text-lg ">{member.name}</h3>
       <p className="text-gray-600 text-sm font-gilroy">{member.role}</p>
 
-      {/* Colored horizontal line below role with spacing */}
       <div className="mt-4 h-[1px] bg-[#FF577F] w-full mx-auto rounded-full" />
     </div>
   ))}
 </div>
 
         </div>
-      </section>
+      </section> */}
 
-      {/* Become Part Section */}
      <section className="py-16 bg-white">
   <div className="container mx-auto px-4">
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
       
-      {/* Left (Text) - Span 2 out of 5 */}
       <div className="lg:col-span-2">
         <h2 className="text-4xl font-bold leading-[48px] font-gilroy mb-6">
           BECOME A PART
@@ -253,7 +250,6 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Right (Image) - Span 3 out of 5 */}
       <div className="lg:col-span-3">
         <Image
           src="/placeholder.svg?height=400&width=600"
