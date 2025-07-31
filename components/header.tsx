@@ -54,18 +54,21 @@ export default function Header() {
                   Contact
                 </Link>
 
-                <div className="flex items-center space-x-4">
-                  <Link href="/login">
-                    <Button variant="outline" className="bg-[#FF577F] h-8 px-6 hover:bg-rose-600 text-white">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button className="bg-[#FF577F] hover:bg-rose-600 h-8 px-6 text-white">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
+              <div className="flex items-center space-x-4">
+  <button
+    onClick={() => window.location.href = 'https://wedmac-artist-hub.lovable.app/login'}
+    className="bg-[#FF577F] h-8 px-6 hover:bg-rose-600 text-white rounded"
+  >
+    Login
+  </button>
+  <button
+    onClick={() => window.location.href = 'https://wedmac-artist-hub.lovable.app/signup'}
+    className="bg-[#FF577F] hover:bg-rose-600 h-8 px-6 text-white rounded"
+  >
+    Sign Up
+  </button>
+</div>
+
               </div>
 
               {/* Mobile Menu Button */}

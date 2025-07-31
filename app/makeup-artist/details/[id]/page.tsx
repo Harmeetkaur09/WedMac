@@ -40,6 +40,33 @@ export default function MakeupArtistDetailPage() {
   const [artist, setArtist]         = useState<ArtistDetail | null>(null)
   const [loading, setLoading]       = useState(true)
   const [showModal, setShowModal] = useState(false)
+    const pricing = [
+    {
+      title: "Bridal HD Makeup – ₹12,000 per function",
+      details:
+        "Includes one bridal makeup look (up to 3 hours), a pre-wedding trial session, professional HD foundations, false lashes, and touch-up kit. Travel within city limits included.",
+    },
+    {
+      title: "Bridal HD Makeup + Hair Styling – ₹15,000 per function",
+      details:
+        "Everything in the ₹12,000 package, plus bridal hair styling (up to 3 hours), premium hair accessories, and on-site hair touch-ups throughout the event.",
+    },
+    {
+      title: "Party & Reception Makeup – ₹18,000 per function",
+      details:
+        "Party-ready HD makeup (up to 2 hours), false lashes, shimmer/highlight accents, and one hour of post-event touch-up support to keep you looking flawless.",
+    },
+    {
+      title: "Destination Bridal Makeup – ₹25,000 per function",
+      details:
+        "All inclusions of the ₹15,000 package, plus artist travel and accommodation (within India), an extra trial session, and 24×7 on-call support on your wedding day.",
+    },
+    {
+      title: "Airbrush Makeup Package – ₹18,000 per function",
+      details:
+        "Airbrush foundation application (ideal for photography), HD contouring, waterproof finishes, plus a mini trial to test coverage and tone ahead of your event.",
+    },
+  ]
 
   useEffect(() => {
     if (!id) return
@@ -163,8 +190,8 @@ export default function MakeupArtistDetailPage() {
 
                                             </div>
                                             <p className="text-[#8D8D8D] text-md mb-2">{artist.location.city},{artist.location.state}</p>
-                                            {/* <p className="text-[#8D8D8D] font-[600] text-md mb-2">covid vaccinated</p>
-                                            <p className="text-[#8D8D8D] text-md mb-2">Get 10% off on your first booking</p> */}
+                                            <p className="text-[#8D8D8D] font-[600] text-md mb-2">covid vaccinated</p>
+                                            <p className="text-[#8D8D8D] text-md mb-2">Get 10% off on your first booking</p>
 
 
 
@@ -190,7 +217,7 @@ export default function MakeupArtistDetailPage() {
                                             <div className="flex gap-2 mb-4">
                                               <Button
         onClick={() => setShowModal(true)}
-        className="w-full bg-[#FF577F] text-white"
+        className="w-full bg-[#FF577F] text-white hover:bg-pink-600"
       >
         Book Now
       </Button>
@@ -371,41 +398,56 @@ export default function MakeupArtistDetailPage() {
                             {/* You May Also Like */}
                             <div>
                                 <Card>
-                                    <CardContent className="px-10 py-4">
-                                        <h3 className="text-xl font-inter text-center font-bold mb-4">You May Also Like</h3>
-                                        <Image
-                                            src="/images/protfolio2.jpg?height=200&width=300"
-                                            alt="Another Artist"
-                                            width={300}
-                                            height={200}
-                                            className="w-full h-80 object-cover rounded-lg mb-3"
-                                        />
-                                        <div className="flex items-center mb-4">
-                                            <Image
-                                                src="/images/fdprofile.png?height=50&width=50"
-                                                alt="Avneet Kaur"
-                                                width={50}
-                                                height={50}
-                                                className="w-14 h-14 rounded-full mr-4"
-                                            />
-                                            <div>
-                                                <h3 className="font-semibold font-inter">Avneet Kaur</h3>
-                                                <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
-                                                <div className="flex items-center text-sm text-gray-500">
-                                                    <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                                                    <span>Delhi</span>
-                                                    <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                                                       {artist.rating}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <Link href="/makeup-artist-detail" className="flex-1">
-                                            <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                                                View Profile
-                                                <ArrowUpRight className="w-4 h-4" />
-                                            </Button>
-                                        </Link>                                    </CardContent>
+                                  <CardContent className="px-10 py-4">
+  <h3 className="text-xl font-inter text-center font-bold mb-4">
+    You May Also Like
+  </h3>
+
+  {/* 1) Make this wrapper relative */}
+  <div className="relative mb-3">
+    <Image
+      src="/images/protfolio2.jpg?height=200&width=300"
+      alt="Another Artist"
+      width={300}
+      height={200}
+      className="w-full h-80 object-cover rounded-lg"
+    />
+
+    {/* 2) Move the badge inside, absolutely positioned */}
+    <Badge className="absolute top-7 left-5 bg-[#ff577fbd] p-1 text-xs font-inter text-white rounded">
+      Popular
+    </Badge>
+  </div>
+
+  <div className="flex items-center mb-4">
+    <Image
+      src="/images/fdprofile.png?height=50&width=50"
+      alt="Avneet Kaur"
+      width={50}
+      height={50}
+      className="w-14 h-14 rounded-full mr-4"
+    />
+    <div>
+      <h3 className="font-semibold font-inter">Avneet Kaur</h3>
+      <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
+      <div className="flex items-center text-sm text-gray-500">
+        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+        <span>Delhi</span>
+        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+          {artist.rating}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <Link href="/makeup-artist-detail" className="flex-1">
+    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+      View Profile
+      <ArrowUpRight className="w-4 h-4" />
+    </Button>
+  </Link>
+</CardContent>
+
                                 </Card>
                             </div>
 
@@ -437,35 +479,49 @@ export default function MakeupArtistDetailPage() {
                             <div className="border border-[#D5D5D5] rounded-xl p-4">
                                 <h3 className="text-2xl font-inter font-[700] mb-4">Follow Us On Social Media</h3>
                                 <div className="flex gap-3">
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
-                                    >
-                                        <Facebook className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
-                                    >
-                                        <Instagram className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
-                                    >
-                                        <Twitter className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
-                                    >
-                                        <Youtube className="w-4 h-4" />
-                                    </Button>
-                                </div>
+  <a
+    href="https://www.facebook.com/people/WedMac-India/61564828839583/?mibextid=wwXIfr&rdid=djzmQicgZ0O9puqA&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1JbKayyDey%2F%3Fmibextid%3DwwXIfr"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Button
+      size="icon"
+      variant="outline"
+      className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
+    >
+      <Facebook className="w-4 h-4" />
+    </Button>
+  </a>
+
+  <a
+    href="https://www.instagram.com/wedmac.india/?igsh=cmdrd2dtZWF4MXZk#"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Button
+      size="icon"
+      variant="outline"
+      className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
+    >
+      <Instagram className="w-4 h-4" />
+    </Button>
+  </a>
+
+  <a
+    href="https://x.com/wedmacindia?s=21"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Button
+      size="icon"
+      variant="outline"
+      className="rounded-full bg-transparent border-[#FF577F] text-[#FF577F]"
+    >
+      <Twitter className="w-4 h-4" />
+    </Button>
+  </a>
+</div>
+
                             </div>
 
                         </div>
@@ -527,30 +583,26 @@ export default function MakeupArtistDetailPage() {
 
 
             {/* Pricing Section */}
-            <section className="py-8 px-4 bg-white">
-                <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
-                    <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
-                    <div className="space-y-4">
-                        {[
-                            "Bridal HD Makeup ₹ 12,000 per function",
-                            "Bridal HD Makeup ₹ 15,000 per function",
-                            "Bridal HD Makeup ₹ 18,000 per function",
-                            "Bridal HD Makeup ₹ 25,000 per function",
-                            "Bridal HD Makeup ₹ 18,000 per function",
-                        ].map((price, i) => (
-                            <Collapsible key={i}>
-                                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
-                                    <span className="text-[#ff577f] text-sm font-medium">{price}</span>
-<ChevronDown className="w-5 h-5 text-[#FF577F]" />
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="p-4 rounded-b-lg">
-                                    <p className="text-gray-600">Package details and inclusions will be displayed here.</p>
-                                </CollapsibleContent>
-                            </Collapsible>
-                        ))}
-                    </div>
-                </div>
-            </section>
+           <section className="py-8 px-4 bg-white">
+      <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
+        <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
+        <div className="space-y-4">
+          {pricing.map((pkg, i) => (
+            <Collapsible key={i}>
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
+                <span className="text-[#FF577F] text-sm font-medium">
+                  {pkg.title}
+                </span>
+                <ChevronDown className="w-5 h-5 text-[#FF577F]" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 rounded-b-lg bg-gray-50">
+                <p className="text-gray-600 text-sm">{pkg.details}</p>
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
+        </div>
+      </div>
+    </section>
 
             {/* Policies and Products Section */}
             <section className="py-16 px-4 ">
@@ -565,42 +617,31 @@ export default function MakeupArtistDetailPage() {
                             </div>
 
                             {/* Products Use */}
-                           <div className="border border-[#D5D5D5] rounded-xl p-4">
-  <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">Products Use</h2>
+          <div className="border border-[#D5D5D5] rounded-xl p-4">
+  <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">Products Used</h2>
 
   <div className="grid grid-cols-2 gap-3">
     {[
-      "MAC",
-      "Estee Lauder",
-      "MARS",
-      "Color Pop",
-      "Maybelline",
-      "Loreal",
-      "PAC",
-      "Too Faced",
-      "Huda Beauty",
-      "Inglot",
-      "Charlotte Tilbury",
-      "Smashbox",
-      "Makeup Forever",
-      "Colorbar",
-      "Laura Mercier",
-      "Kylie Cosmetics",
-      "LAKMÉ",
-      "Nykaa",
-      "ELF",
-      "Fenty",
+      "MAC", "Estee Lauder", "MARS", "Color Pop", "Maybelline", "Loreal",
+      "PAC", "Too Faced", "Huda Beauty", "Inglot", "Charlotte Tilbury",
+      "Smashbox", "Makeup Forever", "Colorbar", "Laura Mercier",
+      "Kylie Cosmetics", "LAKMÉ", "Nykaa", "ELF", "Fenty",
     ].map((brand, i) => (
       <label
         key={i}
-        className="flex items-center gap-2    p-2 rounded font-medium text-sm cursor-pointer"
+        className="flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed opacity-60"
       >
-        <input type="checkbox" className="accent-[#FF577F] w-5 h-5" />
+        <input
+          type="checkbox"
+          disabled
+          className="accent-[#FF577F] w-5 h-5 cursor-not-allowed"
+        />
         <span>{brand}</span>
       </label>
     ))}
   </div>
 </div>
+
 
                         </div>
 
@@ -613,16 +654,27 @@ export default function MakeupArtistDetailPage() {
                             </div>
 
                             {/* Glam Up Banner */}
-                           <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-8 rounded-lg min-h-[550px] flex items-center justify-left">
-  <div className="text-left">
-    <h3 className="text-3xl font-bold mb-4">
-      Glam Up
-      <br />
-      With
-      <br />
-      WedMac India
-    </h3>
-    <Button className="bg-white text-pink-500 hover:bg-gray-100">Book Now</Button>
+                 <div className="relative rounded-lg overflow-hidden min-h-[550px]">
+  <Image
+    src="/images/img34.png"
+    alt="Glam Up Banner"
+    fill
+    className="object-cover"
+    priority
+  />
+  <div className="absolute inset-0 bg-black/30 flex items-center p-8">
+    <div className="text-left text-white">
+      <h3 className="text-3xl font-bold mb-4">
+        Glam Up
+        <br />
+        With
+        <br />
+        WedMac India
+      </h3>
+      <Button className="bg-white text-pink-500 hover:bg-gray-100">
+        Book Now
+      </Button>
+    </div>
   </div>
 </div>
 

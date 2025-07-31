@@ -27,12 +27,33 @@ interface ArtistCard {
 
 
 export default function MakeupArtistPagesPage() {
+    const [savedArtists, setSavedArtists] = useState<number[]>(() => {
+    // initialize from localStorage (or empty)
+    if (typeof window !== "undefined") {
+      return JSON.parse(localStorage.getItem("savedArtists") || "[]");
+    }
+    return [];
+  });
+  const [showOnlySaved, setShowOnlySaved] = useState(false);
        const [artists, setArtists] = useState<ArtistCard[]>([]);
       const [loading, setLoading] = useState(true);
         const [makeupTypes, setMakeupTypes] = useState<string[]>([])
   const [products, setProducts]       = useState<string[]>([])
       const { id } = useParams()
   const [showModal, setShowModal] = useState(false)
+  
+
+    const toggleSaveArtist = (id: number) => {
+    setSavedArtists(prev => {
+      const next = prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id];
+      localStorage.setItem("savedArtists", JSON.stringify(next));
+      return next;
+    });
+    toast.success("Updated saved profiles!");
+  };
+
 
      useEffect(() => {
     // fetch latest 3 artists
@@ -51,13 +72,14 @@ export default function MakeupArtistPagesPage() {
     .catch(() => toast.error('Failed to load makeup types'))
 
   // products (services)
-  fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=services')
+  fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=products')
     .then(res => res.json())
     .then((data: { id: number; name: string; description: string }[]) => {
       setProducts(data.map(d => d.name))
     })
     .catch(() => toast.error('Failed to load products'))
 }, [])
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -133,10 +155,10 @@ export default function MakeupArtistPagesPage() {
                 <div className="mb-6">
                 <h3 className="font-inter mb-3">Makeup Type</h3>
                <div className="space-y-2 h-full ">
-                  {products.map((prod) => (
-                    <div key={prod} className="flex items-center space-x-2">
-                      <Checkbox id={`prod-${prod}`} />
-                      <Label htmlFor={`prod-${prod}`} className="text-sm">{prod}</Label>
+                 {makeupTypes.map((type) => (
+                    <div key={type} className="flex items-center space-x-2">
+                      <Checkbox id={`mt-${type}`} />
+                      <Label htmlFor={`mt-${type}`} className="text-sm">{type}</Label>
                     </div>
                   ))}
                 </div>
@@ -146,26 +168,22 @@ export default function MakeupArtistPagesPage() {
                 {/* <div className="mb-6">
                   <h3 className="font-[400] font-inter mb-3">Date</h3>
                   <input type="date" className="w-full p-2 border rounded-md" defaultValue="2024-03-15" />
-                </div>
-                <div className="mb-6">
-                  <h3 className="font-[400] font-inter mb-3">Bookmark</h3>
-  
-                  <RadioGroup defaultValue="save">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value="save"
-                        id="save-profile"
-                        className="h-4 w-4 rounded-full border-2 border-[#FF577F] data-[state=checked]:bg-[#FF577F] data-[state=checked]:border-[#FF577F] transition-colors"
-                      />
-                      <Label
-                        htmlFor="save-profile"
-                        className="text-sm cursor-pointer"
-                      >
-                        Saved Profiles
-                      </Label>
-                    </div>
-                  </RadioGroup>
                 </div> */}
+              <div className="mb-6">
+  <h3 className="font-[400] font-inter mb-3">Bookmark</h3>
+  <div className="flex items-center space-x-2">
+    <Checkbox
+      id="filter-saved"
+      checked={showOnlySaved}
+      onCheckedChange={(val) => setShowOnlySaved(val === true)}
+      className="h-4 w-4 rounded-full border-2 border-[#FF577F] data-[state=checked]:bg-[#FF577F] transition-colors"
+    />
+    <Label htmlFor="filter-saved" className="text-sm cursor-pointer">
+      Saved Profiles
+    </Label>
+  </div>
+</div>
+
   
   
   
@@ -202,10 +220,10 @@ export default function MakeupArtistPagesPage() {
                 <div className="mb-6">
                 <h3 className="font-inter mb-3">Products</h3>
                <div className="space-y-2 h-full">
-                  {makeupTypes.map((type) => (
-                    <div key={type} className="flex items-center space-x-2">
-                      <Checkbox id={`mt-${type}`} />
-                      <Label htmlFor={`mt-${type}`} className="text-sm">{type}</Label>
+                  {products.map((product) => (
+                    <div key={product} className="flex items-center space-x-2">
+                      <Checkbox id={`prod-${product}`} />
+                      <Label htmlFor={`prod-${product}`} className="text-sm">{product}</Label>
                     </div>
                   ))}
                 </div>
@@ -222,7 +240,9 @@ export default function MakeupArtistPagesPage() {
           className=
            "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
           
-        >        {artists.map((artist) => (
+        >        {artists
+  .filter(a => !showOnlySaved || savedArtists.includes(a.id))
+  .map(artist =>(
             <div key={artist.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
               {/* Portfolio Grid — exactly your original flex layout */}
               <div className="flex gap-2 p-4 h-[250px]">
@@ -277,9 +297,19 @@ export default function MakeupArtistPagesPage() {
                     </div>
                   </div>
   
-                  <button className="text-[#FF577F] hover:text-pink-600 transition">
-                    <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
-                  </button>
+                  <button
+    onClick={() => toggleSaveArtist(artist.id)}
+    className="text-[#FF577F] hover:text-pink-600 transition"
+  >
+    <Bookmark
+      className={`w-6 h-6 cursor-pointer ${
+        savedArtists.includes(artist.id)
+          ? "fill-[#FF577F]"     // filled color for “saved”
+          : "stroke-[#FF577F]"   // outline for “not saved”
+      }`}
+    />
+  </button>
+
                 </div>
   
                 {/* Buttons — unchanged */}

@@ -5,38 +5,39 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useState } from "react";
 
 export default function FAQPage() {
-  const faqs = [
-    {
-      question: "What is Webflow and why is it the best website builder?",
-      answer:
-        "Webflow allows designers to build responsive websites visually without writing code.",
-    },
-    {
-      question: "What is your favorite template from BRIX Templates?",
-      answer:
-        "BRIX Templates offer well-designed and easily customizable templates suitable for many industries.",
-    },
-    {
-      question: "How do you clone a template from the Showcase?",
-      answer:
-        "Click on 'Clone' in the template details and it will be copied into your Webflow dashboard.",
-    },
-    {
-      question: "Why is BRIX Templates the best Webflow agency?",
-      answer:
-        "They deliver high-quality designs, optimized code, and great customer service.",
-    },
-    {
-      question: "When was Webflow officially launched?",
-      answer:
-        "Webflow officially launched in 2013.",
-    },
-    {
-      question: "How do you integrate Jetboost with Webflow?",
-      answer:
-        "You can integrate Jetboost using their visual tools and embed snippets in your Webflow project.",
-    },
-  ];
+const faqs = [
+  {
+    question: "What services do you offer at your makeup studio?",
+    answer:
+      "We offer bridal makeup, Engagement makeup, Fashion and Haldi makeup, skincare consultations, and hair styling services.",
+  },
+  {
+    question: "How long does a typical makeup session take?",
+    answer:
+      "A standard makeup session usually takes between 60 to 90 minutes, depending on the look and occasion.",
+  },
+  {
+    question: "Do you provide makeup for both daytime and evening looks?",
+    answer:
+      "Yes, we customize makeup looks based on the time of day, lighting, and event type to ensure you look flawless in every setting.",
+  },
+  {
+    question: "What if I have sensitive skin or allergies?",
+    answer:
+      "We use hypoallergenic and dermatologically tested products. Please let us know about any allergies in advance.",
+  },
+  {
+    question: "Can I bring reference photos for the makeup look I want?",
+    answer:
+      "Absolutely! We encourage you to share inspiration photos so we can create a look that matches your vision.",
+  },
+  {
+    question: "How do I prepare my skin before a makeup appointment?",
+    answer:
+      "Keep your skin clean, moisturized, and avoid trying new products a few days before your appointment to prevent reactions.",
+  },
+];
+
 
   const [openItems, setOpenItems] = useState<string[]>([]);
 

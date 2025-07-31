@@ -13,17 +13,19 @@ interface BookModalProps {
   onClose: () => void
 }
 
-interface MasterItem { id: number; name: string; label: string }
+interface MasterItem {
+  id: number
+  name: string
+  label: string
+}
 
 export default function BookModal({ artistId, onClose }: BookModalProps) {
   const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName]   = useState("")
-  const [phone, setPhone]         = useState("")
-  const [email, setEmail]         = useState("")
+  const [lastName, setLastName] = useState("")
+  const [phone, setPhone] = useState("")
   const [bookingDate, setBookingDate] = useState("")
   const [eventType, setEventType] = useState("engagement")
-  const [budgetRange, setBudgetRange] = useState<number|undefined>()
-  const [location, setLocation] = useState<number|undefined>()
+  const [budgetRange, setBudgetRange] = useState<number | undefined>()
   const [makeupTypes, setMakeupTypes] = useState<number[]>([])
   const [requirements, setRequirements] = useState("")
   const [notes, setNotes] = useState("")
@@ -37,17 +39,17 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
       .then(res => res.json())
       .then(setMasterMakeupTypes)
       .catch(() => toast.error("Failed to load makeup types"))
-  fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=budgets")
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Budget response:", data)
-      if (Array.isArray(data)) {
-        setMasterBudgets(data)
-      } else {
-        toast.error("Unexpected data format from budget API")
-      }
-    })
-    .catch(() => toast.error("Failed to load budgets"))
+
+    fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=budgets")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMasterBudgets(data)
+        } else {
+          toast.error("Unexpected data format from budget API")
+        }
+      })
+      .catch(() => toast.error("Failed to load budgets"))
   }, [])
 
   const toggleMakeupType = (id: number) => {
@@ -57,42 +59,49 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      const payload = {
-        first_name: firstName,
-        last_name: lastName,
-        phone,
-        email,
-        service: 1,
-        event_type: eventType,
-        requirements,
-        booking_date: bookingDate,
-        budget_range: budgetRange,
-        makeup_types: makeupTypes,
-        location: location ?? 1,
-        source: "website",
-        requested_artist: artistId,
-        status: "new",
-        notes,
-      }
-      const res = await fetch("https://wedmac-services.onrender.com/api/leads/public/submit/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) throw new Error("Submit failed")
-      toast.success("Booking request submitted!")
-      onClose()
-    } catch {
-      toast.error("Submission failed")
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const payload = {
+      first_name: firstName,
+      last_name: lastName,
+      phone,
+      service: 1,
+      event_type: eventType,
+      requirements,
+      booking_date: bookingDate,
+      budget_range: budgetRange,
+      makeup_types: makeupTypes,
+      location: 1, // Set manually
+      source: "website",
+      requested_artist: artistId,
+      status: "new",
+      notes,
+    };
+
+    const res = await fetch("https://wedmac-services.onrender.com/api/leads/public/submit/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("Submit failed");
+
+    // ✅ Toast on success
+    toast.success("Booking request submitted successfully!");
+    onClose(); // close modal or form
+  } catch (error) {
+    // ❌ Toast on failure
+    toast.error("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
   }
+};
+
 
   return (
+    <>
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
@@ -123,10 +132,6 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
             <Input id="phone" required value={phone} onChange={e => setPhone(e.target.value)} />
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} />
-          </div>
-          <div>
             <Label htmlFor="date">Booking Date</Label>
             <Input id="date" type="date" required value={bookingDate} onChange={e => setBookingDate(e.target.value)} />
           </div>
@@ -135,7 +140,7 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
             <select id="event" className="w-full border rounded px-2 py-1"
               value={eventType} onChange={e => setEventType(e.target.value)}>
               <option value="engagement">Engagement</option>
-              <option value="bridal">Bridal</option>
+              <option value="wedding">Wedding</option>
               <option value="party">Party</option>
             </select>
           </div>
@@ -146,16 +151,6 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
               {masterBudgets.map(b => (
                 <option key={b.id} value={b.id}>{b.label}</option>
               ))}
-            </select>
-          </div>
-          <div>
-            <Label htmlFor="loc">Location</Label>
-            <select id="loc" className="w-full border rounded px-2 py-1"
-              value={location} onChange={e => setLocation(Number(e.target.value))}>
-              {/* Static or dynamic */}
-              <option value={1}>Mumbai</option>
-              <option value={2}>Delhi</option>
-              <option value={3}>Bengaluru</option>
             </select>
           </div>
           <div className="md:col-span-3">
@@ -188,5 +183,6 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
         </form>
       </div>
     </div>
+    </>
   )
 }

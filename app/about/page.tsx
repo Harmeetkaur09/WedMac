@@ -13,38 +13,39 @@ export default function AboutPage() {
     { name: "Devon Lane", role: "Marketing", image: "/placeholder.svg?height=300&width=250" },
   ]
 
-  const features = [
-    {
-      title: "EXPERTISE",
-      description:
-        "Our team comprises industry experts with a wealth of experience in their respective fields. We bring deep knowledge and proven methodologies to every project.",
-    },
-    {
-      title: "CLIENT-CENTRIC APPROACH",
-      description:
-        "Your success is our priority. We work closely with you to understand your unique needs and tailor our solutions to meet your specific requirements.",
-    },
-    {
-      title: "TRANSPARENCY",
-      description:
-        "We believe in open communication and transparency throughout our partnership. You'll always know what we're working on and why.",
-    },
-    {
-      title: "INNOVATION",
-      description:
-        "We stay at the forefront of industry trends and technologies, ensuring that our solutions are cutting-edge and future-ready.",
-    },
-    {
-      title: "COMMUNITY FOCUS",
-      description:
-        "We're not just service providers; we're part of your community. We invest in long-term relationships and contribute to your success.",
-    },
-    {
-      title: "TRUSTED ADVISORS",
-      description:
-        "Beyond delivering services, we serve as your trusted advisors, providing strategic guidance and insights to help you make informed decisions.",
-    },
-  ]
+ const features = [
+  {
+    title: "PROFESSIONAL EXPERTISE",
+    description:
+      "Our artists are professionally trained and experienced in bridal, editorial, and event makeup. We bring out your natural beauty with precision and creativity.",
+  },
+  {
+    title: "PERSONALIZED EXPERIENCE",
+    description:
+      "Every face is unique — and so is our approach. We listen closely to your preferences and customize each look to match your style, skin type, and occasion.",
+  },
+  {
+    title: "QUALITY PRODUCTS",
+    description:
+      "We use only top-tier, dermatologist-approved products to ensure a flawless, long-lasting finish without compromising your skin's health.",
+  },
+  {
+    title: "TREND-DRIVEN TECHNIQUES",
+    description:
+      "From timeless elegance to the latest makeup trends, we stay updated with industry styles and techniques to create looks that are modern yet timeless.",
+  },
+  {
+    title: "CLIENT TRUST & COMFORT",
+    description:
+      "We create a relaxing and judgment-free space where clients feel comfortable, confident, and celebrated — before, during, and after every session.",
+  },
+  {
+    title: "REPUTATION FOR EXCELLENCE",
+    description:
+      "With a strong portfolio and glowing client reviews, we’ve built a reputation based on reliability, artistry, and unmatched service quality.",
+  },
+];
+
 
   return (
     <div className="min-h-screen">
@@ -82,7 +83,7 @@ export default function AboutPage() {
   </section>
 
       {/* Vision Section */}
-      <section className="py-16 bg-white">
+      <section className=" bg-white">
         <div className="container mx-auto px-8">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h2 className="text-5xl font-gilroy-black leading-[60px] font-[800] mb-8">
@@ -91,8 +92,7 @@ export default function AboutPage() {
               inspiring and fulfilling
             </h2>
           <p className="text-lg font-gilroy max-w-2xl text-center text-gray-600 mb-8 mx-auto">
-  HRLInk is a cloud-based HR system designed to simplify and streamline HR processes. Grove HR is a powerful tool that can help SMB businesses manage their HR operations with ease.
-</p>
+Wedmac India is a leading platform dedicated to makeup artists and beauty professionals. We connect talented with clients across India, offering a seamless experience for booking, showcasing portfolios, and growing in the beauty industry.</p>
 
            
           </div>
@@ -101,58 +101,53 @@ export default function AboutPage() {
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
           {/* Left side - Company Description */}
           <div className="space-y-6">
-            <div className="space-y-4 font-gilroy text-gray-700 leading-relaxed">
-              <p>
-                HRLink was established in 2009 as a U.S.-based software
-                development & consulting company with development
-                centers in Vietnam.
-              </p>
-              <p>
-                Besides providing outsourcing services, HRLink has built and
-                successfully launched its own software companies. The most
-                notable companies with millions of users worldwide.
-              </p>
-              <p>
-                HRLink is reliable, secure, and backed by a team of HR
-                experts with a proven track record of developing high-quality
-                technology solutions.
-              </p>
-              <p>
-                With the growing size of many startups and SME companies
-                and the increasing complexity of HR regulations and
-                employee expectations, manual HR processes can become
-                time-consuming, error-prone, and difficult to manage. HR
-                management software provides a centralized platform for
-                storing and automating HR processes to offer more free time
-                for HR staff.
-              </p>
-            </div>
+<div className="space-y-4 font-gilroy text-gray-700 leading-relaxed">
+  <p>
+    Wedmac India was founded with a vision to empower makeup artists and beauty professionals across the country by providing a digital platform to grow their brand and connect with clients.
+  </p>
+  <p>
+    Beyond being a booking platform, Wedmac India offers tools to showcase portfolios, manage appointments. We’re building a vibrant beauty community with thousands of artists and satisfied clients.
+  </p>
+  <p>
+    Wedmac India is trusted by professional artists for its reliable technology, seamless user experience, and commitment to quality. Whether you're just starting out or an established, we’re here to support your journey.
+  </p>
+  <p>
+    As the beauty industry evolves, artists need more than just talent — they need the right tools to manage bookings, grow visibility, and stay competitive. Wedmac India simplifies the business side of beauty so artists can focus on what they do best: creating stunning transformations.
+  </p>
+</div>
+
           </div>
 
           {/* Right side - Overlapping Images */}
           <div className="relative flex justify-center lg:justify-end">
             <div className="relative w-full max-w-lg h-96">
               {/* First Image - Ronald Richards - Back card */}
-               <div className="absolute top-0 right-8 z-10  w-64">
-      {/* <div className="w-32 h-40 rounded-lg mx-auto mb-4 overflow-hidden"> */}
-        <img
-          src="/images/Co-Founder.png"
-          alt="Ronald Richards"
-          className="w-full h-full object-cover object-center"
-        />
-      {/* </div> */}
-    </div>
+           <div className="absolute top-0 right-8 z-10 w-64 text-right ">
+  <img
+    src="/images/Co-founder.JPG"
+    alt="Abhishek Shrivastav"
+    className="w-full h-full object-cover object-center "
+  />
+  <div className="mt-3">
+    <h3 className="text-lg font-semibold text-gray-800">Abhishek Shrivastav</h3>
+    <p className="text-sm text-gray-600">Co-founder</p>
+  </div>
+</div>
+
 
               {/* Second Image - Darrell Steward - Front card overlapping */}
-              <div className="absolute top-16 left-8 z-20 w-64">
-      {/* <div className="w-32 h-40 rounded-lg mx-auto mb-4 overflow-hidden"> */}
-        <img
-          src="/images/Founder.png"
-          alt="Darrell Steward"
-          className="w-full h-full object-cover object-center"
-        />
-      {/* </div> */}
-    </div>
+           <div className="absolute top-16 left-8 z-20 w-64 text-center">
+  <img
+    src="/images/Founder.JPG"
+    alt="Anukalp Shrivastav"
+    className="w-full h-full object-cover object-center border-4 border-white"
+  />
+  <div className="mt-3">
+    <h3 className="text-lg font-semibold text-gray-800">Anukalp Shrivastav</h3>
+    <p className="text-sm text-gray-600">Founder</p>
+  </div>
+</div>
+
             </div>
           </div>
         </div>
@@ -162,7 +157,7 @@ export default function AboutPage() {
       {/* Why Choose Section */}
       <section className="py-16 bg-[#FF577F] text-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-gilroy-black font-bold text-left mb-12">WHY CHOOSE PROPIO</h2>
+          <h2 className="text-4xl font-gilroy-black font-bold text-left mb-12">WHY CHOOSE WEDMAC INDIA</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
@@ -181,28 +176,34 @@ export default function AboutPage() {
 
       {/* Refund Policy Section */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-3xl font-[700] mb-8 font-gilroy">REFUND & CANCELLATION POLICY</h2>
+       <div className="container mx-auto px-4 max-w-4xl">
+  <h2 className="text-3xl font-[700] mb-8 font-gilroy">REFUND & CANCELLATION POLICY</h2>
 
-          <div className="space-y-6 text-gray-600 ">
-            <p className="font-gilroy">
-              Our team comprises industry experts with in-depth knowledge of local markets. We leverage this expertise
-              to provide you with an advantage in your real estate endeavors.
-            </p>
-            <p className="font-gilroy">
-              Our team comprises industry experts with in-depth knowledge of local markets. We leverage this expertise
-              to provide you with an advantage in your real estate endeavors.
-            </p>
-            <p className="font-gilroy">
-              Our team comprises industry experts with in-depth knowledge of local markets. We leverage this expertise
-              to provide you with an advantage in your real estate endeavors.
-            </p>
-            <p className="font-gilroy">
-              Our team comprises industry experts with in-depth knowledge of local markets. We leverage this expertise
-              to provide you with an advantage in your real estate endeavors.
-            </p>
-          </div>
-        </div>
+  <div className="space-y-6 text-gray-600">
+    <p className="font-gilroy">
+      At Wedmac India, we aim to provide a smooth and reliable booking experience for both clients and makeup artists. We understand that plans can change, which is why we have a flexible and fair refund and cancellation policy.
+    </p>
+
+    <p className="font-gilroy">
+      <strong>Service Cancellation by Clients:</strong> If a client wishes to cancel a booked appointment, they must do so at least 48 hours before the scheduled time. Cancellations made within this period will be eligible for a full refund.
+    </p>
+
+    <p className="font-gilroy">
+      <strong>Last-Minute Cancellations:</strong> Cancellations made less than 48 hours before the appointment may not be eligible for a full refund. Partial refunds or rescheduling options may be considered at the discretion of the artist.
+    </p>
+
+    <p className="font-gilroy">
+      <strong>Service Cancellation by Artist:</strong> In rare cases where a makeup artist needs to cancel due to unforeseen circumstances, clients will receive a full refund or can choose to rebook with another verified artist.
+    </p>
+
+    <p className="font-gilroy">
+      <strong>Refund Processing Time:</strong> Approved refunds will be processed within 7–10 business days and credited to the original payment method.
+    </p>
+
+   
+  </div>
+</div>
+
       </section>
 
       {/* Team Section */}
@@ -240,19 +241,20 @@ export default function AboutPage() {
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
       
       <div className="lg:col-span-2">
-        <h2 className="text-4xl font-bold leading-[48px] font-gilroy mb-6">
-          BECOME A PART
-          <br />
-          OF THE TEAM
-        </h2>
-        <p className="text-gray-600 font-gilroy mb-8">
-          "We're always getting better, forging strong business connections, and valuing every team member as a vital part of our energetic, knowledgeable, and powerful team."
-        </p>
-      </div>
+  <h2 className="text-4xl font-bold leading-[48px] font-gilroy mb-6">
+    BECOME A PART
+    <br />
+    OF THE TEAM
+  </h2>
+  <p className="text-gray-600 font-gilroy mb-8">
+    At Wedmac India, we’re building a vibrant community of passionate makeup artists, hairstylists, and beauty professionals. Join us to grow your visibility, connect with clients across India, and be part of a platform that celebrates talent and empowers creativity.
+  </p>
+</div>
+
 
       <div className="lg:col-span-3">
         <Image
-          src="/placeholder.svg?height=400&width=600"
+          src="/images/team.png?height=400&width=600"
           alt="Team collaboration"
           width={600}
           height={200}

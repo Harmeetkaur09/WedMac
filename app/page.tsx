@@ -86,30 +86,36 @@ export default function HomePage() {
   const router = useRouter();
   const [cities, setCities] = useState<CityOption[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
+const [savedArtists, setSavedArtists] = useState<number[]>(() =>
+  typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
+    : []
+);
+
   const testimonials = [
     {
-      name: "Bang Upin",
-      title: "Pedagang Asongan",
+      name: "Anjali Sharma",
+    title: "Bride – Mumbai",
       image: "/images/protfolio1.jpg",
       avatar: "/images/fdprofile.png",
       feedback:
-        "Terimakasih banyak, kini ruanganku menjadi lebih mewah dan terlihat mahal",
+      "The makeup was absolutely stunning and lasted all day! I felt confident, radiant, and photo-ready from start to finish.",
     },
     {
-      name: "Ibuk Sukijan",
-      title: "Ibu Rumah Tangga",
-      image: "/images/protfolio2.jpg",
+      name: "Simran Kaur",
+    title: "Bride – Delhi",
+      image: "/images/img37.png",
       avatar: "/images/fdprofile.png",
       feedback:
-        "Terimakasih banyak, kini ruanganku menjadi lebih mewah dan terlihat mahal",
+      "Thank you so much for making my big day even more special. The look was elegant, timeless, and exactly what I dreamed of!",
     },
     {
-      name: "Mpok Ina",
-      title: "Karyawan Swasta",
+      name: "Pooja Verma",
+    title: "Bride – Jaipur",
       image: "/images/protfolio5.jpg",
       avatar: "/images/fdprofile.png",
       feedback:
-        "Sangat terjangkau untuk kantong saya yang tidak terlalu banyak",
+      "The attention to detail was amazing. My bridal look was flawless and received so many compliments throughout the day!",
     },
   ];
      useEffect(() => {
@@ -138,15 +144,27 @@ export default function HomePage() {
       setSelectedCity('');
     }
   }, [selectedState]);
+      const toggleSaveArtist = (id: number) => {
+    setSavedArtists(prev => {
+      const next = prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id];
+      localStorage.setItem("savedArtists", JSON.stringify(next));
+      return next;
+    });
+    toast.success("Updated saved profiles!");
+  };
 
   // Handle search
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (selectedType) params.append("type", selectedType);
-    if (selectedState) params.append("state", selectedState);
-    if (selectedCity) params.append("city", selectedCity);
-    router.push(`/search`);
-  };
+const handleSearch = () => {
+  const query = new URLSearchParams();
+
+  if (selectedType) query.append("type", selectedType);
+  if (selectedState) query.append("state", selectedState);
+  if (selectedCity) query.append("city", selectedCity);
+
+  router.push(`/search?${query.toString()}`);
+};
   const handleHelpSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const nameRegex = /^[A-Za-z ]+$/
@@ -193,6 +211,7 @@ export default function HomePage() {
       .catch(err => toast.error('Failed to load artists'))
       .finally(() => setLoading(false));
   }, []);
+  
   return (
     <><Header />
       <div className="min-h-screen">
@@ -310,7 +329,7 @@ export default function HomePage() {
                    {/* Image 1: Left large vertical */}
        
                    {/* Combined Image 1  layout */}
-                   <div className="col-span-1 row-span-2 flex space-x-4">
+                   <div className="col-span-1 row-span-2 flex space-x-4 cursor-pointer">
                      {/* Image 1 - wider */}
                      <div className="relative w-[100%] group">
                        <HoverShuffleImage
@@ -320,7 +339,7 @@ export default function HomePage() {
                        />
                    <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
-           <span>Bridal Makeup</span>
+           <span>Party Makeup</span>
            <ArrowUpRight className="w-3 h-3" />
          </div>
        </div>
@@ -329,7 +348,7 @@ export default function HomePage() {
        
        
                    {/* Image 2,3: Top-right square */}
-                   <div className="col-span-2 row-span-1 flex space-x-4">
+                   <div className="col-span-2 row-span-1 flex space-x-4 cursor-pointer ">
                      {/* Image 3 */}
                      <div className="relative w-[70%] group">
                        <HoverShuffleImage
@@ -337,7 +356,7 @@ export default function HomePage() {
                          alt="Bridal Makeup"
                          secondarySrc="/images/img19.jpg"
                        />
-                <div className="absolute bottom-4 w-full flex justify-center">
+                <div className="absolute bottom-4 w-full flex justify-center cursor-pointer">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
            <span>Bridal Makeup</span>
            <ArrowUpRight className="w-3 h-3" />
@@ -347,7 +366,7 @@ export default function HomePage() {
                      </div>
        
                      {/* Image 4 */}
-                     <div className="relative w-[30%] overflow-hidden group">
+                     <div className="relative w-[30%] overflow-hidden group cursor-pointer">
                        <HoverShuffleImage
                          primarySrc="/images/img8.jpg"
                          alt="Light Makeup"
@@ -355,7 +374,7 @@ export default function HomePage() {
                        />
                  <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
-           <span>Bridal Makeup</span>
+           <span>Haldi Makeup</span>
            <ArrowUpRight className="w-3 h-3" />
          </div>
        </div>
@@ -368,10 +387,10 @@ export default function HomePage() {
        
                    {/* Image 5: Below image 1 and 2 (landscape) */}
                     <div className="col-span-1 row-span-2 relative group cursor-pointer">
-                     <HoverShuffleImage primarySrc="/images/img20.jpg" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
+                     <HoverShuffleImage primarySrc="/images/img33.png" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
                     <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
-           <span>Bridal Makeup</span>
+           <span>Engagement Makeup</span>
            <ArrowUpRight className="w-3 h-3" />
          </div>
        </div>
@@ -379,7 +398,7 @@ export default function HomePage() {
                    </div>
                   
                    {/* 9th */}
-                 <div className="col-span-2 row-span-1 flex space-x-4">
+                 <div className="col-span-2 row-span-1 flex space-x-4 cursor-pointer">
                      {/* Image 6: Wider */}
                    
                      
@@ -387,13 +406,13 @@ export default function HomePage() {
                      {/* Image 7 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/img5.jpeg"
+                         primarySrc="/images/img31.jpg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/img14.jpg"
+                         secondarySrc="/images/img32.png"
                        />
                        <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
-           <span>Bridal Makeup</span>
+           <span>Haldi Makeup</span>
            <ArrowUpRight className="w-3 h-3" />
          </div>
        </div>
@@ -403,7 +422,7 @@ export default function HomePage() {
                      {/* Image 8 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/img1.jpeg"
+                         primarySrc="/images/img40.png"
                          secondarySrc="/images/img21.jpg"
                          alt="Bridal Makeup"
                          
@@ -452,86 +471,55 @@ export default function HomePage() {
              </section>
 
         {/* Artist Profiles Section */}
-                 {/* Artist Profiles Section */}
-<section className="py-8 bg-white">
+       <section className="py-8 bg-white">
   <div className="container mx-auto px-4">
     <div className="text-center mb-6">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">Artist Profiles</h2>
-      <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
-      {tabs.map((tab) => (
-        <div
-          key={tab}
-          className="relative cursor-pointer"
-          onClick={() => setSelected(tab)}
-        >
-          {selected === tab && (
-            <div className="absolute item-center -top-2.5  left-1/2 -translate-x-1/2 w-10 h-10  bg-white shadow-md z-0 px-11 py-6 rounded-[25px] text-sm font-medium transition-colors "></div>
-          )}
-          <span
-            className={`relative z-10 px-2 font-[400] transition-colors ${
-              selected === tab
-                ? "text-rose-500"
-                : "text-black hover:text-rose-500 "
-            }`}
-          >
-            {tab}
-          </span>
-        </div>
-      ))}
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
+        Artist Profiles
+      </h2>
     </div>
-    </div>
-    <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
 
     {loading ? (
       <p className="text-center">Loading...</p>
     ) : (
- <div
+      <div
         className={
           artists.length < 3
             ? "flex justify-center gap-8 max-w-6xl mx-auto"
             : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
         }
-      >        {artists.map((artist) => (
+      >
+        {artists.map((artist) => (
           <div key={artist.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-            {/* Portfolio Grid — exactly your original flex layout */}
-           <div className="flex gap-2 p-4 h-[250px]">
-  {/* Left Large Image */}
-  <Image
-    src={
-      artist.portfolio_photos[0]?.file_url || "/images/search1.png"
-    }
-    alt="Artist Work"
-    width={250}
-    height={220}
-    className="rounded-lg object-cover w-[65%] h-full"
-  />
+            {/* Portfolio Grid */}
+            <div className="flex gap-2 p-4 h-[250px]">
+              <Image
+                src={artist.portfolio_photos[0]?.file_url || "/images/search1.png"}
+                alt="Artist Work"
+                width={250}
+                height={220}
+                className="rounded-lg object-cover w-[65%] h-full"
+              />
+              <div className="flex flex-col gap-2 w-[35%]">
+                <Image
+                  src={artist.portfolio_photos[1]?.file_url || "/images/search2.png"}
+                  alt="Artist Work"
+                  width={100}
+                  height={120}
+                  className="rounded-lg object-cover w-full h-[130px]"
+                />
+                <Image
+                  src={artist.portfolio_photos[2]?.file_url || "/images/search3.png"}
+                  alt="Artist Work"
+                  width={100}
+                  height={90}
+                  className="rounded-lg object-cover w-full h-[88px]"
+                />
+              </div>
+            </div>
 
-  {/* Right two stacked */}
-  <div className="flex flex-col gap-2 w-[35%]">
-    <Image
-      src={
-        artist.portfolio_photos[1]?.file_url || "/images/search2.png"
-      }
-      alt="Artist Work"
-      width={100}
-      height={120}
-      className="rounded-lg object-cover w-full h-[130px]"
-    />
-    <Image
-      src={
-        artist.portfolio_photos[2]?.file_url || "/images/search3.png"
-      }
-      alt="Artist Work"
-      width={100}
-      height={90}
-      className="rounded-lg object-cover w-full h-[88px]"
-    />
-  </div>
-</div>
-
-
-            {/* Info & Avatar — matches your original */}
-            <div className="pr-4 pl-4 pb-4 pt-0">
+            {/* Info & Avatar */}
+            <div className="px-4 pb-4 pt-0">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center">
                   <Image
@@ -543,7 +531,9 @@ export default function HomePage() {
                   />
                   <div>
                     <h3 className="font-semibold">{artist.full_name}</h3>
-                    <p className="text-sm text-[#8D8D8D]">{artist?.makeup_types || "-"}</p>
+                    <p className="text-sm text-[#8D8D8D]">
+                      {artist.makeup_types.join(", ") || "-"}
+                    </p>
                     <div className="flex items-center text-sm text-gray-500">
                       <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
                       <span>{artist.location}</span>
@@ -554,48 +544,55 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <button className="text-[#FF577F] hover:text-pink-600 transition">
-                  <Bookmark className="text-black hover:text-pink-600 w-6 h-6 cursor-pointer" />
+                {/* Bookmark Icon */}
+                <button
+                  onClick={() => toggleSaveArtist(artist.id)}
+                  className="text-[#FF577F] hover:text-pink-600 transition"
+                >
+                  <Bookmark
+                    className={`w-6 h-6 cursor-pointer ${
+                      savedArtists.includes(artist.id)
+                        ? "fill-[#FF577F]"
+                        : "stroke-[#FF577F]"
+                    }`}
+                  />
                 </button>
               </div>
 
-              {/* Buttons — unchanged */}
-               <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowModal(true)}
-
-                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                  >
-                    <span className="flex items-center gap-1">
-                      Book Now
-                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    </span>
+              {/* Actions */}
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowModal(true)}
+                  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                >
+                  <span className="flex items-center gap-1">
+                    Book Now
+                    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  </span>
+                </Button>
+                <Link href={`/makeup-artist/details/${artist.id}`} className="flex-1">
+                  <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                    View Profile
+                    <ArrowUpRight className="w-4 h-4" />
                   </Button>
-  
-                       <Link href={`/makeup-artist/details/${artist.id}`}  className="flex-1">
-  <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-    View Profile
-    <ArrowUpRight className="w-4 h-4" />
-  </Button>
-</Link>
-                </div>
+                </Link>
+              </div>
             </div>
           </div>
         ))}
       </div>
     )}
- <div className="mt-10 text-center">
-    <Link
-      href="/search"
-      className="text-rose-500 font-semibold hover:underline text-lg"
-    >
-      View All →
-    </Link>
-  </div>
 
+    <div className="mt-10 text-center">
+      <Link href="/search" className="text-rose-500 font-semibold hover:underline text-lg">
+        View All →
+      </Link>
+    </div>
   </div>
 </section>
+
+
 
 
         {/* Wedmac India Section */}
@@ -798,10 +795,10 @@ export default function HomePage() {
             <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">WHAT OUR CUSTOMERS HAVE TO SAY</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {[
-                "/images/img12.jpg",
-                "/images/img2.jpeg",
-                "/images/img23.jpg",
-                "/images/img4.jpeg",
+                "/images/img42.png",
+                "/images/img34.png",
+                "/images/img38.png",
+                "/images/img39.png",
               ].map((src, index) => (
                 <div key={index} className="relative group overflow-hidden rounded-2xl">
                   <img

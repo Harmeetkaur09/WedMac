@@ -5,6 +5,8 @@ import "./globals.css"
 import { Poppins } from 'next/font/google'
 import Header from "@/components/header"
 import Footer from "@/components/footer"
+import { Toaster } from 'react-hot-toast'
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,8 +21,12 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "WedMac India - Makeup Artist Platform",
   description: "Make Your Interior More Minimalistic & Modern",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: "/logotab.png", // Or .png, .svg depending on your file
+  }
 }
+
 
 export default function RootLayout({
   children,
@@ -28,6 +34,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
+    <>
 <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className={inter.className}>
         <Header />
@@ -35,5 +42,7 @@ export default function RootLayout({
         <Footer />
       </body>
     </html>
+          <Toaster position="top-right" reverseOrder={false} />
+</>
   )
 }

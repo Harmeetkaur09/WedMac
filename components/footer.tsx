@@ -44,11 +44,11 @@ export default function Footer() {
             <h3 className="text-xl font-semibold mb-6">Links</h3>
             <div className="space-y-3">
               <Link href="/faq" className="block hover:underline">FAQs</Link>
-              <Link href="/disclosures" className="block hover:underline">Disclosures</Link>
-              <Link href="/terms" className="block hover:underline">Terms And Conditions</Link>
+              {/* <Link href="/disclosures" className="block hover:underline">Disclosures</Link> */}
+              <Link href="/blog" className="block hover:underline">Blog</Link> 
               <Link href="/privacy" className="block hover:underline">Privacy Policy</Link>
-              <Link href="/submit-deals" className="block hover:underline">Submit Deals</Link>
-              <Link href="/media-kit" className="block hover:underline">Media Kit</Link>
+              <Link href="/terms" className="block hover:underline">Terms And Conditions</Link>
+              {/* {/* <Link href="/submit-deals" className="block hover:underline">Submit Deals</Link> */}
             </div>
           </div>
 
@@ -56,8 +56,7 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-6">Investment Disclosure</h3>
             <p className="text-sm leading-relaxed">
-              When you invest with Atlas, you are more than a number; you are a partner. You can access real estate
-              investment opportunities designed with you in mind.
+         We offer bespoke makeup services designed to complement your unique beauty and style, ensuring you look and feel confident, radiant, and unforgettable on your special day.
             </p>
           </div>
 
@@ -65,7 +64,7 @@ export default function Footer() {
           <div>
           
 
-            <h3 className="text-lg font-semibold mb-3">10% Secure Payment</h3>
+            <h3 className="text-lg font-semibold mb-3">100% Secure Payment</h3>
 <div className="grid grid-cols-2 gap-2 items-center">
               <Image src="/images/master.png" alt="Razorpay" width={80} height={30} />
               <Image src="/images/paytm.png" alt="Paytm" width={60} height={30} />
