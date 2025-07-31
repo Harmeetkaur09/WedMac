@@ -42,17 +42,24 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(true);
   const [makeupTypes, setMakeupTypes] = useState<string[]>([]);
   const [products, setProducts] = useState<string[]>([]);
-  const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const [showOnlySaved, setShowOnlySaved] = useState(false);
   const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
-  const [savedArtists, setSavedArtists] = useState<number[]>(() => {
-    // initialize from localStorage (or empty)
-    if (typeof window !== "undefined") {
-      return JSON.parse(localStorage.getItem("savedArtists") || "[]");
+const [savedArtists, setSavedArtists] = useState<number[]>([]);
+
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("savedArtists");
+    if (saved) {
+      try {
+        setSavedArtists(JSON.parse(saved));
+      } catch (e) {
+        setSavedArtists([]);
+      }
     }
-    return [];
-  });
+  }
+}, []);
+
   const filteredArtists = artists.filter((artist) => {
     // lowercase once up front
     const loc = artist.location.toLowerCase();
