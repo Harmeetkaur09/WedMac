@@ -163,7 +163,7 @@ const handleSearch = () => {
   if (selectedState) query.append("state", selectedState);
   if (selectedCity) query.append("city", selectedCity);
 
-  router.push(`/search`);
+  router.push(`/search?${query.toString()}`);
 };
   const handleHelpSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

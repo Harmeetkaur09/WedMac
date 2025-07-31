@@ -17,7 +17,12 @@ import {
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
-import BookModal from "../makeup-artist/details/[id]/BookModal";
+import dynamic from "next/dynamic";
+
+const BookModal = dynamic(
+  () => import("../makeup-artist/details/[id]/BookModal"),
+  { ssr: false }
+);
 import { useParams } from "next/navigation";
 interface ArtistCard {
   id: number;
