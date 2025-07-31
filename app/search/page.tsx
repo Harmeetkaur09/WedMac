@@ -45,6 +45,7 @@ export default function SearchPage() {
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const [showOnlySaved, setShowOnlySaved] = useState(false);
+  const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
   const [savedArtists, setSavedArtists] = useState<number[]>(() => {
     // initialize from localStorage (or empty)
     if (typeof window !== "undefined") {
@@ -386,7 +387,11 @@ export default function SearchPage() {
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"
-                            onClick={() => setShowModal(true)}
+                            onClick={() => {
+  setSelectedArtistId(artist.id);
+  setShowModal(true);
+}}
+
                             className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
                           >
                             <span className="flex items-center gap-1">
@@ -437,9 +442,10 @@ export default function SearchPage() {
           </div>
         </div>
       </div>
-      {showModal && (
-        <BookModal artistId={Number(id)} onClose={() => setShowModal(false)} />
-      )}
+     {showModal && selectedArtistId !== null && (
+  <BookModal artistId={selectedArtistId} onClose={() => setShowModal(false)} />
+)}
+
     </div>
   );
 }
