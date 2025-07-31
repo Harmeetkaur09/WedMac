@@ -19,9 +19,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
-const BookModal = dynamic(() => import("../makeup-artist/details/[id]/BookModal"), {
-  ssr: false,
-});interface ArtistCard {
+interface ArtistCard {
   id: number;
   full_name: string;
   profile_photo_url: string | null;
@@ -451,9 +449,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-     {showModal && selectedArtistId !== null && (
-  <BookModal artistId={selectedArtistId} onClose={() => setShowModal(false)} />
-)}
+  
 
     </div>
   );
