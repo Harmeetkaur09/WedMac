@@ -19,12 +19,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 
-const BookModal = dynamic(
-  () => import("../makeup-artist/details/[id]/BookModal"),
-  { ssr: false }
-);
-import { useParams } from "next/navigation";
-interface ArtistCard {
+const BookModal = dynamic(() => import("../makeup-artist/details/[id]/BookModal"), {
+  ssr: false,
+});interface ArtistCard {
   id: number;
   full_name: string;
   profile_photo_url: string | null;
