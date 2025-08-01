@@ -387,7 +387,7 @@ const handleSearch = () => {
        
                    {/* Image 5: Below image 1 and 2 (landscape) */}
                     <div className="col-span-1 row-span-2 relative group cursor-pointer">
-                     <HoverShuffleImage primarySrc="/images/img33.png" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
+                     <HoverShuffleImage primarySrc="/images/new3.png" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
                     <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
            <span>Engagement Makeup</span>
@@ -406,9 +406,9 @@ const handleSearch = () => {
                      {/* Image 7 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/img31.jpg"
+                         primarySrc="/images/new1.jpg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/img32.png"
+                         secondarySrc="/images/new2.png"
                        />
                        <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -422,7 +422,7 @@ const handleSearch = () => {
                      {/* Image 8 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/img40.png"
+                         primarySrc="/images/new10.png"
                          secondarySrc="/images/img21.jpg"
                          alt="Bridal Makeup"
                          
