@@ -406,9 +406,9 @@ const handleSearch = () => {
                      {/* Image 7 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/new1.jpg"
+                         primarySrc="/images/img6.jpg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/new2.png"
+                         secondarySrc="/images/img7.jpg"
                        />
                        <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
