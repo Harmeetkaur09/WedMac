@@ -104,7 +104,7 @@ const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     {
       name: "Simran Kaur",
     title: "Bride – Delhi",
-      image: "/images/img37.png",
+      image: "/images/new7.PNG",
       avatar: "/images/fdprofile.png",
       feedback:
       "Thank you so much for making my big day even more special. The look was elegant, timeless, and exactly what I dreamed of!",
@@ -406,9 +406,9 @@ const handleSearch = () => {
                      {/* Image 7 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/img6.jpg"
+                         primarySrc="/images/new1.JPG"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/img7.jpg"
+                         secondarySrc="/images/new2.PNG"
                        />
                        <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -422,7 +422,7 @@ const handleSearch = () => {
                      {/* Image 8 */}
                      <div className="relative w-full group">
                        <HoverShuffleImage
-                         primarySrc="/images/new10.png"
+                         primarySrc="/images/new10.PNG"
                          secondarySrc="/images/img21.jpg"
                          alt="Bridal Makeup"
                          
@@ -795,10 +795,10 @@ const handleSearch = () => {
             <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">WHAT OUR CUSTOMERS HAVE TO SAY</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {[
-                "/images/img42.png",
-                "/images/img34.png",
-                "/images/img38.png",
-                "/images/img39.png",
+                "/images/new12.PNG",
+                "/images/new4.PNG",
+                "/images/new8.PNG",
+                "/images/new9.PNG",
               ].map((src, index) => (
                 <div key={index} className="relative group overflow-hidden rounded-2xl">
                   <img
