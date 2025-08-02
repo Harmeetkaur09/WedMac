@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import toast from "react-hot-toast"
+import Select from "react-select"
 
 interface BookModalProps {
   artistId: number
@@ -98,6 +99,10 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
     setLoading(false);
   }
 };
+ const makeupOptions = masterMakeupTypes.map(mt => ({
+    value: mt.id,
+    label: mt.name
+  }))
 
 
   return (
@@ -135,14 +140,22 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
             <Label htmlFor="date">Booking Date</Label>
             <Input id="date" type="date" required value={bookingDate} onChange={e => setBookingDate(e.target.value)} />
           </div>
-          <div>
-            <Label htmlFor="event">Event Type</Label>
-            <select id="event" className="w-full border rounded px-2 py-1"
-              value={eventType} onChange={e => setEventType(e.target.value)}>
-              <option value="engagement">Engagement</option>
-              <option value="wedding">Wedding</option>
-              <option value="party">Party</option>
-            </select>
+            <div className="md:col-span-2">
+            <Label>Makeup Types</Label>
+            <Select
+              isMulti
+              options={makeupOptions}
+              className="mt-1"
+              classNamePrefix="react-select"
+              placeholder="Makeup type"
+              isSearchable
+              onChange={selected => {
+                // selected is array of {value,label}
+                setMakeupTypes(selected.map(s => s.value))
+              }}
+              // keep the current values selected
+              value={makeupOptions.filter(o => makeupTypes.includes(o.value))}
+            />
           </div>
           <div>
             <Label htmlFor="budget">Budget Range</Label>
@@ -153,28 +166,13 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
               ))}
             </select>
           </div>
-          <div className="md:col-span-3">
-            <Label>Makeup Types</Label>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {masterMakeupTypes.map(mt => (
-                <label key={mt.id} className="flex items-center space-x-2">
-                  <input type="checkbox" checked={makeupTypes.includes(mt.id)}
-                    onChange={() => toggleMakeupType(mt.id)} className="accent-[#FF577F]" />
-                  <span className="text-sm">{mt.name}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+      
           <div className="md:col-span-2">
             <Label htmlFor="req">Requirements</Label>
             <Textarea id="req" required rows={3} value={requirements}
               onChange={e => setRequirements(e.target.value)} />
           </div>
-          <div>
-            <Label htmlFor="notes">Additional Notes</Label>
-            <Textarea id="notes" rows={3} value={notes}
-              onChange={e => setNotes(e.target.value)} />
-          </div>
+          
           <div className="md:col-span-3 text-center">
             <Button type="submit" disabled={loading} className="bg-[#FF577F] hover:bg-pink-500 w-full text-white px-6 py-2">
               {loading ? "Submitting..." : "Submit Booking"}

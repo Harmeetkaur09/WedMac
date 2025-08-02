@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, BadgeCheck, MessageCircle, ArrowUpRight } from "lucide-react"
+import { Star, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Youtube, ChevronDown, BadgeCheck, MessageCircle, ArrowUpRight, Bookmark } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link";
 import { useParams } from "next/navigation"
@@ -27,6 +27,15 @@ bio: string
   instagram_url: string
   starting_price: number
 }
+interface CardArtist {
+  id: number
+  full_name: string
+  profile_photo_url: string | null
+  location: string
+  average_rating: number
+  portfolio_photos: { file_url: string; tag: string }[]
+}
+
 
 export default function MakeupArtistDetailPage() {
 
@@ -67,7 +76,40 @@ export default function MakeupArtistDetailPage() {
         "Airbrush foundation application (ideal for photography), HD contouring, waterproof finishes, plus a mini trial to test coverage and tone ahead of your event.",
     },
   ]
+    const [alsoLike, setAlsoLike] = useState<CardArtist[]>([])
+  const [alsoLoading, setAlsoLoading] = useState(true)
+  const [savedArtists, setSavedArtists] = useState<number[]>(() =>
+  typeof window !== "undefined"
+    ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
+    : []
+);
 
+  useEffect(() => {
+    fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+      headers: { "Accept": "application/json" },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load recommendations")
+        return res.json()
+      })
+      .then((data: CardArtist[]) => setAlsoLike(data))
+      .catch(err => {
+        console.error(err)
+        toast.error("Could not load suggestions")
+      })
+      .finally(() => setAlsoLoading(false))
+  }, [])
+
+    const toggleSaveArtist = (id: number) => {
+    setSavedArtists(prev => {
+      const next = prev.includes(id)
+        ? prev.filter(x => x !== id)
+        : [...prev, id];
+      localStorage.setItem("savedArtists", JSON.stringify(next));
+      return next;
+    });
+    toast.success("Updated saved profiles!");
+  };
   useEffect(() => {
     if (!id) return
 
@@ -141,14 +183,11 @@ export default function MakeupArtistDetailPage() {
             
                     <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
                       <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-                        Make Your Interior More
-                        <br />
-                        Minimalistic & Modern
-                      </h1>
+Style That Turns Heads                        <br />
+Every Special Day                     </h1>
                       <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
-                        Turn your room with WedMac India into a lot more minimalist
-                        <br />
-                        and modern with ease and speed
+Make your presence unforgettable with premium beauty and fashion services                <br />
+                        designed for life’s most special moments
                       </p>
                     </div>
                   </section>
@@ -181,17 +220,42 @@ export default function MakeupArtistDetailPage() {
                                         </div>
 
                                         <div className="md:w-2/3 pt-6  pr-8">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <h3 className="text-2xl font-inter font-bold">{artist.full_name}</h3>
-                                                <div className="flex items-center gap-1 text-sm text-pink-600 font-inter">
-                                                    <Image src="/images/verify.svg" alt="Verified" width={16} height={16} className="w-8 h-8" />
-                                                    Verified
-                                                </div>
+                                         <div className="flex items-start justify-between mb-2">
+  {/* Left side: Name + Verified */}
+  <div className="flex items-center gap-2">
+    <h3 className="text-2xl font-inter font-bold">{artist.full_name}</h3>
+    <div className="flex items-center gap-1 text-sm text-pink-600 font-inter">
+      <Image
+        src="/images/verify.svg"
+        alt="Verified"
+        width={16}
+        height={16}
+        className="w-5 h-5"
+      />
+      Verified
+    </div>
+  </div>
 
-                                            </div>
+  {/* Right side: Bookmark */}
+  <button
+    onClick={() => toggleSaveArtist(artist.id)}
+    className="text-[#FF577F] hover:text-pink-600 transition"
+  >
+    <Bookmark
+      className={`w-6 h-6 cursor-pointer ${
+        savedArtists.includes(artist.id)
+          ? "fill-[#FF577F]"
+          : "stroke-[#FF577F]"
+      }`}
+    />
+  </button>
+</div>
+
                                             <p className="text-[#8D8D8D] text-md mb-2">{artist.location.city},{artist.location.state}</p>
                                             <p className="text-[#8D8D8D] font-[600] text-md mb-2">covid vaccinated</p>
                                             <p className="text-[#8D8D8D] text-md mb-2">Get 10% off on your first booking</p>
+                                            <p className="text-[#8D8D8D] text-md mb-2">Free Trail</p>
+
 
 
 
@@ -396,59 +460,74 @@ export default function MakeupArtistDetailPage() {
                         {/* Right Side - You May Also Like, Certificates, Social Media */}
                         <div className="space-y-8">
                             {/* You May Also Like */}
-                            <div>
-                                <Card>
-                                  <CardContent className="px-10 py-4">
-  <h3 className="text-xl font-inter text-center font-bold mb-4">
-    You May Also Like
-  </h3>
+                             <div>
+    <h3 className="text-xl font-inter text-center font-bold mb-4">
+      You May Also Like
+    </h3>
 
-  {/* 1) Make this wrapper relative */}
-  <div className="relative mb-3">
-    <Image
-      src="/images/protfolio2.jpg?height=200&width=300"
-      alt="Another Artist"
-      width={300}
-      height={200}
-      className="w-full h-80 object-cover rounded-lg"
-    />
+    {alsoLoading ? (
+      <p className="text-center">Loading suggestions…</p>
+    ) : (
+      <div className="grid grid-cols-1 gap-6">
+        {alsoLike.map(a => {
+          // pick best image: profile_photo_url or first portfolio photo
+          const imgUrl =
+            a.profile_photo_url ||
+            a.portfolio_photos.find(p => p.tag === "profile-photo")?.file_url ||
+            a.portfolio_photos[0]?.file_url ||
+            "/images/placeholder.svg"
+                            return (
+            <Card key={a.id}>
+              <CardContent className="px-6 py-4">
+                <div className="relative mb-3">
+                  <Image
+                    src={imgUrl}
+                    alt={a.full_name}
+                    width={300}
+                    height={200}
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                  <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+                    Popular
+                  </Badge>
+                </div>
 
-    {/* 2) Move the badge inside, absolutely positioned */}
-    <Badge className="absolute top-7 left-5 bg-[#ff577fbd] p-1 text-xs font-inter text-white rounded">
-      Popular
-    </Badge>
-  </div>
+                <div className="flex items-center mb-4">
+                  <Image
+                    src={imgUrl}
+                    alt={a.full_name}
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{a.full_name}</h4>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <MapPin className="w-4 h-4 mr-1 text-pink-500" />
+                      <span>{a.location}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-sm text-pink-500">
+                    <Star className="w-4 h-4" />
+                    <span className="ml-1">{a.average_rating.toFixed(1)}</span>
+                  </div>
+                </div>
 
-  <div className="flex items-center mb-4">
-    <Image
-      src="/images/fdprofile.png?height=50&width=50"
-      alt="Avneet Kaur"
-      width={50}
-      height={50}
-      className="w-14 h-14 rounded-full mr-4"
-    />
-    <div>
-      <h3 className="font-semibold font-inter">Avneet Kaur</h3>
-      <p className="text-sm text-[#8D8D8D]">Beauty Parlour</p>
-      <div className="flex items-center text-sm text-gray-500">
-        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-        <span>Delhi</span>
-        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-          {artist.rating}
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <Link href="/makeup-artist-detail" className="flex-1">
-    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-      View Profile
-      <ArrowUpRight className="w-4 h-4" />
-    </Button>
-  </Link>
-</CardContent>
-
-                                </Card>
+                <Link href={`/makeup-artist/details/${a.id}`}>
+                  <Button
+                    size="sm"
+                    className="w-full flex items-center justify-center gap-1 bg-pink-500 text-white"
+                  >
+                    View Profile
+                    <ArrowUpRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )
+        })}
+          </div>
+    )}
                             </div>
 
                             {/* Makeup Certificate & Awards */}
@@ -542,7 +621,7 @@ export default function MakeupArtistDetailPage() {
               <div>
                 <Input
                   placeholder="Your Name"
-                  className="rounded-none"
+                  className="rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                   value={helpName}
                   onChange={(e) => setHelpName(e.target.value)}
                 />
@@ -551,7 +630,7 @@ export default function MakeupArtistDetailPage() {
               <div>
                 <Input
                   placeholder="Your Mobile"
-                  className="rounded-none"
+                  className="rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                   value={helpMobile}
                   onChange={(e) => setHelpMobile(e.target.value)}
                 />
@@ -561,7 +640,7 @@ export default function MakeupArtistDetailPage() {
             <div>
               <Textarea
                 placeholder="Write here your Doubt"
-                className="mb-2 rounded-none"
+                className="mb-2 rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                 rows={4}
                 value={helpMessage}
                 onChange={(e) => setHelpMessage(e.target.value)}
@@ -656,7 +735,7 @@ export default function MakeupArtistDetailPage() {
                             {/* Glam Up Banner */}
                  <div className="relative rounded-lg overflow-hidden min-h-[550px]">
   <Image
-    src="/images/img34.png"
+    src="/images/new4.PNG"
     alt="Glam Up Banner"
     fill
     className="object-cover"

@@ -50,32 +50,27 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[90vh] pt-32 text-center text-white">
-        {/* Background Image and Overlay */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/hero.jpg"
-            alt="Hero Background"
-            fill
-            className="object-cover object-top -z-10"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-        </div>
-      
-        {/* Centered Heading Text */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Make Your Interior More
-            <br />
-            Minimalistic & Modern
-          </h1>
-          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
-            Turn your room with WedMac India into a lot more minimalist
-            <br />
-            and modern with ease and speed
-          </p>
-        </div>
-      </section>
+        <section className="relative h-[90vh] pt-32 text-center text-white">
+                        <div className="absolute inset-0">
+                          <Image
+                            src="/images/hero.jpg"
+                            alt="Hero Background"
+                            fill
+                            className="object-cover object-top -z-10"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+                        </div>
+                
+                        <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+                          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+    Style That Turns Heads                        <br />
+    Every Special Day                     </h1>
+                          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+    Make your presence unforgettable with premium beauty and fashion services                <br />
+                            designed for life’s most special moments
+                          </p>
+                        </div>
+                      </section>
          <section className="py-12 -mt-20 relative z-30 px-4">
     <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
      <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">About Us</h1>
@@ -92,7 +87,7 @@ export default function AboutPage() {
               inspiring and fulfilling
             </h2>
           <p className="text-lg font-gilroy max-w-2xl text-center text-gray-600 mb-8 mx-auto">
-Wedmac India is a leading platform dedicated to makeup artists and beauty professionals. We connect talented with clients across India, offering a seamless experience for booking, showcasing portfolios, and growing in the beauty industry.</p>
+Wedmac India is a premier platform for makeup artists and beauty professionals. We offer a seamless experience for booking services, showcasing portfolios, and building a successful career in the beauty industry..</p>
 
            
           </div>
@@ -100,7 +95,7 @@ Wedmac India is a leading platform dedicated to makeup artists and beauty profes
           {/* Founders Section */}
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
           {/* Left side - Company Description */}
-          <div className="space-y-6">
+          <div className="space-y-6 pb-8">
 <div className="space-y-4 font-gilroy text-gray-700 leading-relaxed">
   <p>
     Wedmac India was founded with a vision to empower makeup artists and beauty professionals across the country by providing a digital platform to grow their brand and connect with clients.
@@ -129,7 +124,7 @@ Wedmac India is a leading platform dedicated to makeup artists and beauty profes
     className="w-full h-full object-cover object-center "
   />
   <div className="mt-3">
-    <h3 className="text-lg font-semibold text-gray-800">Abhishek Shrivastav</h3>
+    <h3 className="text-lg font-semibold text-gray-800">Ankit Shrivastava</h3>
     <p className="text-sm text-gray-600">Co-founder</p>
   </div>
 </div>
@@ -143,7 +138,7 @@ Wedmac India is a leading platform dedicated to makeup artists and beauty profes
     className="w-full h-full object-cover object-center border-4 border-white"
   />
   <div className="mt-3">
-    <h3 className="text-lg font-semibold text-gray-800">Anukalp Shrivastav</h3>
+    <h3 className="text-lg font-semibold text-gray-800">Anukalp Shrivastava</h3>
     <p className="text-sm text-gray-600">Founder</p>
   </div>
 </div>
@@ -236,7 +231,7 @@ Wedmac India is a leading platform dedicated to makeup artists and beauty profes
         </div>
       </section> */}
 
-     <section className="py-16 bg-white">
+     <section className="py-6 bg-white">
   <div className="container mx-auto px-4">
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
       
@@ -254,7 +249,7 @@ Wedmac India is a leading platform dedicated to makeup artists and beauty profes
 
       <div className="lg:col-span-3">
         <Image
-          src="/images/team.png?height=400&width=600"
+          src="/images/team.JPG?height=400&width=600"
           alt="Team collaboration"
           width={600}
           height={200}

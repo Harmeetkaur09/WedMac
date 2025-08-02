@@ -8,28 +8,27 @@ export default function Privacy() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[90vh] pt-32 text-center text-white">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/hero.jpg"
-            alt="Hero Background"
-            fill
-            className="object-cover object-top -z-10"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Privacy Policy
-          </h1>
-          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
-            Your privacy is critically important to us.  
-            <br />
-            At WedMac India, we respect and protect your personal data.
-          </p>
-        </div>
-      </section>
+        <section className="relative h-[90vh] pt-32 text-center text-white">
+                        <div className="absolute inset-0">
+                          <Image
+                            src="/images/hero.jpg"
+                            alt="Hero Background"
+                            fill
+                            className="object-cover object-top -z-10"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+                        </div>
+                
+                        <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+                          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+    Style That Turns Heads                        <br />
+    Every Special Day                     </h1>
+                          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+    Make your presence unforgettable with premium beauty and fashion services                <br />
+                            designed for life’s most special moments
+                          </p>
+                        </div>
+                      </section>
 
       {/* Title Section */}
       <section className="py-12 -mt-20 relative z-30 px-4">
@@ -92,8 +91,19 @@ export default function Privacy() {
             <p>
               We may update this Privacy Policy from time to time. We’ll post the revised date at the top and encourage you to review it periodically.
             </p>
+<p className="font-poppins font-bold">Wedmac India is only a connecting platform between users and makeup artists. In case of any unfortunate event (such as accidents, emergencies, or last-minute cancellations), Wedmac India shall not be held responsible for any kind of financial loss, service failure, or artist payment issues. All bookings are directly between the customer and the service provider.</p>
+<h2 className="font-poppins font-bold">9. Refund Policy</h2>
+<p>
+  At <strong>WedMac India</strong>, we operate solely as a connecting platform between users and makeup artists. As such, all payments, cancellations, and refund requests must be handled directly between the customer and the service provider.
+</p>
+<ul className="list-disc pl-5">
+  <li><strong>Platform Non-Liability:</strong> WedMac India does not handle or hold any payment between clients and artists, and therefore cannot process or guarantee any refunds.</li>
+  <li><strong>Disputes:</strong> In case of a dispute, we recommend reaching out directly to the artist. WedMac India may assist in communication, but is not responsible for dispute resolution or refund enforcement.</li>
+</ul>
+<p>
+  Please make sure to discuss and confirm all service details, pricing, and cancellation terms with your artist before finalizing the booking.
+</p>
 
-           
           </div>
         </div>
       </section>

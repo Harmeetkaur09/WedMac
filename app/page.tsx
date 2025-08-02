@@ -96,7 +96,7 @@ const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     {
       name: "Anjali Sharma",
     title: "Bride – Mumbai",
-      image: "/images/protfolio1.jpg",
+      image: "/images/new12.PNG",
       avatar: "/images/fdprofile.png",
       feedback:
       "The makeup was absolutely stunning and lasted all day! I felt confident, radiant, and photo-ready from start to finish.",
@@ -112,7 +112,7 @@ const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     {
       name: "Pooja Verma",
     title: "Bride – Jaipur",
-      image: "/images/protfolio5.jpg",
+      image: "/images/new9.PNG",
       avatar: "/images/fdprofile.png",
       feedback:
       "The attention to detail was amazing. My bridal look was flawless and received so many compliments throughout the day!",
@@ -218,32 +218,27 @@ const handleSearch = () => {
         {/* Navigation Header */}
 
 
-        <section className="relative h-[90vh] pt-32 text-center text-white">
-          {/* Background Image and Overlay */}
-          <div className="absolute inset-0">
-            <Image
-              src="/images/hero.jpg"
-              alt="Hero Background"
-              fill
-              className="object-cover object-top -z-10"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-          </div>
-
-          {/* Centered Heading Text */}
-          <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-              Make Your Interior More
-              <br />
-              Minimalistic & Modern
-            </h1>
-            <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
-              Turn your room with WedMac India into a lot more minimalist
-              <br />
-              and modern with ease and speed
-            </p>
-          </div>
-        </section>
+       <section className="relative h-[90vh] pt-32 text-center text-white">
+                       <div className="absolute inset-0">
+                         <Image
+                           src="/images/hero.jpg"
+                           alt="Hero Background"
+                           fill
+                           className="object-cover object-top -z-10"
+                         />
+                         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+                       </div>
+               
+                       <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+                         <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+   Style That Turns Heads                        <br />
+   Every Special Day                     </h1>
+                         <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+   Make your presence unforgettable with premium beauty and fashion services                <br />
+                           designed for life’s most special moments
+                         </p>
+                       </div>
+                     </section>
       <section className="py-10 -mt-28 relative z-30 px-4">
           <div className="max-w-6xl mx-auto bg-white rounded-lg p-6 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -838,20 +833,9 @@ const handleSearch = () => {
                     />
 
                     {/* White feedback card inside image */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-white rounded-2xl shadow-xl px-4 pb-6 text-center">
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
                       {/* Horizontal line + avatar */}
-                      <div className="relative mb-10">
-
-                        <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10 bg-white rounded-full p-2">
-                          <Image
-                            src={client.avatar}
-                            alt={client.name}
-                            width={48}
-                            height={48}
-                            className="w-12 h-12 rounded-full object-cover shadow-md"
-                          />
-                        </div>
-                      </div>
+                   
 
                       {/* Text content */}
                       <h3 className="font-semibold text-md font-gilroy">{client.name}</h3>

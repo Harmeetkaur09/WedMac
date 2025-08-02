@@ -6,29 +6,26 @@ export default function TermsPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
        <section className="relative h-[90vh] pt-32 text-center text-white">
-            <div className="absolute inset-0">
-              <Image
-                src="/images/hero.jpg"
-                alt="Hero Background"
-                fill
-                className="object-cover object-top -z-10"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-            </div>
-    
-            <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-              <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-                Make Your Interior More
-                <br />
-                Minimalistic & Modern
-              </h1>
-              <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
-                Turn your room with WedMac India into a lot more minimalist
-                <br />
-                and modern with ease and speed
-              </p>
-            </div>
-          </section>
+                       <div className="absolute inset-0">
+                         <Image
+                           src="/images/hero.jpg"
+                           alt="Hero Background"
+                           fill
+                           className="object-cover object-top -z-10"
+                         />
+                         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+                       </div>
+               
+                       <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+                         <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+   Style That Turns Heads                        <br />
+   Every Special Day                     </h1>
+                         <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+   Make your presence unforgettable with premium beauty and fashion services                <br />
+                           designed for life’s most special moments
+                         </p>
+                       </div>
+                     </section>
              <section className="py-12 -mt-20 relative z-30 px-4">
     <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
      <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Terms and Conditions</h1>
