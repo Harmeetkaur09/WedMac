@@ -3,11 +3,12 @@ import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image"
-import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin, Bookmark, ArrowUpRight, ArrowLeft } from "lucide-react";
+import { Star, ArrowRight, ChevronLeft, ChevronRight, Phone, Mail, MapPin, Bookmark, ArrowUpRight, ArrowLeft, VolumeX, Volume2 } from "lucide-react";
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
+import { motion, AnimatePresence } from "framer-motion";
 
 import toast, { Toaster } from 'react-hot-toast'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import BookModal from "./makeup-artist/details/[id]/BookModal";
 import { useParams, useRouter } from "next/navigation";
@@ -59,33 +60,71 @@ export default function HomePage() {
   const [selectedType, setSelectedType] = useState<string>("");
 
       const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
-    const stateOptions: StateOption[] = [
-    { value: 'Delhi', label: 'Delhi' },
-    { value: 'Mumbai', label: 'Mumbai' },
-    { value: 'Pune', label: 'Pune' }
-  ];
+const stateOptions: StateOption[] = [
+  { value: 'Maharashtra', label: 'Maharashtra' },
+  { value: 'Delhi',       label: 'Delhi'       },
+  { value: 'Punjab',      label: 'Punjab'      }
+];
   const [states] = useState<StateOption[]>(stateOptions);
   const [selectedState, setSelectedState] = useState<string>("");
 
   // City options by state
-  const cityByState: Record<string, CityOption[]> = {
-    Delhi: [
-      { value: 'New Delhi', label: 'New Delhi' },
-      { value: 'Rohini', label: 'Rohini' }
-    ],
-    Mumbai: [
-      { value: 'Andheri', label: 'Andheri' },
-      { value: 'Bandra', label: 'Bandra' }
-    ],
-    Pune: [
-      { value: 'Shivaji Nagar', label: 'Shivaji Nagar' },
-      { value: 'Kalyani Nagar', label: 'Kalyani Nagar' }
-    ]
-  };
+ const cityByState: Record<string, CityOption[]> = {
+  Maharashtra: [
+    { value: 'Mumbai', label: 'Mumbai' },
+    { value: 'Pune',   label: 'Pune'   },
+  ],
+  Delhi: [
+    { value: 'Delhi', label: 'Delhi' },
+    { value: 'Rohini',    label: 'Rohini'    },
+  ],
+  Punjab: [
+    { value: 'Chandigarh',  label: 'Chandigarh' },
+    { value: 'Amritsar',    label: 'Amritsar'   },
+  ],
+};
+  const videos = [
+  "/videos/video1.mp4",
+  "/videos/video2.mp4",
+  "/videos/video1.mp4",
+  "/videos/video2.mp4",
+  "/videos/video1.mp4",
+  "/videos/video2.mp4",
+];
+
   const router = useRouter();
   const [cities, setCities] = useState<CityOption[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("");
+    const [currentIndex, setCurrentIndex] = useState(0);
+  const [muted, setMuted] = useState(true);
+  const videoRefs = useRef<HTMLVideoElement[]>([]);
+
+  const currentGroupStart = Math.floor(currentIndex / 4) * 4;
+const visibleVideos = Array.from({ length: 4 }, (_, i) => {
+  const index = (currentGroupStart + i) % videos.length;
+  return videos[index];
+});
+
+  useEffect(() => {
+    const currentVideo = videoRefs.current[currentIndex];
+    if (currentVideo) {
+      currentVideo.play().catch(() => {});
+    }
+
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) {
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+    };
+  }, [currentIndex]);
+
+  const handleVideoEnd = () => {
+    const nextIndex = (currentIndex + 1) % videos.length;
+    setCurrentIndex(nextIndex);
+  };
 const [savedArtists, setSavedArtists] = useState<number[]>(() =>
   typeof window !== "undefined"
     ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
@@ -111,11 +150,11 @@ const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     },
     {
       name: "Pooja Verma",
-    title: "Bride – Jaipur",
-      image: "/images/new9.PNG",
+    title: "Party – Jaipur",
+      image: "/images/new25.JPG",
       avatar: "/images/fdprofile.png",
       feedback:
-      "The attention to detail was amazing. My bridal look was flawless and received so many compliments throughout the day!",
+      "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
     },
   ];
      useEffect(() => {
@@ -157,14 +196,13 @@ const [savedArtists, setSavedArtists] = useState<number[]>(() =>
 
   // Handle search
 const handleSearch = () => {
-  const query = new URLSearchParams();
-
-  if (selectedType) query.append("type", selectedType);
-  if (selectedState) query.append("state", selectedState);
-  if (selectedCity) query.append("city", selectedCity);
-
-  router.push(`/search?${query.toString()}`);
+sessionStorage.setItem(
+  "artistFilters",
+  JSON.stringify({  state: selectedState, city: selectedCity })
+);
+router.push("/search");
 };
+
   const handleHelpSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const nameRegex = /^[A-Za-z ]+$/
@@ -202,15 +240,30 @@ const handleSearch = () => {
   }
 
 
-  useEffect(() => {
-    fetch('https://wedmac-services.onrender.com/api/artists/cards/')
-      .then(res => res.json())
-      .then((data: ArtistCard[]) => {
-        setArtists(data.slice(0, 3)); // latest 3
-      })
-      .catch(err => toast.error('Failed to load artists'))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ /* whatever your API expects */ }),
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => {
+      // ✅ data.results is the array of artist cards
+      const cards = Array.isArray(data.results) ? data.results : [];
+      setArtists(cards.slice(0, 3));
+    })
+    .catch(err => {
+      console.error("Artist fetch failed:", err);
+      toast.error("Failed to load artists");
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, []);
+
   
   return (
     <><Header />
@@ -221,7 +274,7 @@ const handleSearch = () => {
        <section className="relative h-[90vh] pt-32 text-center text-white">
                        <div className="absolute inset-0">
                          <Image
-                           src="/images/hero.jpg"
+                           src="/images/hero.JPG"
                            alt="Hero Background"
                            fill
                            className="object-cover object-top -z-10"
@@ -233,14 +286,14 @@ const handleSearch = () => {
                          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
    Style That Turns Heads                        <br />
    Every Special Day                     </h1>
-                         <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                         <p className="text-sm md:text-xl font-gilroy font-400 opacity-90">
    Make your presence unforgettable with premium beauty and fashion services                <br />
                            designed for life’s most special moments
                          </p>
                        </div>
                      </section>
       <section className="py-10 -mt-28 relative z-30 px-4">
-          <div className="max-w-6xl mx-auto bg-white rounded-lg p-6 shadow-lg">
+          <div className="max-w-5xl mx-auto bg-white rounded-lg p-3 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Makeup Type */}
               <div className="text-left border-r">
@@ -330,7 +383,7 @@ const handleSearch = () => {
                        <HoverShuffleImage
                          primarySrc="/images/img4.jpeg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/img2.jpeg"
+                         secondarySrc="/images/new22.JPG"
                        />
                    <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -349,7 +402,7 @@ const handleSearch = () => {
                        <HoverShuffleImage
                          primarySrc="/images/img26.jpg"
                          alt="Bridal Makeup"
-                         secondarySrc="/images/img19.jpg"
+                         secondarySrc="/images/new20.JPG"
                        />
                 <div className="absolute bottom-4 w-full flex justify-center cursor-pointer">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -365,7 +418,7 @@ const handleSearch = () => {
                        <HoverShuffleImage
                          primarySrc="/images/img8.jpg"
                          alt="Light Makeup"
-                         secondarySrc="/images/img6.jpg"
+                         secondarySrc="/images/new21.JPG"
                        />
                  <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -382,7 +435,7 @@ const handleSearch = () => {
        
                    {/* Image 5: Below image 1 and 2 (landscape) */}
                     <div className="col-span-1 row-span-2 relative group cursor-pointer">
-                     <HoverShuffleImage primarySrc="/images/new3.PNG" alt="Bridal Makeup"  secondarySrc="/images/img17.jpg" />
+                     <HoverShuffleImage primarySrc="/images/new3.PNG" alt="Bridal Makeup"  secondarySrc="/images/new24.JPG" />
                     <div className="absolute bottom-4 w-full flex justify-center">
          <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
            <span>Engagement Makeup</span>
@@ -418,7 +471,7 @@ const handleSearch = () => {
                      <div className="relative w-full group">
                        <HoverShuffleImage
                          primarySrc="/images/new10.PNG"
-                         secondarySrc="/images/img21.jpg"
+                         secondarySrc="/images/new23.JPG"
                          alt="Bridal Makeup"
                          
                        />
@@ -480,8 +533,8 @@ const handleSearch = () => {
       <div
         className={
           artists.length < 3
-            ? "flex justify-center gap-8 max-w-6xl mx-auto"
-            : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+            ? "flex justify-center gap-8 max-w-2xl mx-auto"
+            : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
         }
       >
         {artists.map((artist) => (
@@ -785,27 +838,56 @@ const handleSearch = () => {
         </section>
 
         {/* Bottom Gallery Section */}
-        <section className="py-4 ">
-          <div className="container mx-auto border border-[#D5D5D5] rounded-xl p-4">
-            <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">WHAT OUR CUSTOMERS HAVE TO SAY</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {[
-                "/images/new12.PNG",
-                "/images/new4.PNG",
-                "/images/new8.PNG",
-                "/images/new9.PNG",
-              ].map((src, index) => (
-                <div key={index} className="relative group overflow-hidden rounded-2xl">
-                  <img
+     <section className="py-4">
+      <div className="container mx-auto border border-[#D5D5D5] rounded-xl p-4 overflow-hidden">
+        <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">
+          WHAT OUR CUSTOMERS HAVE TO SAY
+        </h2>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentGroupStart} // this changes on group switch
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto"
+          >
+            {visibleVideos.map((src, i) => {
+              const absoluteIndex = currentGroupStart + i;
+              const isActive = absoluteIndex === currentIndex;
+
+              return (
+                <div
+                  key={absoluteIndex}
+                  className={`relative group overflow-hidden rounded-2xl border-2 ${
+                    isActive ? "border-pink-500 scale-105" : "border-transparent"
+                  } transition-all duration-500`}
+                >
+                  <video
+                    ref={(el) => {
+                      if (el) videoRefs.current[absoluteIndex] = el;
+                    }}
                     src={src}
-                    alt="Beauty Portfolio"
-                    className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    muted={muted}
+                    onEnded={handleVideoEnd}
+                    className="w-full h-96 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+                  {isActive && (
+                    <button
+                      onClick={() => setMuted(!muted)}
+                      className="absolute top-3 right-3 z-10 p-2 bg-white/80 rounded-full"
+                    >
+                      {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </section>
 
         {/* Wedmac Testimonials Section */}
         <section className="py-12 bg-white md:mb-20">

@@ -34,6 +34,8 @@ export default function MakeupArtistPagesPage() {
     }
     return [];
   });
+    const [selectedState, setSelectedState] = useState<string>("")
+  const [selectedCity,  setSelectedCity]  = useState<string>("")
   const [showOnlySaved, setShowOnlySaved] = useState(false);
        const [artists, setArtists] = useState<ArtistCard[]>([]);
       const [loading, setLoading] = useState(true);
@@ -41,7 +43,13 @@ export default function MakeupArtistPagesPage() {
   const [products, setProducts]       = useState<string[]>([])
       const { id } = useParams()
   const [showModal, setShowModal] = useState(false)
-  
+    const stateOptions = ["Maharashtra","Delhi","Punjab"]
+  const cityByState: Record<string,string[]> = {
+    Maharashtra: ["Mumbai","Pune"],
+    Delhi:       ["New Delhi","Rohini"],
+    Punjab:      ["Chandigarh","Amritsar"]
+  }
+  const cities = selectedState ? cityByState[selectedState] || [] : []
 
     const toggleSaveArtist = (id: number) => {
     setSavedArtists(prev => {
@@ -55,30 +63,45 @@ export default function MakeupArtistPagesPage() {
   };
 
 
-     useEffect(() => {
-    // fetch latest 3 artists
-    fetch('https://wedmac-services.onrender.com/api/artists/cards/')
-      .then(res => res.json())
-      .then((data: ArtistCard[]) => setArtists(data.slice(0, 3)))
-      .catch(() => toast.error('Failed to load artists'))
+useEffect(() => {
+    setLoading(true)
+    fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filters: {
+          state: selectedState.toLowerCase(),
+          city:  selectedCity.toLowerCase(),
+        }
+      })
+    })
+      .then(r => {
+        if (!r.ok) throw new Error(r.statusText)
+        return r.json()
+      })
+      .then(data => {
+        setArtists(Array.isArray(data.results) ? data.results : [])
+      })
+      .catch(err => {
+        console.error(err)
+        toast.error("Failed to load artists")
+      })
       .finally(() => setLoading(false))
+  }, [selectedState, selectedCity])
 
-    // fetch makeup_types
-   fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=makeup_types')
-    .then(res => res.json())
-    .then((data: { id: number; name: string; description: string }[]) => {
-      setMakeupTypes(data.map(d => d.name))
-    })
-    .catch(() => toast.error('Failed to load makeup types'))
+  // fetch makeup types + products once
+  useEffect(() => {
+    fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=makeup_types")
+      .then(r => r.json())
+      .then((d: any[]) => setMakeupTypes(d.map(x => x.name)))
+      .catch(() => toast.error("Failed to load makeup types"))
 
-  // products (services)
-  fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=products')
-    .then(res => res.json())
-    .then((data: { id: number; name: string; description: string }[]) => {
-      setProducts(data.map(d => d.name))
-    })
-    .catch(() => toast.error('Failed to load products'))
-}, [])
+    fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=products")
+      .then(r => r.json())
+      .then((d: any[]) => setProducts(d.map(x => x.name)))
+      .catch(() => toast.error("Failed to load products"))
+  }, [])
+
 
   return (
     <div className="min-h-screen">
@@ -86,7 +109,7 @@ export default function MakeupArtistPagesPage() {
      <section className="relative h-[90vh] pt-32 text-center text-white">
                      <div className="absolute inset-0">
                        <Image
-                         src="/images/hero.jpg"
+                         src="/images/hero.JPG"
                          alt="Hero Background"
                          fill
                          className="object-cover object-top -z-10"
@@ -98,7 +121,7 @@ export default function MakeupArtistPagesPage() {
                        <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
  Style That Turns Heads                        <br />
  Every Special Day                     </h1>
-                       <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                       <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
  Make your presence unforgettable with premium beauty and fashion services                <br />
                          designed for life’s most special moments
                        </p>
@@ -120,21 +143,41 @@ export default function MakeupArtistPagesPage() {
   
   
                 {/* Location Filter */}
-               <div className="mb-6">
-    <h3 className="font-[400] font-inter mb-3">Location</h3>
-    <select
-      className="w-full border border-[#D5D5D5] rounded-lg px-3 py-2 text-sm text-[#303A4280]"
-      defaultValue=""
-    >
-      <option value="" disabled className="text-sm text-[#303A4280]">
-        Enter Your Location
-      </option>
-      <option value="delhi" className="text-black">Delhi</option>
-      <option value="mumbai" className="text-black">Mumbai</option>
-      {/* Add more options as needed */}
-    </select>
-  </div>
-  
+            <aside className="w-full mb-2 space-y-6">
+        <div>
+          <label className="block mb-1">State</label>
+          <select
+            value={selectedState}
+            onChange={e => {
+              setSelectedState(e.target.value)
+              setSelectedCity("")      // reset city
+            }}
+            className="w-full border rounded px-2 py-1"
+          >
+            <option value="">All States</option>
+            {stateOptions.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-1">City</label>
+          <select
+            value={selectedCity}
+            onChange={e => setSelectedCity(e.target.value)}
+            disabled={!cities.length}
+            className="w-full border rounded px-2 py-1 disabled:opacity-50"
+          >
+            <option value="">All Cities</option>
+            {cities.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+       
+      </aside>
   
                 {/* Budget Filter */}
                 <div className="mb-6">

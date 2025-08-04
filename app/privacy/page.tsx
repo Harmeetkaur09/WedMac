@@ -11,7 +11,7 @@ export default function Privacy() {
         <section className="relative h-[90vh] pt-32 text-center text-white">
                         <div className="absolute inset-0">
                           <Image
-                            src="/images/hero.jpg"
+                            src="/images/hero.JPG"
                             alt="Hero Background"
                             fill
                             className="object-cover object-top -z-10"
@@ -23,7 +23,7 @@ export default function Privacy() {
                           <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
     Style That Turns Heads                        <br />
     Every Special Day                     </h1>
-                          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                          <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
     Make your presence unforgettable with premium beauty and fashion services                <br />
                             designed for life’s most special moments
                           </p>

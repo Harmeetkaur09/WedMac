@@ -10,7 +10,7 @@ import Link from "next/link";
 import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
 import BookModal from "../makeup-artist/details/[id]/BookModal"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 interface ArtistCard {
   id: number;
   full_name: string;
@@ -32,38 +32,61 @@ export default function SearchPage() {
     const [products, setProducts]       = useState<string[]>([])
         const { id } = useParams()
     const [showModal, setShowModal] = useState(false)
-  
-       useEffect(() => {
-      // fetch latest 3 artists
-      fetch('https://wedmac-services.onrender.com/api/artists/cards/')
-        .then(res => res.json())
-        .then((data: ArtistCard[]) => setArtists(data.slice(0, 3)))
-        .catch(() => toast.error('Failed to load artists'))
-        .finally(() => setLoading(false))
-  
-      // fetch makeup_types
-     fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=makeup_types')
+      const searchParams = useSearchParams();
+      const type  = searchParams.get("type")  || "";
+  const state = searchParams.get("state") || "";
+  const city  = searchParams.get("city")  || "";
+
+  useEffect(() => {
+    setLoading(true)
+    const raw = sessionStorage.getItem("artistFilters") || "{}";
+const filters = JSON.parse(raw);
+    fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ filters }),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        return res.json()
+      })
+      .then(data => {
+        setArtists(Array.isArray(data.results) ? data.results : [])
+      })
+      .catch(err => {
+        console.error("Search fetch failed:", err)
+        toast.error("Failed to load search results")
+      })
+      .finally(() => setLoading(false))
+  }, [type, state, city])
+
+  // 2️⃣ Load makeup types once
+  useEffect(() => {
+    fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=makeup_types")
       .then(res => res.json())
-      .then((data: { id: number; name: string; description: string }[]) => {
+      .then((data: { name: string }[]) =>
         setMakeupTypes(data.map(d => d.name))
-      })
-      .catch(() => toast.error('Failed to load makeup types'))
-  
-    // products (services)
-    fetch('https://wedmac-services.onrender.com/api/admin/master/list/?type=services')
-      .then(res => res.json())
-      .then((data: { id: number; name: string; description: string }[]) => {
-        setProducts(data.map(d => d.name))
-      })
-      .catch(() => toast.error('Failed to load products'))
+      )
+      .catch(() => toast.error("Failed to load makeup types"))
   }, [])
+
+  // 3️⃣ Load services once
+  useEffect(() => {
+    fetch("https://wedmac-services.onrender.com/api/admin/master/list/?type=services")
+      .then(res => res.json())
+      .then((data: { name: string }[]) =>
+        setProducts(data.map(d => d.name))
+      )
+      .catch(() => toast.error("Failed to load services"))
+  }, [])
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
          <section className="relative h-[90vh] pt-32 text-center text-white">
                          <div className="absolute inset-0">
                            <Image
-                             src="/images/hero.jpg"
+                             src="/images/hero.JPG"
                              alt="Hero Background"
                              fill
                              className="object-cover object-top -z-10"
@@ -75,7 +98,7 @@ export default function SearchPage() {
                            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
      Style That Turns Heads                        <br />
      Every Special Day                     </h1>
-                           <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                           <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
      Make your presence unforgettable with premium beauty and fashion services                <br />
                              designed for life’s most special moments
                            </p>

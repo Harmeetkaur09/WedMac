@@ -31,15 +31,30 @@ export default function PortfolioPage() {
   const [showModal, setShowModal] = useState(false)
 
 
-    useEffect(() => {
-      fetch('https://wedmac-services.onrender.com/api/artists/cards/')
-        .then(res => res.json())
-        .then((data: ArtistCard[]) => {
-          setArtists(data.slice(0, 3)); // latest 3
-        })
-        .catch(err => toast.error('Failed to load artists'))
-        .finally(() => setLoading(false));
-    }, []);
+ 
+useEffect(() => {
+  fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ /* whatever your API expects */ }),
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then((data) => {
+      // ✅ data.results is the array of artist cards
+      const cards = Array.isArray(data.results) ? data.results : [];
+      setArtists(cards.slice(0, 3));
+    })
+    .catch(err => {
+      console.error("Artist fetch failed:", err);
+      toast.error("Failed to load artists");
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, []);
   const testimonials = [
   {
     name: "Bang Upin",
@@ -73,7 +88,7 @@ export default function PortfolioPage() {
         {/* Background Image and Overlay */}
         <div className="absolute inset-0">
           <Image
-            src="/images/hero.jpg"
+            src="/images/hero.JPG"
             alt="Hero Background"
             fill
             className="object-cover object-top -z-10"
@@ -88,7 +103,7 @@ export default function PortfolioPage() {
             <br />
             Minimalistic & Modern
           </h1>
-          <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+          <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
             Turn your room with WedMac India into a lot more minimalist
             <br />
             and modern with ease and speed

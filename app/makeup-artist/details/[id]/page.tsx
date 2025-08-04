@@ -35,7 +35,18 @@ interface CardArtist {
   average_rating: number
   portfolio_photos: { file_url: string; tag: string }[]
 }
-
+interface ArtistCard {
+  id: number;
+  full_name: string;
+  profile_photo_url: string | null;
+  location: string;
+  average_rating: number;
+  total_ratings: number;
+  makeup_types: string[];
+  portfolio_photos: {
+    file_url: string;
+  }[];
+}
 
 export default function MakeupArtistDetailPage() {
 
@@ -46,6 +57,8 @@ export default function MakeupArtistDetailPage() {
   const [helpErrors, setHelpErrors] = useState<{ name?: string; mobile?: string }>({})
   const [helpLoading, setHelpLoading] = useState(false)
     const { id } = useParams()
+           const [artists, setArtists] = useState<ArtistCard[]>([]);
+  
   const [artist, setArtist]         = useState<ArtistDetail | null>(null)
   const [loading, setLoading]       = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -84,21 +97,23 @@ export default function MakeupArtistDetailPage() {
     : []
 );
 
-  useEffect(() => {
-    fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
-      headers: { "Accept": "application/json" },
+
+useEffect(() => {
+  fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ /* whatever your API expects */ }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      const cards = Array.isArray(data.results) ? data.results : [];
+      // e.g. skip the current artist, then pick the first one
+const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
+      setAlsoLike(suggestions.slice(0, 1));
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to load recommendations")
-        return res.json()
-      })
-      .then((data: CardArtist[]) => setAlsoLike(data))
-      .catch(err => {
-        console.error(err)
-        toast.error("Could not load suggestions")
-      })
-      .finally(() => setAlsoLoading(false))
-  }, [])
+    .catch(() => toast.error("Failed to load suggestions"))
+    .finally(() => setAlsoLoading(false));
+}, [id]);
 
     const toggleSaveArtist = (id: number) => {
     setSavedArtists(prev => {
@@ -173,7 +188,7 @@ export default function MakeupArtistDetailPage() {
            <section className="relative h-[90vh] pt-32 text-center text-white">
                     <div className="absolute inset-0">
                       <Image
-                        src="/images/hero.jpg"
+                        src="/images/hero.JPG"
                         alt="Hero Background"
                         fill
                         className="object-cover object-top -z-10"
@@ -185,7 +200,7 @@ export default function MakeupArtistDetailPage() {
                       <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
 Style That Turns Heads                        <br />
 Every Special Day                     </h1>
-                      <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                      <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
 Make your presence unforgettable with premium beauty and fashion services                <br />
                         designed for life’s most special moments
                       </p>
@@ -469,13 +484,12 @@ Make your presence unforgettable with premium beauty and fashion services       
       <p className="text-center">Loading suggestions…</p>
     ) : (
       <div className="grid grid-cols-1 gap-6">
-        {alsoLike.map(a => {
-          // pick best image: profile_photo_url or first portfolio photo
+  {alsoLike.slice(0, 1).map(a => {          // pick best image: profile_photo_url or first portfolio photo
           const imgUrl =
             a.profile_photo_url ||
             a.portfolio_photos.find(p => p.tag === "profile-photo")?.file_url ||
             a.portfolio_photos[0]?.file_url ||
-            "/images/placeholder.svg"
+            "/images/protfolio1.JPG"
                             return (
             <Card key={a.id}>
               <CardContent className="px-6 py-4">
@@ -516,7 +530,7 @@ Make your presence unforgettable with premium beauty and fashion services       
                 <Link href={`/makeup-artist/details/${a.id}`}>
                   <Button
                     size="sm"
-                    className="w-full flex items-center justify-center gap-1 bg-pink-500 text-white"
+                    className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
                   >
                     View Profile
                     <ArrowUpRight className="w-4 h-4" />
