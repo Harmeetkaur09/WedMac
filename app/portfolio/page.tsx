@@ -88,7 +88,7 @@ useEffect(() => {
         {/* Background Image and Overlay */}
         <div className="absolute inset-0">
           <Image
-            src="/images/hero.JPG"
+            src="/images/hero.jpg"
             alt="Hero Background"
             fill
             className="object-cover object-top -z-10"

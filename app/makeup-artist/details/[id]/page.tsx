@@ -188,7 +188,7 @@ const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
            <section className="relative h-[90vh] pt-32 text-center text-white">
                     <div className="absolute inset-0">
                       <Image
-                        src="/images/hero.JPG"
+                        src="/images/hero.jpg"
                         alt="Hero Background"
                         fill
                         className="object-cover object-top -z-10"
