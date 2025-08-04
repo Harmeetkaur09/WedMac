@@ -10,7 +10,7 @@ import Link from "next/link";
 import toast, { Toaster } from 'react-hot-toast'
 import { useState, useEffect } from 'react';
 import BookModal from "../makeup-artist/details/[id]/BookModal"
-import { useParams, useSearchParams } from "next/navigation"
+import { useParams } from "next/navigation"
 interface ArtistCard {
   id: number;
   full_name: string;
@@ -32,33 +32,33 @@ export default function SearchPage() {
     const [products, setProducts]       = useState<string[]>([])
         const { id } = useParams()
     const [showModal, setShowModal] = useState(false)
-      const searchParams = useSearchParams();
-      const type  = searchParams.get("type")  || "";
-  const state = searchParams.get("state") || "";
-  const city  = searchParams.get("city")  || "";
 
-  useEffect(() => {
-    setLoading(true)
-    const raw = sessionStorage.getItem("artistFilters") || "{}";
+
+useEffect(() => {
+  setLoading(true);
+      const raw = sessionStorage.getItem("artistFilters") || "{}";
 const filters = JSON.parse(raw);
-    fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ filters }),
+
+  fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filters }),
+
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
     })
-      .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
-      })
-      .then(data => {
-        setArtists(Array.isArray(data.results) ? data.results : [])
-      })
-      .catch(err => {
-        console.error("Search fetch failed:", err)
-        toast.error("Failed to load search results")
-      })
-      .finally(() => setLoading(false))
-  }, [type, state, city])
+    .then(data => {
+      setArtists(Array.isArray(data.results) ? data.results : []);
+    })
+    .catch(err => {
+      console.error("Search fetch failed:", err);
+      toast.error("Failed to load search results");
+    })
+    .finally(() => setLoading(false));
+}, []);
+
 
   // 2️⃣ Load makeup types once
   useEffect(() => {
@@ -98,7 +98,7 @@ const filters = JSON.parse(raw);
                            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
      Style That Turns Heads                        <br />
      Every Special Day                     </h1>
-                           <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
+                           <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
      Make your presence unforgettable with premium beauty and fashion services                <br />
                              designed for life’s most special moments
                            </p>
