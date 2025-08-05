@@ -241,17 +241,26 @@ router.push("/search");
 
 
 useEffect(() => {
+  // Build filters based on selected tab
+  const filters: Record<string, string> = {};
+  if (selected !== "All") {
+    // For Mumbai and Pune, state is Maharashtra; for others, state equals selected
+    filters.state = (selected === "Mumbai" || selected === "Pune") ? "Maharashtra" : selected;
+    // city equals the selected tab
+    filters.city = selected;
+  }
+  setLoading(true);
+
   fetch("https://wedmac-services.onrender.com/api/artists/cards/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ /* whatever your API expects */ }),
+    body: JSON.stringify({ filters }),
   })
     .then(res => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
     })
     .then((data) => {
-      // ✅ data.results is the array of artist cards
       const cards = Array.isArray(data.results) ? data.results : [];
       setArtists(cards.slice(0, 3));
     })
@@ -262,7 +271,7 @@ useEffect(() => {
     .finally(() => {
       setLoading(false);
     });
-}, []);
+}, [selected]);
 
   
   return (
@@ -525,7 +534,32 @@ useEffect(() => {
       <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
         Artist Profiles
       </h2>
+    
+          <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
+
+       {tabs.map((tab) => (
+        <div
+          key={tab}
+          className="relative cursor-pointer"
+          onClick={() => setSelected(tab)}
+        >
+          {selected === tab && (
+            <div className="absolute item-center -top-2.5  left-1/2 -translate-x-1/2 w-10 h-10  bg-white shadow-md z-0 px-11 py-6 rounded-[25px] text-sm font-medium transition-colors "></div>
+          )}
+          <span
+            className={`relative z-10 px-2 font-[400] transition-colors ${
+              selected === tab
+                ? "text-rose-500"
+                : "text-black hover:text-rose-500 "
+            }`}
+          >
+            {tab}
+          </span>
+        </div>
+      ))}
     </div>
+    </div>
+    <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
 
     {loading ? (
       <p className="text-center">Loading...</p>
@@ -852,26 +886,26 @@ useEffect(() => {
             transition={{ duration: 0.5 }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto"
           >
-            {visibleVideos.map((src, i) => {
-              const absoluteIndex = currentGroupStart + i;
-              const isActive = absoluteIndex === currentIndex;
+             {visibleVideos.map((src, i) => {
+   const absoluteIndex = currentGroupStart + i;
+   const isActive = absoluteIndex === currentIndex;
+
 
               return (
-                <div
-                  key={absoluteIndex}
-                  className={`relative group overflow-hidden rounded-2xl border-2 ${
-                    isActive ? "border-pink-500 scale-105" : "border-transparent"
-                  } transition-all duration-500`}
-                >
-                  <video
-                    ref={(el) => {
-                      if (el) videoRefs.current[absoluteIndex] = el;
-                    }}
-                    src={src}
-                    muted={muted}
-                    onEnded={handleVideoEnd}
-                    className="w-full h-96 object-cover"
-                  />
+                 <div
+       key={absoluteIndex}
+       onClick={() => setCurrentIndex(absoluteIndex)}             // ← add this
+       className={`relative group overflow-hidden rounded-2xl border-2 ${
+         isActive ? "border-pink-500 scale-105" : "border-transparent"
+       } transition-all duration-500 cursor-pointer`}            // ← cursor-pointer to hint clickability
+     >
+                <video
+    ref={el => { if (el) videoRefs.current[absoluteIndex] = el }}
+    src={src}
+    muted={muted}
+    onEnded={handleVideoEnd}
+    className="w-full h-96 object-cover"
+  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
                   {isActive && (
                     <button
