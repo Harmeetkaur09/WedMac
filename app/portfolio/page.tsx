@@ -103,7 +103,7 @@ useEffect(() => {
             <br />
             Minimalistic & Modern
           </h1>
-          <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
+          <p className="text-md md:text-xl font-gilroy  font-400 opacity-90lroy  font-400 opacity-90">
             Turn your room with WedMac India into a lot more minimalist
             <br />
             and modern with ease and speed

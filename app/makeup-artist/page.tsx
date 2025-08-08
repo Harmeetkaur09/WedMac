@@ -121,7 +121,7 @@ useEffect(() => {
                        <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
  Style That Turns Heads                        <br />
  Every Special Day                     </h1>
-                       <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
+                       <p className="text-md md:text-xl font-gilroy  font-400 opacity-90lroy  font-400 opacity-90">
  Make your presence unforgettable with premium beauty and fashion services                <br />
                          designed for life’s most special moments
                        </p>
@@ -257,7 +257,7 @@ useEffect(() => {
                 </div> */}
   
                 {/* Products Filter */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                 <h3 className="font-inter mb-3">Products</h3>
                <div className="space-y-2 h-full">
                   {products.map((product) => (
@@ -267,7 +267,7 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
               </div>
             </div>
   

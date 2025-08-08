@@ -65,7 +65,7 @@ export default function AboutPage() {
                           <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
     Style That Turns Heads                        <br />
     Every Special Day                     </h1>
-                          <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
+                          <p className="text-md md:text-xl font-gilroy  font-400 opacity-90">
     Make your presence unforgettable with premium beauty and fashion services                <br />
                             designed for life’s most special moments
                           </p>
@@ -117,21 +117,24 @@ Wedmac India is a premier platform for makeup artists and beauty professionals. 
           <div className="relative flex justify-center lg:justify-end">
             <div className="relative w-full max-w-lg h-96">
               {/* First Image - Ronald Richards - Back card */}
-           <div className="absolute top-0 right-8 z-10 w-64 text-right ">
+           <div className="absolute top-0 right-8 z-10 md:w-64 w-40 text-right ">
   <img
     src="/images/Co-founder.JPG"
     alt="Abhishek Shrivastav"
     className="w-full h-full object-cover object-center "
   />
   <div className="mt-3">
-    <h3 className="text-lg font-semibold text-gray-800">Ankit Shrivastava</h3>
+<h3 className="text-lg font-semibold text-gray-800">
+  <span className="block sm:inline">Ankit</span>{' '}
+  <span className="block sm:inline">Shrivastava</span>
+</h3>
     <p className="text-sm text-gray-600">Co-founder</p>
   </div>
 </div>
 
 
               {/* Second Image - Darrell Steward - Front card overlapping */}
-           <div className="absolute top-16 left-8 z-20 w-64 text-center">
+           <div className="absolute top-16 left-8 z-20 md:w-64 w-40 text-center">
   <img
     src="/images/Founder.JPG"
     alt="Anukalp Shrivastav"
@@ -158,7 +161,7 @@ Wedmac India is a premier platform for makeup artists and beauty professionals. 
             {features.map((feature, index) => (
            <div 
   key={index} 
-  className="text-center p-8 border-t border-b border-r border-white last:border-r-0 md:last:border-r md:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0"
+  className="text-center p-8 border md:border-0 mb-6 md:mb-0  md:border-t md:border-b md:border-r md:border-white md:last:border-r-0 md:last:border-r md:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0"
 >
 
                 <h3 className="text-xl font-[600] text-left font-gilroy mb-4">{feature.title}</h3>
@@ -249,7 +252,7 @@ Wedmac India is a premier platform for makeup artists and beauty professionals. 
 
       <div className="lg:col-span-3">
         <Image
-          src="/images/team.JPG?height=400&width=600"
+          src="/images/team.JPG"
           alt="Team collaboration"
           width={600}
           height={200}

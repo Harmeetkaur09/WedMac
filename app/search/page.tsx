@@ -98,7 +98,7 @@ const filters = JSON.parse(raw);
                            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
      Style That Turns Heads                        <br />
      Every Special Day                     </h1>
-                           <p className="text-sm md:text-xl font-gilroy mb-12 font-400 opacity-90">
+                           <p className="text-md md:text-xl font-gilroy  font-400 opacity-90lroy mb-12 font-400 opacity-90">
      Make your presence unforgettable with premium beauty and fashion services                <br />
                              designed for life’s most special moments
                            </p>
@@ -218,7 +218,7 @@ const filters = JSON.parse(raw);
               </div> */}
 
               {/* Products Filter */}
-             <div className="mb-6">
+             {/* <div className="mb-6">
                 <h3 className="font-inter mb-3">Products</h3>
                <div className="space-y-2 h-full">
                   {makeupTypes.map((type) => (
@@ -228,7 +228,7 @@ const filters = JSON.parse(raw);
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 

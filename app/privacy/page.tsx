@@ -23,7 +23,7 @@ export default function Privacy() {
             Style That Turns Heads <br />
             Every Special Day{" "}
           </h1>
-          <p className="text-sm md:text-xl font-gilroy font-400 opacity-90">
+          <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
             Make your presence unforgettable with premium beauty and fashion
             services <br />
             designed for life’s most special moments

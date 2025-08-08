@@ -54,31 +54,31 @@ export default function BlogDetailsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen">
 
 
             {/* Hero Section */}
-           <section className="relative h-[90vh] pt-32 text-center text-white">
-                           <div className="absolute inset-0">
-                             <Image
-                               src="/images/hero.jpg"
-                               alt="Hero Background"
-                               fill
-                               className="object-cover object-top -z-10"
-                             />
-                             <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-                           </div>
-                   
-                           <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-                             <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-       Style That Turns Heads                        <br />
-       Every Special Day                     </h1>
-                             <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
-       Make your presence unforgettable with premium beauty and fashion services                <br />
-                               designed for life’s most special moments
-                             </p>
-                           </div>
-                         </section>
+               <section className="relative h-[90vh] pt-32 text-center text-white">
+                               <div className="absolute inset-0">
+                                 <Image
+                                   src="/images/hero.jpg"
+                                   alt="Hero Background"
+                                   fill
+                                   className="object-cover object-top -z-10"
+                                 />
+                                 <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+                               </div>
+                       
+                               <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+                                 <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+           Style That Turns Heads                        <br />
+           Every Special Day                     </h1>
+                                 <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
+           Make your presence unforgettable with premium beauty and fashion services                <br />
+                                   designed for life’s most special moments
+                                 </p>
+                               </div>
+                             </section>
                <section className="py-12 -mt-20 relative z-30 px-4">
     <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
      <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Blog</h1>
@@ -86,11 +86,11 @@ export default function BlogDetailsPage() {
   </section>
 
             {/* Main Content */}
-            <section className="py-16 px-4">
+            <section className="md:py-16 py-5 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid lg:grid-cols-4 gap-8">
                         {/* Left Sidebar: Popular Topics */}
-                         <div className="lg:col-span-1 flex flex-col items-center gap-4 pt-8">
+<div className="lg:col-span-1 flex flex-row lg:flex-col items-center gap-4 pt-8">
                             <div className="flex flex-row gap-2 items-center text-gray-600 text-sm">
                                 <Facebook className="w-5 h-5 mb-1" />
                                 <span>800</span>

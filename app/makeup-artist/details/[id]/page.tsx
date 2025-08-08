@@ -200,7 +200,7 @@ const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
                       <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
 Style That Turns Heads                        <br />
 Every Special Day                     </h1>
-                      <p className="text-sm md:text-xl font-gilroy  font-400 opacity-90">
+                      <p className="text-md md:text-xl font-gilroy  font-400 opacity-90lroy  font-400 opacity-90">
 Make your presence unforgettable with premium beauty and fashion services                <br />
                         designed for life’s most special moments
                       </p>
@@ -234,7 +234,7 @@ Make your presence unforgettable with premium beauty and fashion services       
                                             />
                                         </div>
 
-                                        <div className="md:w-2/3 pt-6  pr-8">
+                                        <div className="md:w-2/3 md:pt-6 md:pr-8 p-4 md:p-0">
                                          <div className="flex items-start justify-between mb-2">
   {/* Left side: Name + Verified */}
   <div className="flex items-center gap-2">
@@ -276,23 +276,23 @@ Make your presence unforgettable with premium beauty and fashion services       
 
 
                                             {/* 👉 Social Buttons */}
-                                            <div className="grid grid-cols-2 gap-2 mb-4 w-[400px]">
-                                                <Button
-                                                    variant="outline"
-                                                    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-                                                >
-                                                    <Instagram className="w-4 h-4" />
-                                                    Instagram
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-                                                >
-                                                    <Facebook className="w-4 h-4" />
-                                                    Facebook
-                                                </Button>
-                                              
-                                            </div>
+                                      <div className="grid grid-cols-2 gap-2 mb-4 w-full md:w-[400px]">
+  <Button
+    variant="outline"
+    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  >
+    <Instagram className="w-4 h-4" />
+    Instagram
+  </Button>
+  <Button
+    variant="outline"
+    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  >
+    <Facebook className="w-4 h-4" />
+    Facebook
+  </Button>
+</div>
+
                                             <div className="flex gap-2 mb-4">
                                               <Button
         onClick={() => setShowModal(true)}
@@ -365,7 +365,7 @@ Make your presence unforgettable with premium beauty and fashion services       
                                         {/* Review Tab Content */}
                                         {activeTab === "review" && (
                                             <div className=" p-6 rounded-lg">
-                                                <div className="flex gap-8">
+                                                <div className="md:flex block gap-8">
                                                     {/* Left Side - Overall Rating */}
                                                     <div className="text-center">
                                                         <div className="border border-[#D5D5D5] mb-3 p-4 ">

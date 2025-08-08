@@ -40,6 +40,14 @@ interface CityOption {
   value: string;
   label: string;
 }
+const imagePaths = [
+  { primary: "/images/new22.JPG", secondary: "/images/new24.JPG"  },
+  { primary: "/images/img22.JPG", secondary: "/images/new22.JPG" },
+  { primary: "/images/img2.JPEG", secondary: "/images/img3.JPEG" },
+  { primary: "/images/img8.JPG" , secondary: "/images/new26.JPG" },
+  { primary: "/images/img21.JPG", secondary: "/images/img5.JPEG"  },
+  { primary: "/images/new27.JPG", secondary: "/images/new1.JPG"  },
+];
 
 
 export default function HomePage() {
@@ -104,6 +112,29 @@ const visibleVideos = Array.from({ length: 4 }, (_, i) => {
   const index = (currentGroupStart + i) % videos.length;
   return videos[index];
 });
+
+  const [shuffledImages, setShuffledImages] = useState(imagePaths);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShuffledImages((prev) =>
+        prev.map((img, idx) => {
+          if (img.secondary) {
+            return {
+              ...img,
+              primary:
+                img.primary === imagePaths[idx].primary
+                  ? img.secondary
+                  : imagePaths[idx].primary,
+            };
+          }
+          return img;
+        })
+      );
+    }, 3000); // every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const currentVideo = videoRefs.current[currentIndex];
@@ -295,7 +326,7 @@ useEffect(() => {
                          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
    Style That Turns Heads                        <br />
    Every Special Day                     </h1>
-                         <p className="text-sm md:text-xl font-gilroy font-400 opacity-90">
+                         <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
    Make your presence unforgettable with premium beauty and fashion services                <br />
                            designed for life’s most special moments
                          </p>
@@ -305,14 +336,14 @@ useEffect(() => {
           <div className="max-w-5xl mx-auto bg-white rounded-lg p-3 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Makeup Type */}
-              <div className="text-left border-r">
+              <div className="text-left ">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Makeup Type
                 </label>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">All Types</option>
                   {makeupTypes.map((mt) => (
@@ -324,14 +355,14 @@ useEffect(() => {
               </div>
 
               {/* State */}
-              <div className="text-left border-r">
+              <div className="text-left ">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   State
                 </label>
                  <select
                   value={selectedState}
                   onChange={e => setSelectedState(e.target.value)}
-                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">Select State</option>
                   {states.map(st => (
@@ -343,7 +374,7 @@ useEffect(() => {
               </div>
 
               {/* City */}
-              <div className="text-left border-r">
+              <div className="text-left ">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   City
                 </label>
@@ -351,7 +382,7 @@ useEffect(() => {
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
                   disabled={!cities.length}
-                  className="w-60 border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
+                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
                 >
                   <option value="">Select City</option>
                   {cities.map((ct) => (
@@ -503,27 +534,39 @@ useEffect(() => {
                  </div>
        
                  {/* Mobile Version */}
-                 <div className="block lg:hidden">
-                   <div className="grid grid-cols-2 gap-4">
-                     {Array.from({ length: 6 }).map((_, index) => (
-                       <div key={index} className="relative group cursor-pointer">
-                         <div className="aspect-square">
-                           <Image
-                             src={`/images/protfolio${index + 1}.jpg`}
-                             alt="Bridal Makeup"
-                             width={300}
-                             height={300}
-                             className="w-full h-full object-cover rounded-lg"
-                           />
-                         </div>
-                         <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
-                           <span className="text-xs font-medium">{index === 3 ? "Light Makeup" : "Bridal Makeup"}</span>
-                           <ArrowUpRight className="w-3 h-3" />
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 </div>
+  <div className="block lg:hidden">
+      <div className="grid grid-cols-2 gap-4">
+        {shuffledImages.map((img, index) => (
+          <div key={index} className="relative group cursor-pointer">
+            <div className="aspect-square">
+              <Image
+                src={img.primary}
+                alt={
+                  index === 3
+                    ? "Haldi Makeup"
+                    : index === 1 || index === 2
+                    ? "Haldi Makeup"
+                    : "Haldi Makeup"
+                }
+                width={300}
+                height={300}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+            <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
+              <span className="text-xs font-medium">
+                {index === 3
+                  ? "Haldi Makeup"
+                  : index === 1 || index === 2
+                  ? "Party Makeup"
+                  : "Engagement Makeup"}
+              </span>
+              <ArrowUpRight className="w-3 h-3" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
                </div>
              </section>
 
@@ -537,26 +580,28 @@ useEffect(() => {
     
           <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
 
-       {tabs.map((tab) => (
-        <div
-          key={tab}
-          className="relative cursor-pointer"
-          onClick={() => setSelected(tab)}
-        >
-          {selected === tab && (
-            <div className="absolute item-center -top-2.5  left-1/2 -translate-x-1/2 w-10 h-10  bg-white shadow-md z-0 px-11 py-6 rounded-[25px] text-sm font-medium transition-colors "></div>
-          )}
-          <span
-            className={`relative z-10 px-2 font-[400] transition-colors ${
-              selected === tab
-                ? "text-rose-500"
-                : "text-black hover:text-rose-500 "
-            }`}
-          >
-            {tab}
-          </span>
-        </div>
-      ))}
+{tabs.map((tab) => (
+  <div
+    key={tab}
+    className="relative cursor-pointer"
+    onClick={() => setSelected(tab)}
+  >
+    {selected === tab && (
+      <div className="absolute item-center -top-2.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-white shadow-md z-0 px-11 py-6 rounded-[25px] transition-colors"></div>
+    )}
+    <span
+      className={`relative z-10 px-2 font-[400] transition-colors text-sm sm:text-base ${
+        selected === tab
+          ? "text-rose-500"
+          : "text-black hover:text-rose-500"
+      }`}
+    >
+      {tab}
+    </span>
+  </div>
+))}
+
+
     </div>
     </div>
     <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
@@ -710,7 +755,7 @@ useEffect(() => {
 
               {/* Right Side - Content */}
               <div className="">
-                <p className="text-sm font-[500] font-gilroy mb-1 text-[#ff577f]">who is</p>
+                <p className="md:text-sm text-xl font-[500] font-gilroy mb-1 text-[#ff577f]">who is</p>
                 <h2 className="text-4xl md:text-4xl font-gilroy font-bold text-gray-800 mb-2">Wedmac India</h2>
                 <p className="text-[#1e1e1e] text-md leading-7 mb-4">
                   We are India's premier beauty and makeup service platform, connecting you with the most talented
@@ -786,7 +831,7 @@ useEffect(() => {
 
 
         {/* Deals Of The Month Section */}
-        <section className="py-20 bg-white">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center  border border-[#D5D5D5] rounded-xl p-4">
               <div className="space-y-8">
@@ -872,7 +917,7 @@ useEffect(() => {
         </section>
 
         {/* Bottom Gallery Section */}
-     <section className="py-4">
+     <section className="py-4 px-2">
       <div className="container mx-auto border border-[#D5D5D5] rounded-xl p-4 overflow-hidden">
         <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">
           WHAT OUR CUSTOMERS HAVE TO SAY
@@ -924,7 +969,7 @@ useEffect(() => {
     </section>
 
         {/* Wedmac Testimonials Section */}
-        <section className="py-12 bg-white md:mb-20">
+        <section className="py-12 px-2 bg-white md:mb-20">
           <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
             <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
               What Client Said About
