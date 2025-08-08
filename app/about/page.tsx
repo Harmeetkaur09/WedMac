@@ -252,7 +252,7 @@ Wedmac India is a premier platform for makeup artists and beauty professionals. 
 
       <div className="lg:col-span-3">
         <Image
-          src="/images/team.JPG"
+          src="/images/team.jpg"
           alt="Team collaboration"
           width={600}
           height={200}
