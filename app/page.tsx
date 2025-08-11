@@ -42,10 +42,10 @@ interface CityOption {
 }
 const imagePaths = [
   { primary: "/images/new22.JPG", secondary: "/images/new24.JPG"  },
-  { primary: "/images/img22.JPG", secondary: "/images/new22.JPG" },
-  { primary: "/images/img2.JPEG", secondary: "/images/img3.JPEG" },
-  { primary: "/images/img8.JPG" , secondary: "/images/new26.JPG" },
-  { primary: "/images/img21.JPG", secondary: "/images/img5.JPEG"  },
+  { primary: "/images/img22.jpg", secondary: "/images/new22.JPG" },
+  { primary: "/images/img2.jpeg", secondary: "/images/img3.jpeg" },
+  { primary: "/images/img8.jpg" , secondary: "/images/new44.JPG" },
+  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg"  },
   { primary: "/images/new27.JPG", secondary: "/images/new1.JPG"  },
 ];
 
