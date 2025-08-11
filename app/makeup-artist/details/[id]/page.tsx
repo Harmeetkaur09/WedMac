@@ -96,6 +96,21 @@ export default function MakeupArtistDetailPage() {
     ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
     : []
 );
+const instagramLinks = [
+  "https://www.instagram.com/randomPage1",
+  "https://www.instagram.com/randomPage2",
+  "https://www.instagram.com/randomPage3"
+];
+
+const facebookLinks = [
+  "https://www.facebook.com/randomPage1",
+  "https://www.facebook.com/randomPage2",
+  "https://www.facebook.com/randomPage3"
+];
+
+function getRandomLink(links: string[]): string {
+  return links[Math.floor(Math.random() * links.length)];
+}
 
 
 useEffect(() => {
@@ -286,20 +301,24 @@ const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
 
                                             {/* 👉 Social Buttons */}
                                       <div className="grid grid-cols-2 gap-2 mb-4 w-full md:w-[400px]">
-  <Button
-    variant="outline"
-    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-  >
-    <Instagram className="w-4 h-4" />
-    Instagram
-  </Button>
-  <Button
-    variant="outline"
-    className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-  >
-    <Facebook className="w-4 h-4" />
-    Facebook
-  </Button>
+                                        
+<Button
+  variant="outline"
+  className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  onClick={() => window.open(getRandomLink(instagramLinks), "_blank")}
+>
+  <Instagram className="w-4 h-4" />
+  Instagram
+</Button>
+
+<Button
+  variant="outline"
+  className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  onClick={() => window.open(getRandomLink(facebookLinks), "_blank")}
+>
+  <Facebook className="w-4 h-4" />
+  Facebook
+</Button>
 </div>
 
                                             <div className="flex gap-2 mb-4">
@@ -773,9 +792,12 @@ const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
         <br />
         WedMac India
       </h3>
+                <Link href={`/contact`}>
+
       <Button className="bg-white text-pink-500 hover:bg-gray-100">
         Book Now
       </Button>
+      </Link>
     </div>
   </div>
 </div>
