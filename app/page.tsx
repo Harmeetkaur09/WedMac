@@ -311,27 +311,36 @@ useEffect(() => {
         {/* Navigation Header */}
 
 
-       <section className="relative h-[90vh] pt-32 text-center text-white">
-                       <div className="absolute inset-0">
-                         <Image
-                           src="/images/hero.jpg"
-                           alt="Hero Background"
-                           fill
-                           className="object-cover object-top -z-10"
-                         />
-                         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-                       </div>
-               
-                       <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-                         <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-   Style That Turns Heads                        <br />
-   Every Special Day                     </h1>
-                         <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-   Make your presence unforgettable with premium beauty and fashion services                <br />
-                           designed for life’s most special moments
-                         </p>
-                       </div>
-                     </section>
+     <section className="relative h-[90vh] pt-32 text-center text-white">
+          {/* Background Image */}
+          <div className="absolute inset-0 -z-10">
+            <Image
+              src="/images/hero2.JPG"
+              alt="Hero Background"
+              fill
+              className="object-cover object-[center_bottom_20%]"
+            />
+          </div>
+  
+          {/* Glassmorphism Overlay */}
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+  
+          {/* Gradient for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+  
+          {/* Content */}
+          <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+              Style That Turns Heads <br />
+              Every Special Day
+            </h1>
+            <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
+              Make your presence unforgettable with premium beauty and fashion
+              services <br />
+              designed for life’s most special moments
+            </p>
+          </div>
+        </section>
       <section className="py-10 -mt-28 relative z-30 px-4">
           <div className="max-w-5xl mx-auto bg-white rounded-lg p-3 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
