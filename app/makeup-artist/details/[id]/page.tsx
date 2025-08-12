@@ -97,15 +97,20 @@ export default function MakeupArtistDetailPage() {
     : []
 );
 const instagramLinks = [
-  "https://www.instagram.com/randomPage1",
-  "https://www.instagram.com/randomPage2",
-  "https://www.instagram.com/randomPage3"
+  "https://www.instagram.com/wedmac.india/?igsh=cmdrd2dtZWF4MXZk#",
+  "https://www.instagram.com/wedmac.india/?igsh=cmdrd2dtZWF4MXZk#",
+  "https://www.instagram.com/wedmac.india/?igsh=cmdrd2dtZWF4MXZk#"
 ];
 
 const facebookLinks = [
-  "https://www.facebook.com/randomPage1",
-  "https://www.facebook.com/randomPage2",
-  "https://www.facebook.com/randomPage3"
+  "https://www.facebook.com/people/WedMac-India/61564828839583/?mibextid=wwXIfr&rdid=djzmQicgZ0O9puqA&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1JbKayyDey%2F%3Fmibextid%3DwwXIfr",
+  "https://www.facebook.com/people/WedMac-India/61564828839583/?mibextid=wwXIfr&rdid=djzmQicgZ0O9puqA&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1JbKayyDey%2F%3Fmibextid%3DwwXIfr",
+  "https://www.facebook.com/people/WedMac-India/61564828839583/?mibextid=wwXIfr&rdid=djzmQicgZ0O9puqA&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1JbKayyDey%2F%3Fmibextid%3DwwXIfr"
+];
+const twitterLinks = [
+  "https://x.com/wedmacindia?s=21",
+  "https://x.com/wedmacindia?s=21",
+  "https://x.com/wedmacindia?s=21"
 ];
 
 function getRandomLink(links: string[]): string {
@@ -318,6 +323,14 @@ const suggestions = cards.filter((c: CardArtist) => c.id !== Number(id));
 >
   <Facebook className="w-4 h-4" />
   Facebook
+</Button>
+<Button
+  variant="outline"
+  className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  onClick={() => window.open(getRandomLink(twitterLinks), "_blank")}
+>
+  <Twitter className="w-4 h-4" />
+  Twitter
 </Button>
 </div>
 
