@@ -30,6 +30,8 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import BookModal from "./BookModal";
+import { useSearchParams } from "next/navigation";
+
 interface ArtistDetail {
   location: any;
   id: number;
@@ -76,9 +78,9 @@ export default function MakeupArtistDetailPage() {
     mobile?: string;
   }>({});
   const [helpLoading, setHelpLoading] = useState(false);
-  const { id } = useParams();
   const [artists, setArtists] = useState<ArtistCard[]>([]);
-
+  const searchParams = useSearchParams();
+  const id = searchParams?.get("id") || "";
   const [artist, setArtist] = useState<ArtistDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -662,7 +664,7 @@ export default function MakeupArtistDetailPage() {
                               </div>
                             </div>
 
-                            <Link href={`/makeup-artist/details/${a.id}`}>
+                            <Link href={`/makeup-artist/details?id=${a.id}`}>
                               <Button
                                 size="sm"
                                 className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
