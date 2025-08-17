@@ -31,6 +31,13 @@ interface ArtistCard {
     file_url: string;
   }[];
 }
+const sliderImages = [
+  "/images/hero1.JPG",
+  "/images/hero2.JPG",
+  "/images/hero3.JPG",
+  "/images/hero4.JPG",
+  "/images/hero5.JPG",
+];
 
 export default function MakeupArtistPagesPage() {
   const [savedArtists, setSavedArtists] = useState<number[]>(() => {
@@ -56,6 +63,14 @@ export default function MakeupArtistPagesPage() {
     Punjab: ["Chandigarh", "Amritsar"],
   };
   const cities = selectedState ? cityByState[selectedState] || [] : [];
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000); // Change image every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleSaveArtist = (id: number) => {
     setSavedArtists((prev) => {
@@ -113,11 +128,11 @@ export default function MakeupArtistPagesPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-[90vh] pt-32 text-center text-white">
-        {/* Background Image */}
-        <div className="absolute inset-0 -z-10">
+        {/* Background Slider */}
+        <div className="absolute inset-0 -z-10 transition-all duration-500">
           <Image
-            src="/images/hero2.JPG"
-            alt="Hero Background"
+            src={sliderImages[current]}
+            alt="Sliding Hero Background"
             fill
             className="object-cover object-[center_bottom_20%]"
           />
@@ -126,7 +141,7 @@ export default function MakeupArtistPagesPage() {
         {/* Glassmorphism Overlay */}
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
 
-        {/* Gradient for better text readability */}
+        {/* Gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
 
         {/* Content */}
@@ -374,7 +389,7 @@ export default function MakeupArtistPagesPage() {
                                 {artist.full_name}
                               </h3>
                               <p className="text-sm text-[#8D8D8D]">
-                                {artist?.makeup_types || "-"}
+                                {artist.makeup_types.join(", ") || "-"}
                               </p>
                               <div className="flex items-center text-sm text-gray-500">
                                 <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />

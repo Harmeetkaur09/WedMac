@@ -107,10 +107,17 @@ export default function HomePage() {
   const videos = [
     "/videos/video1.mp4",
     "/videos/video2.mp4",
-    "/videos/video1.mp4",
+    "/videos/video3.MP4",
     "/videos/video2.mp4",
     "/videos/video1.mp4",
     "/videos/video2.mp4",
+  ];
+  const sliderImages = [
+    "/images/hero1.JPG",
+    "/images/hero2.JPG",
+    "/images/hero3.JPG",
+    "/images/hero4.JPG",
+    "/images/hero5.JPG",
   ];
 
   const router = useRouter();
@@ -119,6 +126,14 @@ export default function HomePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const videoRefs = useRef<HTMLVideoElement[]>([]);
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000); // Change image every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const currentGroupStart = Math.floor(currentIndex / 4) * 4;
   const visibleVideos = Array.from({ length: 4 }, (_, i) => {
@@ -338,11 +353,11 @@ export default function HomePage() {
         {/* Navigation Header */}
 
         <section className="relative h-[90vh] pt-32 text-center text-white">
-          {/* Background Image */}
-          <div className="absolute inset-0 -z-10">
+          {/* Background Slider */}
+          <div className="absolute inset-0 -z-10 transition-all duration-500">
             <Image
-              src="/images/hero2.JPG"
-              alt="Hero Background"
+              src={sliderImages[current]}
+              alt="Sliding Hero Background"
               fill
               className="object-cover object-[center_bottom_20%]"
             />
@@ -351,7 +366,7 @@ export default function HomePage() {
           {/* Glassmorphism Overlay */}
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
 
-          {/* Gradient for better text readability */}
+          {/* Gradient for text readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
 
           {/* Content */}
