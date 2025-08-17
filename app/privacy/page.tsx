@@ -1,25 +1,24 @@
 "use client";
-
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-  const sliderImages = [
-    "/images/hero1.JPG",
-    "/images/hero2.JPG",
-    "/images/hero3.JPG",
-    "/images/hero4.JPG",
-    "/images/hero5.JPG",
-  ];
+const sliderImages = [
+  "/images/hero1.JPG",
+  "/images/hero2.JPG",
+  "/images/hero3.JPG",
+  "/images/hero4.JPG",
+  "/images/hero5.JPG",
+];
 export default function Privacy() {
-    const [current, setCurrent] = useState(0);
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % sliderImages.length);
-      }, 4000); // Change image every 4 seconds
-      return () => clearInterval(interval);
-    }, []);
-  
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000); // Change image every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
