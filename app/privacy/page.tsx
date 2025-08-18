@@ -81,7 +81,7 @@ export default function Privacy() {
             </h2>
             <ul className="list-disc list-inside ">
               <li>
-                <strong>Platform:</strong> Refers to Wedmac Private Limited,
+                <strong>Platform:</strong> Refers to Wedmac India,
                 including its website, mobile applications, backend
                 infrastructure, and any associated technology, services, or
                 digital assets used to connect Artists and Clients for beauty
@@ -201,7 +201,7 @@ export default function Privacy() {
               4. Makeup Artist Service Agreement
             </h2>
             <p>
-              This Agreement is between <strong>Wedmac Private Limited</strong>{" "}
+              This Agreement is between <strong>Wedmac India</strong>{" "}
               ("Platform") and each registered makeup Artist ("Artist"). By
               using our Platform, you agree to these terms.
             </p>
@@ -298,7 +298,7 @@ export default function Privacy() {
               5. Disclaimer & Platform Role
             </h2>
             <p>
-              Wedmac only connects Clients and Artists. We are not liable for
+              Wedmac India only connects Clients and Artists. We are not liable for
               service quality, cancellations, or payment disputes. All
               transactions and agreements are strictly between Client and
               Artist.

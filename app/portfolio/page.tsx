@@ -496,7 +496,7 @@ export default function PortfolioPage() {
                           </span>
                         </Button>
                         <Link
-                          href={`/makeup-artist/details?id=${artist.id}`}
+                          href={`/makeup-artist/details/${artist.id}`}
                           className="flex-1"
                         >
                           <Button className="flex-1 bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
