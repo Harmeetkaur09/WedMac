@@ -143,6 +143,20 @@ export default function HomePage() {
 
   const [shuffledImages, setShuffledImages] = useState(imagePaths);
 
+  // place this helper near top of the component file (above return)
+function formatLocation(loc: unknown): string {
+  if (typeof loc === "string") return loc;
+  if (loc && typeof loc === "object") {
+    const rec = loc as Record<string, unknown>;
+    const city = rec.city ? String(rec.city) : "";
+    const state = rec.state ? String(rec.state) : "";
+    const parts = [city, state].filter(Boolean);
+    return parts.join(", ");
+  }
+  return "-";
+}
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       setShuffledImages((prev) =>
@@ -714,7 +728,7 @@ export default function HomePage() {
                             </p>
                             <div className="flex items-center text-sm text-gray-500">
                               <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                              <span>{artist.location}</span>
+<span>{formatLocation(artist.location)}</span>
                               <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
                                 {artist.average_rating.toFixed(1)}
                               </span>

@@ -30,6 +30,8 @@ interface ArtistCard {
   portfolio_photos: {
     file_url: string;
   }[];
+    price_range?: string | null;
+
 }
   const sliderImages = [
     "/images/hero1.JPG",
@@ -38,7 +40,8 @@ interface ArtistCard {
     "/images/hero4.JPG",
     "/images/hero5.JPG",
   ];
-
+const BUDGET_MIN = 500;
+const BUDGET_MAX = 50000;
 export default function SearchPage() {
   const [artists, setArtists] = useState<ArtistCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,37 +50,95 @@ export default function SearchPage() {
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
   const [current, setCurrent] = useState(0);
+const [selectedMakeupTypes, setSelectedMakeupTypes] = useState<string[]>([]);
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+   const [budgetRange, setBudgetRange] = useState<[number, number]>([
+    BUDGET_MIN,
+    BUDGET_MAX,
+  ]);
 
+  function formatLocation(loc: unknown): string {
+  if (typeof loc === "string") return loc;
+  if (loc && typeof loc === "object") {
+    const rec = loc as Record<string, unknown>;
+    const city = rec.city ? String(rec.city) : "";
+    const state = rec.state ? String(rec.state) : "";
+    const parts = [city, state].filter(Boolean);
+    return parts.join(", ");
+  }
+  return "-";
+}
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % sliderImages.length);
     }, 4000); // Change image every 4 seconds
     return () => clearInterval(interval);
   }, []);
+    function parsePriceRange(raw: unknown): [number, number] | null {
+    if (!raw && raw !== 0) return null;
+    const s = String(raw);
+    // extract numeric groups (allow commas)
+    const matches = s.match(/[\d,]+/g);
+    if (!matches || matches.length === 0) return null;
+    const nums = matches
+      .map((m) => Number(m.replace(/,/g, "")))
+      .filter((n) => Number.isFinite(n));
+    if (nums.length === 0) return null;
+    if (nums.length === 1) return [nums[0], nums[0]];
+    // in case more than 2 numbers, take first two (min,max)
+    const a = Math.min(nums[0], nums[1]);
+    const b = Math.max(nums[0], nums[1]);
+    return [a, b];
+  }
 
-  useEffect(() => {
-    setLoading(true);
-    const raw = sessionStorage.getItem("artistFilters") || "{}";
-    const filters = JSON.parse(raw);
+useEffect(() => {
+  setLoading(true);
 
-    fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filters }),
+  // build filters object only with values set
+  const filters: Record<string, unknown> = {};
+  if (selectedMakeupTypes.length) {
+    // send comma separated or array depending on backend.
+    // We'll send comma separated string (safe); client-side filtering will also enforce.
+    filters.makeuptype = selectedMakeupTypes.map((s) => s.toLowerCase()).join(",");
+  }
+  if (selectedState) filters.state = selectedState.toLowerCase();
+  if (selectedCity) filters.city = selectedCity.toLowerCase();
+
+  fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters }),
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error(r.statusText);
+      return r.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        setArtists(Array.isArray(data.results) ? data.results : []);
-      })
-      .catch((err) => {
-        console.error("Search fetch failed:", err);
-        toast.error("Failed to load search results");
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    .then((data) => {
+      setArtists(Array.isArray(data.results) ? data.results : []);
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error("Failed to load artists");
+    })
+    .finally(() => setLoading(false));
+}, [selectedState, selectedCity, selectedMakeupTypes]); // <-- added selectedMakeupTypes
+
+  const budgetIsFull = budgetRange[0] === BUDGET_MIN && budgetRange[1] === BUDGET_MAX;
+
+  const filteredArtists = artists.filter((a) => {
+    // 1) budget filter
+    if (!budgetIsFull) {
+      const pr = parsePriceRange(a.price_range ?? "");
+      if (!pr) return false; // no price info -> exclude when user applied a custom budget
+      const [amin, amax] = pr;
+      const [selMin, selMax] = budgetRange;
+      const overlap = amax >= selMin && amin <= selMax;
+      if (!overlap) return false;
+    }
+    // 2) (optional) other client side filters can be applied here
+    return true;
+  });
 
   // 2️⃣ Load makeup types once
   useEffect(() => {
@@ -175,36 +236,62 @@ export default function SearchPage() {
               </div>
 
               {/* Budget Filter */}
-              <div className="mb-6">
+                   <div className="mb-6">
                 <h3 className="font-[400] font-inter mb-3">Budget</h3>
                 <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-sm">₹ 500</span>
+                  <span className="text-sm">₹ {budgetRange[0].toLocaleString()}</span>
                   <div className="flex-1">
                     <Slider
-                      defaultValue={[2500]}
-                      max={50000}
-                      step={100}
+                      value={budgetRange}
+                      onValueChange={(val) =>
+                        setBudgetRange([Number(val[0]), Number(val[1])])
+                      }
+                      max={BUDGET_MAX}
+                      min={BUDGET_MIN}
+                      step={500}
                       className="w-full"
                     />
                   </div>
-                  <span className="text-sm">₹ 50,000</span>
+                  <span className="text-sm">₹ {budgetRange[1].toLocaleString()}</span>
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setBudgetRange([BUDGET_MIN, BUDGET_MAX])}
+                    size="sm"
+                  >
+                    Reset
+                  </Button>
                 </div>
               </div>
 
               {/* Makeup Type Filter */}
-              <div className="mb-6">
-                <h3 className="font-inter mb-3">Makeup Type</h3>
-                <div className="space-y-2 h-full ">
-                  {products.map((prod) => (
-                    <div key={prod} className="flex items-center space-x-2">
-                      <Checkbox id={`prod-${prod}`} />
-                      <Label htmlFor={`prod-${prod}`} className="text-sm">
-                        {prod}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+             <div className="mb-6"> <h3 className="font-inter mb-3">Makeup Type</h3> <div className="space-y-2 h-full ">
+           {makeupTypes.map((type) => {
+  const checked = selectedMakeupTypes.includes(type);
+  return (
+    <div key={type} className="flex items-center space-x-2">
+      <Checkbox
+        id={`mt-${type}`}
+        checked={checked}
+        onCheckedChange={(val) => {
+          if (val === true) {
+            setSelectedMakeupTypes((prev) =>
+              prev.includes(type) ? prev : [...prev, type]
+            );
+          } else {
+            setSelectedMakeupTypes((prev) => prev.filter((t) => t !== type));
+          }
+        }}
+      />
+      <Label htmlFor={`mt-${type}`} className="text-sm">
+        {type}
+      </Label>
+    </div>
+  );
+})}
+</div>
+</div>
 
               {/* Date Filter */}
               {/* <div className="mb-6">
@@ -287,7 +374,7 @@ export default function SearchPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {" "}
-                {artists.map((artist) => (
+                {filteredArtists.map((artist) => (
                   <div
                     key={artist.id}
                     className="bg-white rounded-lg shadow-lg overflow-hidden"
@@ -349,11 +436,11 @@ export default function SearchPage() {
                               {artist.full_name}
                             </h3>
                             <p className="text-sm text-[#8D8D8D]">
-                              {artist?.makeup_types || "-"}
-                            </p>
+                                {artist.makeup_types.join(", ") || "-"}
+                              </p>
                             <div className="flex items-center text-sm text-gray-500">
                               <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                              <span>{artist.location}</span>
+<span>{formatLocation(artist.location)}</span>
                               <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
                                 {artist.average_rating.toFixed(1)}
                               </span>

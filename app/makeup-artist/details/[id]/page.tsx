@@ -136,7 +136,17 @@ export default function MakeupArtistDetailPage() {
   function getRandomLink(links: string[]): string {
     return links[Math.floor(Math.random() * links.length)];
   }
-
+  function formatLocation(loc: unknown): string {
+    if (typeof loc === "string") return loc;
+    if (loc && typeof loc === "object") {
+      const rec = loc as Record<string, unknown>;
+      const city = rec.city ? String(rec.city) : "";
+      const state = rec.state ? String(rec.state) : "";
+      const parts = [city, state].filter(Boolean);
+      return parts.join(", ");
+    }
+    return "-";
+  }
   useEffect(() => {
     fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
       method: "POST",
@@ -330,7 +340,7 @@ export default function MakeupArtistDetailPage() {
                       </div>
 
                       <p className="text-[#8D8D8D] text-md mb-2">
-                        {artist.location.city},{artist.location.state}
+                        {formatLocation(artist.location)}
                       </p>
                       <p className="text-[#8D8D8D] font-[600] text-md mb-2">
                         covid vaccinated
@@ -603,7 +613,7 @@ export default function MakeupArtistDetailPage() {
             </div>
 
             {/* Right Side - You May Also Like, Certificates, Social Media */}
-            <div className="space-y-8">
+            <div className="space-y-8 md:mt-0 mt-4">
               {/* You May Also Like */}
               <div>
                 <h3 className="text-xl font-inter text-center font-bold mb-4">
@@ -651,7 +661,7 @@ export default function MakeupArtistDetailPage() {
                                 <h4 className="font-semibold">{a.full_name}</h4>
                                 <div className="flex items-center text-sm text-gray-500">
                                   <MapPin className="w-4 h-4 mr-1 text-pink-500" />
-                                  <span>{a.location}</span>
+                                  <span>{formatLocation(a.location)}</span>
                                 </div>
                               </div>
                               <div className="flex items-center text-sm text-pink-500">

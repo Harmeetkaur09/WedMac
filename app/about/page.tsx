@@ -346,7 +346,7 @@ export default function AboutPage() {
 
             <div className="lg:col-span-3">
               <Image
-                src="/images/team.jpg"
+                src="/images/team.PNG"
                 alt="Team collaboration"
                 width={600}
                 height={200}
