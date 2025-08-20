@@ -135,8 +135,8 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const currentGroupStart = Math.floor(currentIndex / 4) * 4;
-  const visibleVideos = Array.from({ length: 4 }, (_, i) => {
+  const currentGroupStart = Math.floor(currentIndex / 3) * 3;
+  const visibleVideos = Array.from({ length: 3 }, (_, i) => {
     const index = (currentGroupStart + i) % videos.length;
     return videos[index];
   });
@@ -995,7 +995,7 @@ function formatLocation(loc: unknown): string {
 
         {/* Bottom Gallery Section */}
         <section className="py-4 px-2">
-          <div className="container mx-auto border border-[#D5D5D5] rounded-xl p-4 overflow-hidden">
+          <div className=" mx-auto max-w-5xl border border-[#D5D5D5] rounded-xl p-4 overflow-hidden">
             <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">
               WHAT OUR CUSTOMERS HAVE TO SAY
             </h2>
@@ -1006,7 +1006,7 @@ function formatLocation(loc: unknown): string {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -100 }}
                 transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto"
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-4xl mx-auto"
               >
                 {visibleVideos.map((src, i) => {
                   const absoluteIndex = currentGroupStart + i;
