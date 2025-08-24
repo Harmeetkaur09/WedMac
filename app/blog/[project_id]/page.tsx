@@ -2,22 +2,29 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  MapPin,
-  Phone,
-  Mail,
   Facebook,
   Instagram,
   Twitter,
   PinIcon as Pinterest,
   Heart,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
+type ApiPost = {
+  id: number;
+  project_id?: string | number;
+  title: string;
+  content: string;
+  created_on: string;
+  hashtags?: string;
+  author_name?: string;
+  category?: string;
+};
+
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
@@ -25,15 +32,112 @@ const sliderImages = [
   "/images/hero4.JPG",
   "/images/hero5.JPG",
 ];
+
 export default function BlogDetailsPage() {
+  const params = useParams(); // expects route like /blog/[project_id]
+  const projectIdParam = (params && (params as any).project_id) ?? "12345";
+  const projectId = Array.isArray(projectIdParam) ? projectIdParam[0] : projectIdParam;
+  const projectIdNum = Number(projectId);
+
   const [current, setCurrent] = useState(0);
+  const [post, setPost] = useState<ApiPost | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % sliderImages.length);
-    }, 4000); // Change image every 4 seconds
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+ useEffect(() => {
+  const controller = new AbortController();
+
+  async function fetchByProjectId(pid: string | number) {
+    const apiBase =
+      process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://wedmac-be.onrender.com";
+    const token =
+      process.env.NEXT_PUBLIC_BLOG_TOKEN ||
+      (typeof window !== "undefined"
+        ? sessionStorage.getItem("accessToken")
+        : null);
+
+    const url = `${apiBase}/api/blogs/get/${pid}/`;
+    console.debug("🔎 Fetching blog by project_id:", url);
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`API error ${res.status}: ${txt}`);
+    }
+
+    return res.json();
+  }
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchByProjectId(projectId);
+      setPost(data);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error("❌ Blog fetch error:", err);
+        setError(err.message || "Failed to fetch blog post");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  load();
+  return () => controller.abort();
+}, [projectId]);
+
+
+  function formatDate(s?: string) {
+    if (!s) return "";
+    try {
+      const iso = s.includes("T") ? s : s.replace(" ", "T");
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return s;
+      return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    } catch {
+      return s;
+    }
+  }
+
+  function renderHashtags(h?: string) {
+    if (!h) return null;
+    return h
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean)
+      .map((tag, i) => (
+        <Badge key={i} variant="secondary" className="bg-gray-200 text-gray-800 rounded-lg h-8 mr-2">
+          #{tag.replace(/^#/, "")}
+        </Badge>
+      ));
+  }
+
+  function renderContent(text?: string) {
+    if (!text) return null;
+    return text.split(/\n{2,}/).map((p, i) => (
+      <p key={i} className="text-[#6c757d] leading-8">
+        {p}
+      </p>
+    ));
+  }
+
 
   const popularTopics = [
     "Life Style",
@@ -110,6 +214,7 @@ export default function BlogDetailsPage() {
           </p>
         </div>
       </section>
+
       <section className="py-12 -mt-20 relative z-30 px-4">
         <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
           <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">
@@ -122,7 +227,7 @@ export default function BlogDetailsPage() {
       <section className="md:py-16 py-5 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-4 gap-8">
-            {/* Left Sidebar: Popular Topics */}
+            {/* Left Sidebar: Social counts */}
             <div className="lg:col-span-1 flex flex-row lg:flex-col items-center gap-4 pt-8">
               <div className="flex flex-row gap-2 items-center text-gray-600 text-sm">
                 <Facebook className="w-5 h-5 mb-1" />
@@ -144,45 +249,44 @@ export default function BlogDetailsPage() {
 
             {/* Middle: Blog Post Content */}
             <div className="lg:col-span-2">
+              {/* Dynamic category */}
               <Badge className="bg-pink-500 rounded-md text-white mb-4">
-                Print Design
+                {post?.category ?? "Print Design"}
               </Badge>
+
+              {/* Dynamic title */}
               <h2 className="text-4xl font-inter font-bold mb-4">
-                Growing a distributed product design team.
+                {post?.title ?? "Growing a distributed product design team."}
               </h2>
+
+              {/* Dynamic meta */}
               <p className="text-gray-600 text-xs mb-8">
-                Jan Blomqvist | 08.Sep.2023 | in
+                {post?.author_name ?? "Jan Blomqvist"} | {formatDate(post?.created_on)} | in{" "}
+                {post?.category ?? "Print Design"}
               </p>
 
+              {/* Dynamic content */}
               <div className="prose prose-lg max-w-none text-[#6c757d] font-inter leading-8 space-y-6 mb-8">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipiscing elit
-                  porttitor, mollis fames scelerisque aliquam ac tincidunt nunc
-                  magna varius leo. Massa luctus bibendum dapibus nisi magna
-                  netus penatibus senectus, cubilia enim sollicitudin libero nam
-                  ultricies consequat dapibus mi non, eu eget phasellus vivamus
-                  praesent vulputate fusce. Lorem ipsum dolor sit amet
-                  consectetur adipiscing elit porttitor, mollis fames
-                  scelerisque aliquam ac tincidunt nunc magna varius leo. Massa
-                  luctus bibendum dapibus nisi magna netus penatibus senectus,
-                  cubilia enim sollicitudin libero nam ultricies consequat
-                  dapibus mi non, eu eget phasellus vivamus praesent vulputate
-                  fusce.
-                </p>
-                <blockquote className="border-l-2 border-[#212529] pl-4">
-                  <p className="text-xl font-semibold text-[#212529]">
-                    Ullamcorper interdum tortor gravida senectus turpis
-                    vulputate semper eu, vel curabitur class imperdiet hac
-                    dictum convallis cursus, phasellus odio cubilia facilisis
-                    magna et sodales.
+                {loading && <p>Loading post content…</p>}
+                {error && <p className="text-red-600">Error: {error}</p>}
+                {!loading && !error && post && (
+                  <>
+                    {renderContent(post.content)}
+                  </>
+                )}
+
+                {/* fallback static content if API not returned */}
+                {!loading && !error && !post && (
+                  <p>
+                    Lorem ipsum dolor sit amet consectetur adipiscing elit
+                    porttitor, mollis fames scelerisque aliquam ac tincidunt nunc
+                    magna varius leo. Massa luctus bibendum dapibus nisi magna
+                    netus penatibus senectus...
                   </p>
-                  <footer className="text-xs text-[#6c757d] font-inter mt-2">
-                    Jonah Andrew (CEO)
-                  </footer>
-                </blockquote>
+                )}
               </div>
 
-              {/* Image Carousel */}
+              {/* Image Carousel (static) */}
               <div className="relative mb-8">
                 <Image
                   src="/placeholder.svg?height=400&width=800"
@@ -199,57 +303,44 @@ export default function BlogDetailsPage() {
                 </div>
               </div>
 
+              {/* Additional static paragraph */}
               <div className="prose prose-lg max-w-none text-[#6c757d] font-inter  leading-8 space-y-6 mb-8">
                 <p>
                   Lorem ipsum dolor sit amet consectetur adipiscing elit
                   porttitor, mollis fames scelerisque aliquam ac tincidunt nunc
                   magna varius leo. Massa luctus bibendum dapibus nisi magna
-                  netus penatibus senectus, cubilia enim sollicitudin libero nam
-                  ultricies consequat dapibus mi non, eu eget phasellus vivamus
-                  praesent vulputate fusce.
+                  netus penatibus senectus...
                 </p>
               </div>
 
-              {/* Tags */}
+              {/* Dynamic tags from hashtags */}
               <div className="flex flex-wrap gap-2 mb-12 border-y border-gray-200 py-5">
-                <Badge
-                  variant="secondary"
-                  className="bg-[#e26d5c] rounded-lg h-8 text-white"
-                >
-                  Life Style
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="bg-[#81b29a] rounded-lg h-8 text-white"
-                >
-                  Education
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="bg-[#6c757d] rounded-lg h-8 text-white"
-                >
-                  Advice
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="bg-gray-400 rounded-lg h-8 text-white"
-                >
-                  Travel
-                </Badge>
+                {renderHashtags(post?.hashtags)}
+                {/* keep some static tags as fallback */}
+                {!post?.hashtags && (
+                  <>
+                    <Badge variant="secondary" className="bg-[#e26d5c] rounded-lg h-8 text-white">
+                      Life Style
+                    </Badge>
+                    <Badge variant="secondary" className="bg-[#81b29a] rounded-lg h-8 text-white">
+                      Education
+                    </Badge>
+                  </>
+                )}
               </div>
 
-              {/* Author Profile */}
+              {/* Author Profile (static except name) */}
               <div className="flex items-center gap-4 p-6 mb-12">
                 <Image
                   src="/placeholder.svg?height=80&width=80"
-                  alt="Jan Blomqvist"
+                  alt={post?.author_name ?? "Author"}
                   width={80}
                   height={80}
                   className="rounded-full object-cover"
                 />
                 <div>
                   <h3 className="text-xl font-inter font-[500] mb-3">
-                    Jan Blomqvist
+                    {post?.author_name ?? "Jan Blomqvist"}
                   </h3>
                   <p className="font-inter text-[#6c757d] text-xs mb-3">
                     "Fifth Strategy" Book Author, Designer
@@ -263,10 +354,10 @@ export default function BlogDetailsPage() {
                 </div>
               </div>
 
-              {/* Comments Section */}
+              {/* Comments Section (static) */}
               <div className="mb-12">
                 <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">
-                  3 comments
+                  {comments.length} comments
                 </h3>
                 <div className="space-y-8">
                   {comments.map((comment, index) => (
@@ -310,10 +401,8 @@ export default function BlogDetailsPage() {
               </div>
             </div>
 
-            {/* Right Sidebar: Social Share Icons */}
-
+            {/* Right Sidebar: Popular Topics & Sidebar Posts */}
             <div className="space-y-8 hidden lg:block">
-              {/* Popular Topics */}
               <div className="border border-[#D5D5D5] rounded-xl p-4">
                 <h3 className="text-xl font-inter font-[500] mb-4">
                   Popular Topics:
@@ -331,7 +420,6 @@ export default function BlogDetailsPage() {
                 </div>
               </div>
 
-              {/* Sidebar Posts */}
               <div className="space-y-6">
                 {sidebarPosts.map((post, index) => (
                   <Card

@@ -14,133 +14,93 @@ const sliderImages = [
   "/images/hero5.JPG",
 ];
 
+type ApiPost = {
+  id: number;
+  project_id?: number;
+  title: string;
+  content: string;
+  created_on: string;
+  hashtags?: string;
+  author_name?: string;
+  category?: string;
+};
+
 export default function BlogPage() {
   const [current, setCurrent] = useState(0);
+  const [posts, setPosts] = useState<ApiPost[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % sliderImages.length);
-    }, 4000); // Change image every 4 seconds
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const blogPosts = [
-    {
-      id: 1,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Interior Design",
-      categoryColor: "bg-blue-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 2,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Tips & Advice",
-      categoryColor: "bg-orange-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 3,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Interior Design",
-      categoryColor: "bg-blue-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 4,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Print Design",
-      categoryColor: "bg-green-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 5,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Life Style",
-      categoryColor: "bg-purple-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 6,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Print Design",
-      categoryColor: "bg-green-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 7,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Life Style",
-      categoryColor: "bg-purple-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-    {
-      id: 8,
-      image: "/images/blog.png?height=300&width=400",
-      category: "Print Design",
-      categoryColor: "bg-green-500",
-      title: "Growing a distributed product design team",
-      description:
-        "At enim sapien ante nullam placerat felis pellentesque nam, orci justo odio.",
-      author: "Sean Anderson",
-      date: "Sep 8 2023",
-    },
-  ];
+  useEffect(() => {
+    const controller = new AbortController();
+    async function fetchPosts() {
+      setLoading(true);
+      setError(null);
 
-  const popularTopics = [
-    "Life Style",
-    "Advanture",
-    "Recipe",
-    "Technology",
-    "Education",
-    "Design",
-  ];
+      // preferred: set NEXT_PUBLIC_BLOG_TOKEN in .env.local
+      // fallback: sessionStorage.getItem('authToken') if you store it there
+      const token =
+        process.env.NEXT_PUBLIC_BLOG_TOKEN ||
+        (typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null) ||
+        // last-resort (not recommended): paste token here (remove before committing)
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU2MzkxOTgxLCJpYXQiOjE3NTYwMzE5ODEsImp0aSI6ImVjNGVhOWI5YmY1NzRlMjE5YWUyZGM2Y2ExZTIyNGMyIiwidXNlcl9pZCI6MX0.a_ybTL78EdXAeVBSPIyx0MMI8cS1xh2DBixEz0-h-Sk";
 
-  const sidebarPosts = [
-    {
-      image: "/images/blog.png?height=200&width=300",
-      title: "Increased Range, Faster Charge.",
-      category: "Technology",
-    },
-    {
-      image: "/images/blog.png?height=200&width=300",
-      title: "Increased Range, Faster Charge.",
-      category: "Technology",
-    },
-  ];
+      try {
+        const res = await fetch("https://wedmac-be.onrender.com/api/blogs/get/", {
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`API error: ${res.status} ${text}`);
+        }
+        const data: ApiPost[] = await res.json();
+        setPosts(data);
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          setError(err.message || "Failed to fetch posts");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPosts();
+    return () => controller.abort();
+  }, []);
+
+  // small helper to format the API date string ("2025-08-24 17:04:43")
+  function formatDate(s?: string) {
+    if (!s) return "";
+    try {
+      // ensure valid ISO-ish string
+      const iso = s.includes("T") ? s : s.replace(" ", "T");
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return s;
+      return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    } catch {
+      return s;
+    }
+  }
+
+  // fallback placeholder image
+  const placeholderImage = "/images/blog.png";
 
   return (
     <div className="min-h-screen">
       <section className="relative h-[90vh] pt-32 text-center text-white">
-        {/* Background Slider */}
         <div className="absolute inset-0 -z-10 transition-all duration-500">
           <Image
             src={sliderImages[current]}
@@ -149,14 +109,8 @@ export default function BlogPage() {
             className="object-cover object-[center_bottom_20%]"
           />
         </div>
-
-        {/* Glassmorphism Overlay */}
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
-
-        {/* Gradient for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-
-        {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
           <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
             Style That Turns Heads <br />
@@ -169,6 +123,7 @@ export default function BlogPage() {
           </p>
         </div>
       </section>
+
       <section className="py-12 -mt-20 relative z-30 px-4">
         <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
           <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">
@@ -177,60 +132,63 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="py-16 px-4">
         <div className="container mx-auto lg:pl-20">
           <div className="grid lg:grid-cols-4 gap-4">
-            {/* Blog Posts Grid */}
             <div className="lg:col-span-3 ">
-              <div className="grid grid-cols-1  md:grid-cols-2 gap-x-4 gap-y-8 place-items-center">
-                {blogPosts.map((post) => (
-                  <Link href="/blog-detail" className="block">
-                    <Card className="w-[350px] overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
-                      <div className="relative">
-                        <Image
-                          src={post.image || "/images/blog.png"}
-                          alt={post.title}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover"
-                        />
-                        <Badge
-                          className={`absolute top-4 right-4 p-1 font-inter rounded-none ${post.categoryColor} text-white`}
-                        >
-                          {post.category}
-                        </Badge>
-                      </div>
-                      <CardContent className="p-4">
-                        <h3 className="text-xl font-inter font-[500] mb-3 line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <p className="text-[#6c757d] text-sm font-inter mb-4 line-clamp-2">
-                          {post.description}
-                        </p>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <span className="font-inter">
-                            By <b>{post.author}</b>
-                          </span>
-                          <span className="mr-1 font-inter">,</span>
-                          <span className="font-inter">{post.date}</span>
+              {loading && <div className="text-center py-10">Loading posts…</div>}
+              {error && <div className="text-center text-red-600 py-10">Error: {error}</div>}
+              {!loading && posts?.length === 0 && <div className="text-center py-10">No posts found.</div>}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-8 place-items-center">
+                {(posts ?? []).map((post) => {
+                  const desc = post.content ? (post.content.length > 140 ? post.content.slice(0, 137) + "…" : post.content) : "";
+                  return (
+                    <Link key={post.id} href={`/blog/${post.project_id}`} className="block w-full">
+                      <Card className="w-[350px] overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                        <div className="relative">
+                          <Image
+                            src={placeholderImage}
+                            alt={post.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover"
+                          />
+                          <Badge
+                            className={`absolute top-4 right-4 p-1 font-inter rounded-none text-white`}
+                          >
+                            {post.category ?? "General"}
+                          </Badge>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+                        <CardContent className="p-4">
+                          <h3 className="text-xl font-inter font-[500] mb-3 line-clamp-2">
+                            {post.title}
+                          </h3>
+                          <p className="text-[#6c757d] text-sm font-inter mb-4 line-clamp-2">
+                            {desc}
+                          </p>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <span className="font-inter">
+                              By <b>{post.author_name ?? "Unknown"}</b>
+                            </span>
+                            <span className="mr-1 font-inter">,</span>
+                            <span className="font-inter">{formatDate(post.created_on)}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-8 hidden lg:block">
-              {/* Popular Topics */}
               <div className="border border-[#D5D5D5] rounded-xl p-4">
                 <h3 className="text-xl font-inter font-[500] mb-4">
                   Popular Topics:
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {popularTopics.map((topic, index) => (
+                  {["Life Style", "Advanture", "Recipe", "Technology", "Education", "Design"].map((topic, index) => (
                     <Badge
                       key={index}
                       variant="outline"
@@ -242,23 +200,11 @@ export default function BlogPage() {
                 </div>
               </div>
 
-              {/* Sidebar Posts */}
               <div className="space-y-6">
-                {sidebarPosts.map((post, index) => (
-                  <Card
-                    key={index}
-                    className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4"
-                  >
-                    <p className="font-inter text-left text-sm text-[#6c757d]">
-                      Banner
-                    </p>
-                    <Image
-                      src={post.image || "/images/blog.png"}
-                      alt={post.title}
-                      width={300}
-                      height={200}
-                      className="w-full h-full object-cover"
-                    />
+                {[1, 2].map((i) => (
+                  <Card key={i} className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
+                    <p className="font-inter text-left text-sm text-[#6c757d]">Banner</p>
+                    <Image src={placeholderImage} alt="sidebar" width={300} height={200} className="w-full h-full object-cover" />
                   </Card>
                 ))}
               </div>
