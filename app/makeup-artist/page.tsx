@@ -425,125 +425,111 @@ useEffect(() => {
             {loading ? (
               <p className="text-center">Loading...</p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {" "}
-                {filteredArtists
-                  .filter((a) => !showOnlySaved || savedArtists.includes(a.id))
-                  .map((artist) => (
-                    <div
-                      key={artist.id}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden"
-                    >
-                      {/* Portfolio Grid — exactly your original flex layout */}
-                      <div className="flex gap-2 p-4 h-[250px]">
-                        {/* Left large */}
-                        <Image
-                          src={
-                            artist.portfolio_photos[0]?.url ||
-                            "/images/search1.png"
-                          }
-                          alt="Artist Work"
-                          width={250}
-                          height={220}
-                          className="rounded-lg object-cover w-[65%] h-full"
-                        />
-                        {/* Right two stacked */}
-                        <div className="flex flex-col gap-2 w-[35%]">
-                          <Image
-                            src={
-                              artist.portfolio_photos[1]?.url ||
-                              "/images/search2.png"
-                            }
-                            alt="Artist Work"
-                            width={100}
-                            height={120}
-                            className="rounded-lg object-cover w-full h-[130px]"
-                          />
-                          <Image
-                            src={
-                              artist.portfolio_photos[2]?.url ||
-                              "/images/search3.png"
-                            }
-                            alt="Artist Work"
-                            width={100}
-                            height={90}
-                            className="rounded-lg object-cover w-full h-[88px]"
-                          />
-                        </div>
-                      </div>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+  {filteredArtists
+    .filter((a) => !showOnlySaved || savedArtists.includes(a.id))
+    .map((artist) => (
+      <div
+        key={artist.id}
+        className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full"
+      >
+        {/* Portfolio Grid */}
+        <div className="flex gap-2 p-4 h-[250px]">
+          {/* Left large */}
+          <Image
+            src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
+            alt="Artist Work"
+            width={250}
+            height={220}
+            className="rounded-lg object-cover w-[65%] h-full"
+          />
+          {/* Right two stacked */}
+          <div className="flex flex-col gap-2 w-[35%]">
+            <Image
+              src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
+              alt="Artist Work"
+              width={100}
+              height={120}
+              className="rounded-lg object-cover w-full h-[130px]"
+            />
+            <Image
+              src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
+              alt="Artist Work"
+              width={100}
+              height={90}
+              className="rounded-lg object-cover w-full h-[88px]"
+            />
+          </div>
+        </div>
 
-                      {/* Info & Avatar — matches your original */}
-                      <div className="pr-4 pl-4 pb-4 pt-0">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center">
-                            <Image
-                              src={
-                                artist.profile_photo_url ||
-                                "/placeholder.svg?height=50&width=50"
-                              }
-                              alt={artist.full_name}
-                              width={56}
-                              height={56}
-                              className="w-14 h-14 rounded-full mr-4"
-                            />
-                            <div>
-                              <h3 className="font-semibold">
-                                {artist.full_name}
-                              </h3>
-                              {/* <p className="text-sm text-[#8D8D8D]">
-                                {artist.makeup_types.join(", ") || "-"}
-                              </p> */}
-                              <div className="flex items-center text-sm text-gray-500">
-                                <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-<span>{formatLocation(artist.location)}</span>
-                                <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                                  {artist.average_rating.toFixed(1)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() => toggleSaveArtist(artist.id)}
-                            className="text-[#FF577F] hover:text-pink-600 transition"
-                          >
-                            <Bookmark
-                              className={`w-6 h-6 cursor-pointer ${
-                                savedArtists.includes(artist.id)
-                                  ? "fill-[#FF577F]" // filled color for “saved”
-                                  : "stroke-[#FF577F]" // outline for “not saved”
-                              }`}
-                            />
-                          </button>
-                        </div>
-
-                        {/* Buttons — unchanged */}
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowModal(true)}
-                            className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                          >
-                            <span className="flex items-center gap-1">
-                              Book Now
-                              <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                            </span>
-                          </Button>
-
-                          <Link
-                            href={`/makeup-artist/details/${artist.id}`}
-                            className="flex-1"
-                          >
-                            <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                              View Profile
-                              <ArrowUpRight className="w-4 h-4" />
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+        {/* Info & Avatar */}
+        <div className="flex-1 flex flex-col px-4 pb-4 pt-0">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center">
+              <Image
+                src={
+                  artist.profile_photo_url ||
+                  "/placeholder.svg?height=50&width=50"
+                }
+                alt={artist.full_name}
+                width={56}
+                height={56}
+                className="w-14 h-14 rounded-full mr-4"
+              />
+              <div>
+                <h3 className="font-semibold">{artist.full_name}</h3>
+                <div className="flex items-center text-sm text-gray-500">
+                  <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                  <span>{formatLocation(artist.location)}</span>
+                  <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                    {artist.average_rating.toFixed(1)}
+                  </span>
+                </div>
               </div>
+            </div>
+
+            <button
+              onClick={() => toggleSaveArtist(artist.id)}
+              className="text-[#FF577F] hover:text-pink-600 transition"
+            >
+              <Bookmark
+                className={`w-6 h-6 cursor-pointer ${
+                  savedArtists.includes(artist.id)
+                    ? "fill-[#FF577F]"
+                    : "stroke-[#FF577F]"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* CTA Buttons always at bottom */}
+          <div className="mt-auto flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowModal(true)}
+              className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+            >
+              <span className="flex items-center gap-1">
+                Book Now
+                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              </span>
+            </Button>
+
+            <Link
+              href={`/makeup-artist/details/${artist.id}`}
+              className="flex-1"
+            >
+              <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                View Profile
+                <ArrowUpRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    ))}
+</div>
+
             )}
 
             {/* Pagination */}
