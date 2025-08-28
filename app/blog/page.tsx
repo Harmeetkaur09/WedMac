@@ -23,6 +23,8 @@ type ApiPost = {
   hashtags?: string;
   author_name?: string;
   category?: string;
+  photos: string[] | null;
+
 };
 
 export default function BlogPage() {
@@ -57,7 +59,7 @@ export default function BlogPage() {
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+          
           },
           cache: "no-store",
         });
@@ -148,7 +150,7 @@ export default function BlogPage() {
                       <Card className="w-[350px] overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                         <div className="relative">
                           <Image
-                            src={placeholderImage}
+                            src={post.photos?.[0] ?? placeholderImage}
                             alt={post.title}
                             width={400}
                             height={300}

@@ -36,7 +36,7 @@ interface ArtistCard {
   total_ratings: number;
   makeup_types: string[];
   portfolio_photos: {
-    file_url: string;
+    url: string;
   }[];
 }
 interface MakeupType {
@@ -671,20 +671,21 @@ function formatLocation(loc: unknown): string {
                   >
                     {/* Portfolio Grid */}
                     <div className="flex gap-2 p-4 h-[250px]">
-                      <Image
-                        src={
-                          artist.portfolio_photos[0]?.file_url ||
-                          "/images/search1.png"
-                        }
-                        alt="Artist Work"
-                        width={250}
-                        height={220}
-                        className="rounded-lg object-cover w-[65%] h-full"
-                      />
+                    <Image
+  src={
+    artist.portfolio_photos[0]?.url ||
+    "/images/search1.png"
+  }
+  alt="Artist Work"
+  width={250}
+  height={220}
+  className="rounded-lg object-cover w-[65%] h-full"
+/>
+
                       <div className="flex flex-col gap-2 w-[35%]">
                         <Image
                           src={
-                            artist.portfolio_photos[1]?.file_url ||
+                            artist.portfolio_photos[1]?.url ||
                             "/images/search2.png"
                           }
                           alt="Artist Work"
@@ -694,7 +695,7 @@ function formatLocation(loc: unknown): string {
                         />
                         <Image
                           src={
-                            artist.portfolio_photos[2]?.file_url ||
+                            artist.portfolio_photos[2]?.url ||
                             "/images/search3.png"
                           }
                           alt="Artist Work"
@@ -723,9 +724,9 @@ function formatLocation(loc: unknown): string {
                             <h3 className="font-semibold">
                               {artist.full_name}
                             </h3>
-                            <p className="text-sm text-[#8D8D8D]">
+                            {/* <p className="text-sm text-[#8D8D8D]">
                               {artist.makeup_types.join(", ") || "-"}
-                            </p>
+                            </p> */}
                             <div className="flex items-center text-sm text-gray-500">
                               <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
 <span>{formatLocation(artist.location)}</span>

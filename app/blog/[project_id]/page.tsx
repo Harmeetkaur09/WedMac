@@ -50,6 +50,14 @@ export default function BlogDetailsPage() {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+// Helper function to chunk array into groups of n
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
 
  useEffect(() => {
   const controller = new AbortController();
@@ -266,7 +274,7 @@ export default function BlogDetailsPage() {
               </p>
 
               {/* Dynamic content */}
-              <div className="prose prose-lg max-w-none text-[#6c757d] font-inter leading-8 space-y-6 mb-8">
+              <div className="prose prose-lg max-w-none text-[#6c757d] break-words  font-inter leading-8 space-y-6 mb-8">
                 {loading && <p>Loading post content…</p>}
                 {error && <p className="text-red-600">Error: {error}</p>}
                 {!loading && !error && post && (
@@ -285,23 +293,25 @@ export default function BlogDetailsPage() {
                   </p>
                 )}
               </div>
+{/* Yeh code mujhe lagta hai 'Dynamic content' ke section ke baad add karna chahiye */}
+{post?.photos && post.photos.length > 0 && (
+  <div className="flex gap-4 mb-8">
+    {/* Left side: First photo */}
+    <div className="flex-1">
+      <Image
+        src={post.photos[0]}
+        alt={`Photo 1`}
+        width={600}
+        height={700}
+        className="rounded-lg object-cover w-full h-full"
+      />
+    </div>
+    {/* Right side: Next two photos stacked vertically */}
 
-              {/* Image Carousel (static) */}
-              <div className="relative mb-8">
-                <Image
-                  src="/placeholder.svg?height=400&width=800"
-                  alt="Blog Post Image"
-                  width={800}
-                  height={400}
-                  className="w-full h-auto rounded-lg object-cover"
-                />
+  </div>
+)}
 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  <span className="w-2 h-2 bg-white rounded-full opacity-70"></span>
-                  <span className="w-2 h-2 bg-white rounded-full opacity-30"></span>
-                  <span className="w-2 h-2 bg-white rounded-full opacity-30"></span>
-                </div>
-              </div>
+          
 
               {/* Additional static paragraph */}
               <div className="prose prose-lg max-w-none text-[#6c757d] font-inter  leading-8 space-y-6 mb-8">
@@ -420,25 +430,46 @@ export default function BlogDetailsPage() {
                 </div>
               </div>
 
-              <div className="space-y-6">
-                {sidebarPosts.map((post, index) => (
-                  <Card
-                    key={index}
-                    className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4"
-                  >
-                    <p className="font-inter text-left text-sm text-[#6c757d]">
-                      Banner
-                    </p>
-                    <Image
-                      src={post.image || "/images/blog.png"}
-                      alt={post.title}
-                      width={300}
-                      height={200}
-                      className="w-full h-full object-cover"
-                    />
-                  </Card>
-                ))}
-              </div>
+{post?.photos && post.photos.length >= 5 && (
+  <div className="space-y-6">
+    {/* Card 1 with first 2 images */}
+    <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
+      <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 1</p>
+      <div className="grid grid-cols-2 gap-2">
+        {post.photos.slice(0, 2).map((imgSrc, idx) => (
+          <Image
+            key={idx}
+            src={imgSrc}
+            alt={`Banner 1 Photo ${idx + 1}`}
+            width={300}
+            height={200}
+            className="w-full h-full object-cover rounded-md"
+          />
+        ))}
+      </div>
+    </Card>
+
+    {/* Card 2 with next 3 images */}
+    <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
+      <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 2</p>
+      <div className="grid grid-cols-3 gap-2">
+        {post.photos.slice(2, 5).map((imgSrc, idx) => (
+          <Image
+            key={idx}
+            src={imgSrc}
+            alt={`Banner 2 Photo ${idx + 1}`}
+            width={300}
+            height={200}
+            className="w-full h-full object-cover rounded-md"
+          />
+        ))}
+      </div>
+    </Card>
+  </div>
+)}
+
+
+
             </div>
           </div>
         </div>

@@ -44,14 +44,17 @@ interface ArtistDetail {
   about: string;
   instagram_url: string;
   starting_price: number;
+  portfolio_photos: string[] | null;
+   products_used?: string[]; 
 }
+
 interface CardArtist {
   id: number;
   full_name: string;
   profile_photo_url: string | null;
   location: string;
   average_rating: number;
-  portfolio_photos: { file_url: string; tag: string }[];
+  portfolio_photos: { url: string; tag: string }[];
 }
 interface ArtistCard {
   id: number;
@@ -62,7 +65,7 @@ interface ArtistCard {
   total_ratings: number;
   makeup_types: string[];
   portfolio_photos: {
-    file_url: string;
+    url: string;
   }[];
 }
 
@@ -78,7 +81,7 @@ export default function MakeupArtistDetailPage() {
   const [helpLoading, setHelpLoading] = useState(false);
   const { id } = useParams();
   const [artists, setArtists] = useState<ArtistCard[]>([]);
-
+  const [portfolioPhotos, setPortfolioPhotos] = useState<string[]>([]);
   const [artist, setArtist] = useState<ArtistDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -132,6 +135,25 @@ export default function MakeupArtistDetailPage() {
     "https://x.com/wedmacindia?s=21",
     "https://x.com/wedmacindia?s=21",
   ];
+const whatsappLinks = [
+  "https://wa.me/911234567890", // India
+  "https://wa.me/441234567890", // UK
+  "https://wa.me/19876543210",  // US
+  // aur bhi add kar lo
+];
+const WhatsAppIcon = (props: any) => (
+  <svg
+    width={props.size || 24}
+    height={props.size || 24}
+    viewBox="0 0 24 24"
+    fill={props.color || "currentColor"}
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>WhatsApp icon</title>
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+  </svg>
+);
 
   function getRandomLink(links: string[]): string {
     return links[Math.floor(Math.random() * links.length)];
@@ -185,6 +207,7 @@ export default function MakeupArtistDetailPage() {
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
+        
       })
       .then((data: ArtistDetail) => setArtist(data))
       .catch(() => toast.error("Failed to load artist details"))
@@ -383,6 +406,18 @@ export default function MakeupArtistDetailPage() {
                           <Twitter className="w-4 h-4" />
                           Twitter
                         </Button>
+             <Button
+  variant="outline"
+  className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+  onClick={() =>
+    window.open(getRandomLink(whatsappLinks), "_blank")
+  }
+>
+  <WhatsAppIcon className="w-4 h-4" />
+  WhatsApp
+</Button>
+
+
                       </div>
 
                       <div className="flex gap-2 mb-4">
@@ -440,26 +475,29 @@ export default function MakeupArtistDetailPage() {
                     </div>
 
                     {/* Album Tab Content */}
-                    {activeTab === "album" && (
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {[...Array(8)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
-                          >
-                            <Image
-                              src={`/placeholder.svg?height=200&width=200&text=Album${
-                                i + 1
-                              }`}
-                              alt={`Album ${i + 1}`}
-                              width={200}
-                              height={200}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
+{activeTab === "album" && (
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {Array.isArray(artist.portfolio_photos) &&
+      artist.portfolio_photos.map((photoUrl: string, i: number) => (
+        <div
+          key={i}
+          className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
+        >
+          <Image
+            src={photoUrl}
+            alt={`Album ${i + 1}`}
+            width={200}
+            height={200}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ))}
+  </div>
+)}
+
+
+
+
 
                     {/* Review Tab Content */}
                     {activeTab === "review" && (
@@ -626,19 +664,21 @@ export default function MakeupArtistDetailPage() {
                   <div className="grid grid-cols-1 gap-6">
                     {alsoLike.slice(0, 1).map((a) => {
                       // pick best image: profile_photo_url or first portfolio photo
-                      const imgUrl =
-                        a.profile_photo_url ||
-                        a.portfolio_photos.find(
-                          (p) => p.tag === "profile-photo"
-                        )?.file_url ||
-                        a.portfolio_photos[0]?.file_url ||
-                        "/images/protfolio1.JPG";
+                    const profileImageUrl = a.profile_photo_url || "/images/protfolio1.JPG";
+
+const portfolioImageUrl =
+  a.portfolio_photos.find((p) => p.tag === "profile-photo")?.url ||
+  a.portfolio_photos[0]?.url ||
+  "/images/protfolio1.JPG";
+
                       return (
                         <Card key={a.id}>
                           <CardContent className="px-6 py-4">
+
+                            
                             <div className="relative mb-3">
                               <Image
-                                src={imgUrl}
+                                src={portfolioImageUrl}
                                 alt={a.full_name}
                                 width={300}
                                 height={200}
@@ -651,7 +691,7 @@ export default function MakeupArtistDetailPage() {
 
                             <div className="flex items-center mb-4">
                               <Image
-                                src={imgUrl}
+                                src={profileImageUrl}
                                 alt={a.full_name}
                                 width={40}
                                 height={40}
@@ -895,48 +935,63 @@ export default function MakeupArtistDetailPage() {
               </div>
 
               {/* Products Use */}
-              <div className="border border-[#D5D5D5] rounded-xl p-4">
-                <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
-                  Products Used
-                </h2>
+           {/* Products Use */}
+<div className="border border-[#D5D5D5] rounded-xl p-4">
+  <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
+    Products Used
+  </h2>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    "MAC",
-                    "Estee Lauder",
-                    "MARS",
-                    "Color Pop",
-                    "Maybelline",
-                    "Loreal",
-                    "PAC",
-                    "Too Faced",
-                    "Huda Beauty",
-                    "Inglot",
-                    "Charlotte Tilbury",
-                    "Smashbox",
-                    "Makeup Forever",
-                    "Colorbar",
-                    "Laura Mercier",
-                    "Kylie Cosmetics",
-                    "LAKMÉ",
-                    "Nykaa",
-                    "ELF",
-                    "Fenty",
-                  ].map((brand, i) => (
-                    <label
-                      key={i}
-                      className="flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed opacity-60"
-                    >
-                      <input
-                        type="checkbox"
-                        disabled
-                        className="accent-[#FF577F] w-5 h-5 cursor-not-allowed"
-                      />
-                      <span>{brand}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+  <div className="grid grid-cols-2 gap-3">
+    {[
+      "MAC",
+      "Estee Lauder",
+      "MARS",
+      "Color Pop",
+      "Maybelline",
+      "Loreal",
+      "PAC",
+      "Too Faced",
+      "Huda Beauty",
+      "Inglot",
+      "Charlotte Tilbury",
+      "Smashbox",
+      "Makeup Forever",
+      "Colorbar",
+      "Laura Mercier",
+      "Kylie Cosmetics",
+      "LAKMÉ",
+      "Nykaa",
+      "ELF",
+      "Fenty",
+    ].map((brand, i) => {
+      // safe check if artist and products_used exist
+      const used = Array.isArray(artist?.products_used)
+        ? artist!.products_used.some(
+            (p: string) => String(p).toLowerCase() === brand.toLowerCase()
+          )
+        : false;
+
+      return (
+        <label
+          key={i}
+          className={`flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed ${
+            used ? "" : "opacity-60"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={used}
+            readOnly
+            disabled
+            className="accent-[#FF577F] w-5 h-5"
+          />
+          <span>{brand}</span>
+        </label>
+      );
+    })}
+  </div>
+</div>
+
             </div>
 
             {/* Right Side - Travel Policy and CTA Banner */}
