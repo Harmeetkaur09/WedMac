@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import toast, { Toaster } from "react-hot-toast";
 
-  const sliderImages = [
-    "/images/hero1.JPG",
-    "/images/hero2.JPG",
-    "/images/hero3.JPG",
-    "/images/hero4.JPG",
-    "/images/hero5.JPG",
-  ];
+const sliderImages = [
+  "/images/hero1.JPG",
+  "/images/hero2.JPG",
+  "/images/hero3.JPG",
+  "/images/hero4.JPG",
+  "/images/hero5.JPG",
+];
 export default function ContactPage() {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -20,12 +20,12 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; mobile?: string }>({});
   const [current, setCurrent] = useState(0);
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % sliderImages.length);
-      }, 4000); // Change image every 4 seconds
-      return () => clearInterval(interval);
-    }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000); // Change image every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Clear previous errors
@@ -56,7 +56,7 @@ export default function ContactPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        "https://wedmac-be.onrender.com/api/public/contact-us/",
+        "https://api.wedmacindia.com/api/public/contact-us/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -82,36 +82,36 @@ export default function ContactPage() {
       <Toaster position="top-right" />
 
       {/* Hero Section */}
-       <section className="relative h-[90vh] pt-32 text-center text-white">
-               {/* Background Slider */}
-               <div className="absolute inset-0 -z-10 transition-all duration-500">
-                 <Image
-                   src={sliderImages[current]}
-                   alt="Sliding Hero Background"
-                   fill
-                   className="object-cover object-[center_bottom_20%]"
-                 />
-               </div>
-     
-               {/* Glassmorphism Overlay */}
-               <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
-     
-               {/* Gradient for text readability */}
-               <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
-     
-               {/* Content */}
-               <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-                 <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-                   Style That Turns Heads <br />
-                   Every Special Day
-                 </h1>
-                 <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-                   Make your presence unforgettable with premium beauty and fashion
-                   services <br />
-                   designed for life’s most special moments
-                 </p>
-               </div>
-             </section>
+      <section className="relative h-[90vh] pt-32 text-center text-white">
+        {/* Background Slider */}
+        <div className="absolute inset-0 -z-10 transition-all duration-500">
+          <Image
+            src={sliderImages[current]}
+            alt="Sliding Hero Background"
+            fill
+            className="object-cover object-[center_bottom_20%]"
+          />
+        </div>
+
+        {/* Glassmorphism Overlay */}
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+
+        {/* Gradient for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
+          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+            Style That Turns Heads <br />
+            Every Special Day
+          </h1>
+          <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
+            Make your presence unforgettable with premium beauty and fashion
+            services <br />
+            designed for life’s most special moments
+          </p>
+        </div>
+      </section>
 
       {/* Heading */}
       <section className="py-12 -mt-20 relative z-30 px-4">

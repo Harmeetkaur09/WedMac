@@ -37,7 +37,7 @@ export default function PortfolioPage() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
+    fetch("https://api.wedmacindia.com/api/artists/cards/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

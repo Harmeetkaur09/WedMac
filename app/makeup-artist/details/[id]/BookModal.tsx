@@ -37,13 +37,13 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
 
   useEffect(() => {
     fetch(
-      "https://wedmac-be.onrender.com/api/admin/master/list/?type=makeup_types"
+      "https://api.wedmacindia.com/api/admin/master/list/?type=makeup_types"
     )
       .then((res) => res.json())
       .then(setMasterMakeupTypes)
       .catch(() => toast.error("Failed to load makeup types"));
 
-    fetch("https://wedmac-be.onrender.com/api/admin/master/list/?type=budgets")
+    fetch("https://api.wedmacindia.com/api/admin/master/list/?type=budgets")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -70,13 +70,11 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
         first_name: firstName,
         last_name: lastName,
         phone,
-        service: 1,
         event_type: eventType,
         requirements,
         booking_date: bookingDate,
         budget_range: budgetRange,
         makeup_types: makeupTypes,
-        location: 1, // Set manually
         source: "website",
         requested_artist: artistId,
         status: "new",
@@ -84,7 +82,7 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
       };
 
       const res = await fetch(
-        "https://wedmac-be.onrender.com/api/leads/public/submit/",
+        "https://api.wedmacindia.com/api/leads/public/submit/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

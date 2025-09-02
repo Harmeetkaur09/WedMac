@@ -26,6 +26,12 @@ import Link from "next/link";
 import BookModal from "./makeup-artist/details/[id]/BookModal";
 import { useParams, useRouter } from "next/navigation";
 import router from "next/router";
+import {
+  stateOptions,
+  cityByState,
+  StateOption,
+  CityOption,
+} from "@/components/common/locations";
 
 interface ArtistCard {
   id: number;
@@ -43,15 +49,7 @@ interface MakeupType {
   value: string;
   label: string;
 }
-interface StateOption {
-  value: string;
-  label: string;
-}
 
-interface CityOption {
-  value: string;
-  label: string;
-}
 const imagePaths = [
   { primary: "/images/new22.JPG", secondary: "/images/new24.JPG" },
   { primary: "/images/img22.jpg", secondary: "/images/new22.JPG" },
@@ -77,33 +75,24 @@ export default function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const { id } = useParams();
   const [makeupTypes, setMakeupTypes] = useState<MakeupType[]>([]);
+  const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
 
   const [selectedType, setSelectedType] = useState<string>("");
 
   const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-  const stateOptions: StateOption[] = [
-    { value: "Maharashtra", label: "Maharashtra" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Punjab", label: "Punjab" },
-  ];
+
   const [states] = useState<StateOption[]>(stateOptions);
   const [selectedState, setSelectedState] = useState<string>("");
-
+  useEffect(() => {
+    if (selectedState && cityByState[selectedState]) {
+      setCities(cityByState[selectedState]);
+    } else {
+      setCities([]);
+      setSelectedCity("");
+    }
+  }, [selectedState]);
   // City options by state
-  const cityByState: Record<string, CityOption[]> = {
-    Maharashtra: [
-      { value: "Mumbai", label: "Mumbai" },
-      { value: "Pune", label: "Pune" },
-    ],
-    Delhi: [
-      { value: "Delhi", label: "Delhi" },
-      { value: "Rohini", label: "Rohini" },
-    ],
-    Punjab: [
-      { value: "Chandigarh", label: "Chandigarh" },
-      { value: "Amritsar", label: "Amritsar" },
-    ],
-  };
+
   const videos = [
     "/videos/video1.mp4",
     "/videos/video2.mp4",
@@ -144,18 +133,17 @@ export default function HomePage() {
   const [shuffledImages, setShuffledImages] = useState(imagePaths);
 
   // place this helper near top of the component file (above return)
-function formatLocation(loc: unknown): string {
-  if (typeof loc === "string") return loc;
-  if (loc && typeof loc === "object") {
-    const rec = loc as Record<string, unknown>;
-    const city = rec.city ? String(rec.city) : "";
-    const state = rec.state ? String(rec.state) : "";
-    const parts = [city, state].filter(Boolean);
-    return parts.join(", ");
+  function formatLocation(loc: unknown): string {
+    if (typeof loc === "string") return loc;
+    if (loc && typeof loc === "object") {
+      const rec = loc as Record<string, unknown>;
+      const city = rec.city ? String(rec.city) : "";
+      const state = rec.state ? String(rec.state) : "";
+      const parts = [city, state].filter(Boolean);
+      return parts.join(", ");
+    }
+    return "-";
   }
-  return "-";
-}
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -232,7 +220,7 @@ function formatLocation(loc: unknown): string {
   ];
   useEffect(() => {
     fetch(
-      "https://wedmac-be.onrender.com/api/admin/master/list/?type=makeup_types"
+      "https://api.wedmacindia.com/api/admin/master/list/?type=makeup_types"
     )
       .then((res) => res.json())
       .then((data: any[]) => {
@@ -273,10 +261,22 @@ function formatLocation(loc: unknown): string {
 
   // Handle search
   const handleSearch = () => {
-    sessionStorage.setItem(
-      "artistFilters",
-      JSON.stringify({ state: selectedState, city: selectedCity })
-    );
+    // debug logs
+    console.log("handleSearch called", { selectedState, selectedCity });
+
+    if (typeof window === "undefined") {
+      console.warn("window not available — can't write sessionStorage");
+      return;
+    }
+
+    const payload = {
+      state: selectedState || null,
+      city: selectedCity || null,
+    };
+    sessionStorage.setItem("artistFilters", JSON.stringify(payload));
+    console.log("Saved to sessionStorage:", payload);
+
+    // navigate using app-router
     router.push("/search");
   };
 
@@ -302,7 +302,7 @@ function formatLocation(loc: unknown): string {
     setHelpErrors({});
     try {
       const res = await fetch(
-        "https://wedmac-be.onrender.com/api/public/contact-us/",
+        "https://api.wedmacindia.com/api/public/contact-us/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -338,7 +338,7 @@ function formatLocation(loc: unknown): string {
     }
     setLoading(true);
 
-    fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
+    fetch("https://api.wedmacindia.com/api/artists/cards/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filters }),
@@ -657,114 +657,124 @@ function formatLocation(loc: unknown): string {
             {loading ? (
               <p className="text-center">Loading...</p>
             ) : (
-            <div
-  className={
-    artists.length < 3
-      ? "flex justify-center gap-8 max-w-2xl mx-auto"
-      : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-  }
->
-  {artists.map((artist) => (
-    <div
-      key={artist.id}
-      className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-    >
-      {/* Portfolio Grid */}
-      <div className="flex gap-2 p-4 h-[250px]">
-        <Image
-          src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
-          alt="Artist Work"
-          width={250}
-          height={220}
-          className="rounded-lg object-cover w-[65%] h-full"
-        />
+              <div
+                className={
+                  artists.length < 3
+                    ? "flex justify-center gap-8 max-w-2xl mx-auto"
+                    : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+                }
+              >
+                {artists.map((artist) => (
+                  <div
+                    key={artist.id}
+                    className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+                  >
+                    {/* Portfolio Grid */}
+                    <div className="flex gap-2 p-4 h-[250px]">
+                      <Image
+                        src={
+                          artist.portfolio_photos[0]?.url ||
+                          "/images/search1.png"
+                        }
+                        alt="Artist Work"
+                        width={250}
+                        height={220}
+                        className="rounded-lg object-cover w-[65%] h-full"
+                      />
 
-        <div className="flex flex-col gap-2 w-[35%]">
-          <Image
-            src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
-            alt="Artist Work"
-            width={100}
-            height={120}
-            className="rounded-lg object-cover w-full h-[130px]"
-          />
-          <Image
-            src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
-            alt="Artist Work"
-            width={100}
-            height={90}
-            className="rounded-lg object-cover w-full h-[88px]"
-          />
-        </div>
-      </div>
+                      <div className="flex flex-col gap-2 w-[35%]">
+                        <Image
+                          src={
+                            artist.portfolio_photos[1]?.url ||
+                            "/images/search2.png"
+                          }
+                          alt="Artist Work"
+                          width={100}
+                          height={120}
+                          className="rounded-lg object-cover w-full h-[130px]"
+                        />
+                        <Image
+                          src={
+                            artist.portfolio_photos[2]?.url ||
+                            "/images/search3.png"
+                          }
+                          alt="Artist Work"
+                          width={100}
+                          height={90}
+                          className="rounded-lg object-cover w-full h-[88px]"
+                        />
+                      </div>
+                    </div>
 
-      {/* Info & Avatar */}
-      <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center">
-            <Image
-              src={
-                artist.profile_photo_url ||
-                "/placeholder.svg?height=50&width=50"
-              }
-              alt={artist.full_name}
-              width={56}
-              height={56}
-              className="w-14 h-14 rounded-full mr-4"
-            />
-            <div>
-              <h3 className="font-semibold">{artist.full_name}</h3>
-              <div className="flex items-center text-sm text-gray-500">
-                <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                <span>{formatLocation(artist.location)}</span>
-                <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                  {artist.average_rating.toFixed(1)}
-                </span>
+                    {/* Info & Avatar */}
+                    <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center">
+                          <Image
+                            src={
+                              artist.profile_photo_url ||
+                              "/placeholder.svg?height=50&width=50"
+                            }
+                            alt={artist.full_name}
+                            width={56}
+                            height={56}
+                            className="w-14 h-14 rounded-full mr-4"
+                          />
+                          <div>
+                            <h3 className="font-semibold">
+                              {artist.full_name}
+                            </h3>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                              <span>{formatLocation(artist.location)}</span>
+                              <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                                {artist.average_rating.toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bookmark Icon */}
+                        <button
+                          onClick={() => toggleSaveArtist(artist.id)}
+                          className="text-[#FF577F] hover:text-pink-600 transition"
+                        >
+                          <Bookmark
+                            className={`w-6 h-6 cursor-pointer ${
+                              savedArtists.includes(artist.id)
+                                ? "fill-[#FF577F]"
+                                : "stroke-[#FF577F]"
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {/* Push Actions to Bottom */}
+                      <div className="mt-auto flex space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowModal(true)}
+                          className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                        >
+                          <span className="flex items-center gap-1">
+                            Book Now
+                            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                          </span>
+                        </Button>
+                        <Link
+                          href={`/makeup-artist/details/${artist.id}`}
+                          className="flex-1"
+                        >
+                          <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                            View Profile
+                            <ArrowUpRight className="w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          </div>
-
-          {/* Bookmark Icon */}
-          <button
-            onClick={() => toggleSaveArtist(artist.id)}
-            className="text-[#FF577F] hover:text-pink-600 transition"
-          >
-            <Bookmark
-              className={`w-6 h-6 cursor-pointer ${
-                savedArtists.includes(artist.id)
-                  ? "fill-[#FF577F]"
-                  : "stroke-[#FF577F]"
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Push Actions to Bottom */}
-        <div className="mt-auto flex space-x-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowModal(true)}
-            className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-          >
-            <span className="flex items-center gap-1">
-              Book Now
-              <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            </span>
-          </Button>
-          <Link
-            href={`/makeup-artist/details/${artist.id}`}
-            className="flex-1"
-          >
-            <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-              View Profile
-              <ArrowUpRight className="w-4 h-4" />
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-
             )}
 
             <div className="mt-10 text-center">
@@ -1105,12 +1115,15 @@ function formatLocation(loc: unknown): string {
         </section>
 
         {/* Footer */}
-        {showModal && (
-          <BookModal
-            artistId={Number(id)}
-            onClose={() => setShowModal(false)}
-          />
-        )}
+        {showModal && selectedArtistId && (
+      <BookModal
+        artistId={selectedArtistId}   // ✅ ab requested_artist sahi id jaegi
+        onClose={() => {
+          setShowModal(false);
+          setSelectedArtistId(null);
+        }}
+      />
+    )}
       </div>
     </>
   );

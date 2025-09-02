@@ -24,7 +24,6 @@ type ApiPost = {
   author_name?: string;
   category?: string;
   photos: string[] | null;
-
 };
 
 export default function BlogPage() {
@@ -50,16 +49,17 @@ export default function BlogPage() {
       // fallback: sessionStorage.getItem('authToken') if you store it there
       const token =
         process.env.NEXT_PUBLIC_BLOG_TOKEN ||
-        (typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null) ||
+        (typeof window !== "undefined"
+          ? sessionStorage.getItem("accessToken")
+          : null) ||
         // last-resort (not recommended): paste token here (remove before committing)
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU2MzkxOTgxLCJpYXQiOjE3NTYwMzE5ODEsImp0aSI6ImVjNGVhOWI5YmY1NzRlMjE5YWUyZGM2Y2ExZTIyNGMyIiwidXNlcl9pZCI6MX0.a_ybTL78EdXAeVBSPIyx0MMI8cS1xh2DBixEz0-h-Sk";
 
       try {
-        const res = await fetch("https://wedmac-be.onrender.com/api/blogs/get/", {
+        const res = await fetch("https://api.wedmacindia.com/api/blogs/get/", {
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
-          
           },
           cache: "no-store",
         });
@@ -91,7 +91,11 @@ export default function BlogPage() {
       const iso = s.includes("T") ? s : s.replace(" ", "T");
       const d = new Date(iso);
       if (isNaN(d.getTime())) return s;
-      return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+      return d.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
     } catch {
       return s;
     }
@@ -138,15 +142,31 @@ export default function BlogPage() {
         <div className="container mx-auto lg:pl-20">
           <div className="grid lg:grid-cols-4 gap-4">
             <div className="lg:col-span-3 ">
-              {loading && <div className="text-center py-10">Loading posts…</div>}
-              {error && <div className="text-center text-red-600 py-10">Error: {error}</div>}
-              {!loading && posts?.length === 0 && <div className="text-center py-10">No posts found.</div>}
+              {loading && (
+                <div className="text-center py-10">Loading posts…</div>
+              )}
+              {error && (
+                <div className="text-center text-red-600 py-10">
+                  Error: {error}
+                </div>
+              )}
+              {!loading && posts?.length === 0 && (
+                <div className="text-center py-10">No posts found.</div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-8 place-items-center">
                 {(posts ?? []).map((post) => {
-                  const desc = post.content ? (post.content.length > 140 ? post.content.slice(0, 137) + "…" : post.content) : "";
+                  const desc = post.content
+                    ? post.content.length > 140
+                      ? post.content.slice(0, 137) + "…"
+                      : post.content
+                    : "";
                   return (
-                    <Link key={post.id} href={`/blog/${post.project_id}`} className="block w-full">
+                    <Link
+                      key={post.id}
+                      href={`/blog/${post.project_id}`}
+                      className="block w-full"
+                    >
                       <Card className="w-[350px] overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                         <div className="relative">
                           <Image
@@ -163,18 +183,22 @@ export default function BlogPage() {
                           </Badge>
                         </div>
                         <CardContent className="p-4">
-                          <h3 className="text-xl font-inter font-[500] mb-3 line-clamp-2">
-                            {post.title}
+                          <h3 className="text-xl font-inter font-[500] mb-3">
+                            {post.title.split(" ").slice(0, 4).join(" ")}...
                           </h3>
-                          <p className="text-[#6c757d] text-sm font-inter mb-4 line-clamp-2">
-                            {desc}
+
+                          <p className="text-[#6c757d] text-sm font-inter mb-4">
+                            {desc.split(" ").slice(0, 6).join(" ")}...
                           </p>
+
                           <div className="flex items-center text-sm text-gray-500">
                             <span className="font-inter">
                               By <b>{post.author_name ?? "Unknown"}</b>
                             </span>
                             <span className="mr-1 font-inter">,</span>
-                            <span className="font-inter">{formatDate(post.created_on)}</span>
+                            <span className="font-inter">
+                              {formatDate(post.created_on)}
+                            </span>
                           </div>
                         </CardContent>
                       </Card>
@@ -190,7 +214,14 @@ export default function BlogPage() {
                   Popular Topics:
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {["Life Style", "Advanture", "Recipe", "Technology", "Education", "Design"].map((topic, index) => (
+                  {[
+                    "Life Style",
+                    "Advanture",
+                    "Recipe",
+                    "Technology",
+                    "Education",
+                    "Design",
+                  ].map((topic, index) => (
                     <Badge
                       key={index}
                       variant="outline"
@@ -204,9 +235,20 @@ export default function BlogPage() {
 
               <div className="space-y-6">
                 {[1, 2].map((i) => (
-                  <Card key={i} className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-                    <p className="font-inter text-left text-sm text-[#6c757d]">Banner</p>
-                    <Image src={placeholderImage} alt="sidebar" width={300} height={200} className="w-full h-full object-cover" />
+                  <Card
+                    key={i}
+                    className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4"
+                  >
+                    <p className="font-inter text-left text-sm text-[#6c757d]">
+                      Banner
+                    </p>
+                    <Image
+                      src={placeholderImage}
+                      alt="sidebar"
+                      width={300}
+                      height={200}
+                      className="w-full h-full object-cover"
+                    />
                   </Card>
                 ))}
               </div>

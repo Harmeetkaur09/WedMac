@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import toast from "react-hot-toast";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Facebook,
@@ -13,8 +14,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 type ApiPost = {
+  photos: any;
   id: number;
   project_id?: string | number;
   title: string;
@@ -23,7 +26,18 @@ type ApiPost = {
   hashtags?: string;
   author_name?: string;
   category?: string;
+  comments?: Comment[]; 
 };
+type Comment = {
+
+  id?: number;
+  name: string;
+  location: string;
+  comment: string;
+  created_at?: string;
+};
+
+
 
 const sliderImages = [
   "/images/hero1.JPG",
@@ -36,7 +50,9 @@ const sliderImages = [
 export default function BlogDetailsPage() {
   const params = useParams(); // expects route like /blog/[project_id]
   const projectIdParam = (params && (params as any).project_id) ?? "12345";
-  const projectId = Array.isArray(projectIdParam) ? projectIdParam[0] : projectIdParam;
+  const projectId = Array.isArray(projectIdParam)
+    ? projectIdParam[0]
+    : projectIdParam;
   const projectIdNum = Number(projectId);
 
   const [current, setCurrent] = useState(0);
@@ -44,73 +60,168 @@ export default function BlogDetailsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentForm, setCommentForm] = useState({
+    phone_number: "",
+    otp: "",
+    name: "",
+    location: "",
+    comment: "",
+  });
+  const [otpRequired, setOtpRequired] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+
+
+  // ✅ Handle input
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    setCommentForm({ ...commentForm, [e.target.name]: e.target.value });
+  }
+
+  // ✅ Submit comment
+  // ✅ Submit comment
+
+async function handleSubmit() {
+  setSubmitting(true);
+  try {
+    const res = await fetch(
+      `https://api.wedmacindia.com/api/blogs/add-comment/${projectId}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(commentForm),
+      }
+    );
+
+    const data = await res.json();
+
+if (!res.ok) {
+  const errorMsg =
+    data.detail ||
+    (typeof data.error === "string" ? data.error : null) ||
+    data.error?.otp?.[0] ||
+    data.error?.message ||
+    "Unknown error";
+
+  if (errorMsg.toLowerCase().includes("otp")) {
+    await fetch(
+      `https://api.wedmacindia.com/api/artist-comments/send-otp/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone_number: commentForm.phone_number,
+        }),
+      }
+    );
+    setOtpRequired(true);
+    toast.success("OTP Sent! Please check your phone.");
+  } else {
+    toast.error(errorMsg);
+  }
+} else {
+  // ✅ Success
+  const newComment: Comment = {
+    id: data.id,
+    name: data.name ?? commentForm.name,
+    location: data.location ?? commentForm.location,
+    comment: data.comment ?? commentForm.comment,
+    created_at: data.created_at ?? new Date().toISOString(),
+  };
+
+  setComments((prev) => [...prev, newComment]);
+
+  setCommentForm({
+    phone_number: "",
+    otp: "",
+    name: "",
+    location: "",
+    comment: "",
+  });
+  setOtpRequired(false);
+
+  toast.success("Your comment has been submitted!");
+}
+}
+
+ catch (err) {
+   console.error("❌ Comment submit error:", err);
+   toast.error("Something went wrong. Try again.");
+  } finally {
+    setSubmitting(false);
+  }
+}
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % sliderImages.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-// Helper function to chunk array into groups of n
-function chunkArray<T>(arr: T[], size: number): T[][] {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
-  }
-  return chunks;
-}
-
- useEffect(() => {
-  const controller = new AbortController();
-
-  async function fetchByProjectId(pid: string | number) {
-    const apiBase =
-      process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://wedmac-be.onrender.com";
-    const token =
-      process.env.NEXT_PUBLIC_BLOG_TOKEN ||
-      (typeof window !== "undefined"
-        ? sessionStorage.getItem("accessToken")
-        : null);
-
-    const url = `${apiBase}/api/blogs/get/${pid}/`;
-    console.debug("🔎 Fetching blog by project_id:", url);
-
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`API error ${res.status}: ${txt}`);
+  // Helper function to chunk array into groups of n
+  function chunkArray<T>(arr: T[], size: number): T[][] {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
     }
-
-    return res.json();
+    return chunks;
   }
 
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchByProjectId(projectId);
-      setPost(data);
-    } catch (err: any) {
-      if (err.name !== "AbortError") {
-        console.error("❌ Blog fetch error:", err);
-        setError(err.message || "Failed to fetch blog post");
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchByProjectId(pid: string | number) {
+      const apiBase =
+        process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
+      const token =
+        process.env.NEXT_PUBLIC_BLOG_TOKEN ||
+        (typeof window !== "undefined"
+          ? sessionStorage.getItem("accessToken")
+          : null);
+
+      const url = `${apiBase}/api/blogs/get/${pid}/`;
+      console.debug("🔎 Fetching blog by project_id:", url);
+
+      const res = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`API error ${res.status}: ${txt}`);
       }
-    } finally {
-      setLoading(false);
+
+      return res.json();
     }
-  }
 
-  load();
-  return () => controller.abort();
-}, [projectId]);
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchByProjectId(projectId);
+        setPost(data);
+        setComments(data.comments || []); 
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error("❌ Blog fetch error:", err);
+          setError(err.message || "Failed to fetch blog post");
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
 
+    load();
+    return () => controller.abort();
+  }, [projectId]);
 
   function formatDate(s?: string) {
     if (!s) return "";
@@ -118,7 +229,11 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
       const iso = s.includes("T") ? s : s.replace(" ", "T");
       const d = new Date(iso);
       if (isNaN(d.getTime())) return s;
-      return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+      return d.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
     } catch {
       return s;
     }
@@ -131,7 +246,11 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
       .map((x) => x.trim())
       .filter(Boolean)
       .map((tag, i) => (
-        <Badge key={i} variant="secondary" className="bg-gray-200 text-gray-800 rounded-lg h-8 mr-2">
+        <Badge
+          key={i}
+          variant="secondary"
+          className="bg-gray-200 text-gray-800 rounded-lg h-8 mr-2"
+        >
           #{tag.replace(/^#/, "")}
         </Badge>
       ));
@@ -145,7 +264,6 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
       </p>
     ));
   }
-
 
   const popularTopics = [
     "Life Style",
@@ -166,27 +284,6 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
       image: "/placeholder.svg?height=200&width=300",
       title: "Increased Range, Faster Charge.",
       category: "Technology",
-    },
-  ];
-
-  const comments = [
-    {
-      author: "Jason",
-      date: "08.Sep.2023",
-      text: "Lorem ipsum dolor sit amet consectetur adipiscing elit porttitor, mollis fames scelerisque aliquam ac tincidunt nunc magna varius leo.",
-      likes: 58,
-    },
-    {
-      author: "Mathew",
-      date: "08.Sep.2023",
-      text: "Lorem ipsum dolor sit amet consectetur adipiscing elit porttitor, mollis fames scelerisque aliquam ac tincidunt nunc magna varius leo.",
-      likes: 58,
-    },
-    {
-      author: "Andrew",
-      date: "08.Sep.2023",
-      text: "Lorem ipsum dolor sit amet consectetur adipiscing elit porttitor, mollis fames scelerisque aliquam ac tincidunt nunc magna varius leo.",
-      likes: 58,
     },
   ];
 
@@ -269,7 +366,8 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 
               {/* Dynamic meta */}
               <p className="text-gray-600 text-xs mb-8">
-                {post?.author_name ?? "Jan Blomqvist"} | {formatDate(post?.created_on)} | in{" "}
+                {post?.author_name ?? "Jan Blomqvist"} |{" "}
+                {formatDate(post?.created_on)} | in{" "}
                 {post?.category ?? "Print Design"}
               </p>
 
@@ -278,61 +376,46 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
                 {loading && <p>Loading post content…</p>}
                 {error && <p className="text-red-600">Error: {error}</p>}
                 {!loading && !error && post && (
-                  <>
-                    {renderContent(post.content)}
-                  </>
+                  <>{renderContent(post.content)}</>
                 )}
 
                 {/* fallback static content if API not returned */}
-                {!loading && !error && !post && (
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipiscing elit
-                    porttitor, mollis fames scelerisque aliquam ac tincidunt nunc
-                    magna varius leo. Massa luctus bibendum dapibus nisi magna
-                    netus penatibus senectus...
-                  </p>
-                )}
               </div>
-{/* Yeh code mujhe lagta hai 'Dynamic content' ke section ke baad add karna chahiye */}
-{post?.photos && post.photos.length > 0 && (
-  <div className="flex gap-4 mb-8">
-    {/* Left side: First photo */}
-    <div className="flex-1">
-      <Image
-        src={post.photos[0]}
-        alt={`Photo 1`}
-        width={600}
-        height={700}
-        className="rounded-lg object-cover w-full h-full"
-      />
-    </div>
-    {/* Right side: Next two photos stacked vertically */}
-
-  </div>
-)}
-
-          
+              {/* Yeh code mujhe lagta hai 'Dynamic content' ke section ke baad add karna chahiye */}
+              {post?.photos && post.photos.length > 0 && (
+                <div className="flex gap-4 mb-8">
+                  {/* Left side: First photo */}
+                  <div className="flex-1">
+                    <Image
+                      src={post.photos[0]}
+                      alt={`Photo 1`}
+                      width={600}
+                      height={700}
+                      className="rounded-lg object-cover w-full h-full"
+                    />
+                  </div>
+                  {/* Right side: Next two photos stacked vertically */}
+                </div>
+              )}
 
               {/* Additional static paragraph */}
-              <div className="prose prose-lg max-w-none text-[#6c757d] font-inter  leading-8 space-y-6 mb-8">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipiscing elit
-                  porttitor, mollis fames scelerisque aliquam ac tincidunt nunc
-                  magna varius leo. Massa luctus bibendum dapibus nisi magna
-                  netus penatibus senectus...
-                </p>
-              </div>
 
               {/* Dynamic tags from hashtags */}
-              <div className="flex flex-wrap gap-2 mb-12 border-y border-gray-200 py-5">
+              <div className="flex flex-wrap gap-2 mb-2 border-y border-gray-200 py-5">
                 {renderHashtags(post?.hashtags)}
                 {/* keep some static tags as fallback */}
                 {!post?.hashtags && (
                   <>
-                    <Badge variant="secondary" className="bg-[#e26d5c] rounded-lg h-8 text-white">
+                    <Badge
+                      variant="secondary"
+                      className="bg-[#e26d5c] rounded-lg h-8 text-white"
+                    >
                       Life Style
                     </Badge>
-                    <Badge variant="secondary" className="bg-[#81b29a] rounded-lg h-8 text-white">
+                    <Badge
+                      variant="secondary"
+                      className="bg-[#81b29a] rounded-lg h-8 text-white"
+                    >
                       Education
                     </Badge>
                   </>
@@ -340,73 +423,95 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
               </div>
 
               {/* Author Profile (static except name) */}
-              <div className="flex items-center gap-4 p-6 mb-12">
-                <Image
-                  src="/placeholder.svg?height=80&width=80"
-                  alt={post?.author_name ?? "Author"}
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                />
+              <div className="flex items-center gap-4 p-2 mb-2">
                 <div>
                   <h3 className="text-xl font-inter font-[500] mb-3">
-                    {post?.author_name ?? "Jan Blomqvist"}
+                    BY {post?.author_name ?? "Jan Blomqvist"},{" "}
+                    {formatDate(post?.created_on)}
                   </h3>
-                  <p className="font-inter text-[#6c757d] text-xs mb-3">
-                    "Fifth Strategy" Book Author, Designer
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="bg-black p-1 h-8 text-xs text-white font-inter"
-                  >
-                    Author Posts
-                  </Button>
                 </div>
               </div>
 
               {/* Comments Section (static) */}
-              <div className="mb-12">
-                <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">
-                  {comments.length} comments
-                </h3>
-                <div className="space-y-8">
-                  {comments.map((comment, index) => (
-                    <div
-                      key={index}
-                      className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0"
-                    >
-                      <div className=" items-center mb-2">
-                        <h4 className="font-semibold font-inter">
-                          {comment.author}
-                        </h4>
-                        <p className="text-sm text-gray-500 py-1">
-                          {comment.date}
-                        </p>
-                      </div>
-                      <p className="font-inter text-[#6c757d] leading-8 mb-3">
-                        {comment.text}
-                      </p>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Heart className="w-4 h-4" />
-                        <span>{comment.likes}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+     <div className="mb-12">
+  <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">
+    {comments.length} comments
+  </h3>
+  <div className="space-y-8">
+    {comments.map((c, idx) => (
+      <div
+        key={c.id ?? idx}
+        className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0"
+      >
+        <div className="mb-2">
+          <h4 className="font-semibold font-inter">{c.name}</h4>
+          <p className="text-sm text-gray-500 py-1">
+            {c.location} • {formatDate(c.created_at)}
+          </p>
+        </div>
+        <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">
+          {c.comment}
+        </p>
+      </div>
+    ))}
+  </div>
+</div>
+
+
 
               {/* Add Comment Form */}
               <div>
                 <h3 className="text-2xl font-[600] font-inter mb-6">
                   Add comment
                 </h3>
+
+                <Input
+                  name="name"
+                  placeholder="Your Name"
+                  value={commentForm.name}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
+                <Input
+                  name="phone_number"
+                  placeholder="Phone Number"
+                  value={commentForm.phone_number}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
+                <Input
+                  name="location"
+                  placeholder="Location"
+                  value={commentForm.location}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
+
+                {otpRequired && (
+                  <Input
+                    name="otp"
+                    placeholder="Enter OTP"
+                    value={commentForm.otp}
+                    onChange={handleChange}
+                    className="mb-3"
+                  />
+                )}
+
                 <Textarea
+                  name="comment"
                   placeholder="Your message..."
                   rows={5}
+                  value={commentForm.comment}
+                  onChange={handleChange}
                   className="mb-4"
                 />
-                <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-                  Submit Comment
+
+                <Button
+                  className="bg-pink-500 hover:bg-pink-600 text-white"
+                  disabled={submitting}
+                  onClick={handleSubmit}
+                >
+                  {submitting ? "Submitting..." : "Submit Comment"}
                 </Button>
               </div>
             </div>
@@ -430,46 +535,47 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
                 </div>
               </div>
 
-{post?.photos && post.photos.length >= 5 && (
-  <div className="space-y-6">
-    {/* Card 1 with first 2 images */}
-    <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-      <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 1</p>
-      <div className="grid grid-cols-2 gap-2">
-        {post.photos.slice(0, 2).map((imgSrc, idx) => (
-          <Image
-            key={idx}
-            src={imgSrc}
-            alt={`Banner 1 Photo ${idx + 1}`}
-            width={300}
-            height={200}
-            className="w-full h-full object-cover rounded-md"
-          />
-        ))}
-      </div>
-    </Card>
+              {post?.photos && post.photos.length >= 5 && (
+                <div className="space-y-6">
+                  {/* Card 1 with first 2 images */}
+                  <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
+                      Banner 1
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {post.photos.slice(0, 2).map((imgSrc:any, idx:any) => (
+                        <Image
+                          key={idx}
+                          src={imgSrc}
+                          alt={`Banner 1 Photo ${idx + 1}`}
+                          width={300}
+                          height={200}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      ))}
+                    </div>
+                  </Card>
 
-    {/* Card 2 with next 3 images */}
-    <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-      <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 2</p>
-      <div className="grid grid-cols-3 gap-2">
-        {post.photos.slice(2, 5).map((imgSrc, idx) => (
-          <Image
-            key={idx}
-            src={imgSrc}
-            alt={`Banner 2 Photo ${idx + 1}`}
-            width={300}
-            height={200}
-            className="w-full h-full object-cover rounded-md"
-          />
-        ))}
-      </div>
-    </Card>
-  </div>
-)}
-
-
-
+                  {/* Card 2 with next 3 images */}
+                  <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
+                      Banner 2
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {post.photos.slice(2, 5).map((imgSrc:any, idx:any) => (
+                        <Image
+                          key={idx}
+                          src={imgSrc}
+                          alt={`Banner 2 Photo ${idx + 1}`}
+                          width={300}
+                          height={200}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              )}
             </div>
           </div>
         </div>

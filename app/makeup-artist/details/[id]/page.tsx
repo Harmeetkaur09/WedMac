@@ -45,7 +45,7 @@ interface ArtistDetail {
   instagram_url: string;
   starting_price: number;
   portfolio_photos: string[] | null;
-   products_used?: string[]; 
+  products_used?: string[];
 }
 
 interface CardArtist {
@@ -70,6 +70,17 @@ interface ArtistCard {
 }
 
 export default function MakeupArtistDetailPage() {
+  const [ratingForm, setRatingForm] = useState({
+    phone_number: "",
+    otp: "",
+    name: "",
+    location: "",
+    comment: "",
+    rating: 5,
+  });
+  const [ratingOtpRequired, setRatingOtpRequired] = useState(false);
+  const [ratingSubmitting, setRatingSubmitting] = useState(false);
+  const [artistComments, setArtistComments] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("review");
   const [helpName, setHelpName] = useState("");
   const [helpMobile, setHelpMobile] = useState("");
@@ -85,6 +96,100 @@ export default function MakeupArtistDetailPage() {
   const [artist, setArtist] = useState<ArtistDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  function handleRatingChange(
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) {
+    const { name, value } = e.target;
+    setRatingForm((s) => ({
+      ...s,
+      // store rating as number to avoid string issues
+      [name]: name === "rating" ? Number(value) : value,
+    }));
+  }
+
+  const handleRatingSubmit = async (e?: React.FormEvent) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    setRatingSubmitting(true);
+
+    try {
+      const url = `https://api.wedmacindia.com/api/artist-comments/add-comment-rating/${id}/`;
+      // replace domain if needed: your real API base (user example used 'https://api.yourdomain.com')
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone_number: ratingForm.phone_number,
+          otp: ratingForm.otp || undefined,
+          name: ratingForm.name,
+          location: ratingForm.location,
+          comment: ratingForm.comment,
+          rating: Number(ratingForm.rating),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // robust error parsing (string or object)
+        const errorMsg =
+          data.detail ||
+          (typeof data.error === "string" ? data.error : null) ||
+          data.error?.otp?.[0] ||
+          data.error?.message ||
+          "Unknown error";
+
+        if (
+          typeof errorMsg === "string" &&
+          errorMsg.toLowerCase().includes("otp")
+        ) {
+          // call the same send-otp API for first-time user
+          try {
+            await fetch(
+              `https://api.wedmacindia.com/api/artist-comments/send-otp/`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone_number: ratingForm.phone_number }),
+              }
+            );
+            setRatingOtpRequired(true);
+            toast.success("OTP sent to your phone. Enter it and submit again.");
+          } catch (otpErr) {
+            console.error("OTP send error:", otpErr);
+            toast.error("Failed to send OTP. Try again.");
+          }
+        } else {
+          console.error("Submit error:", data);
+          toast.error(
+            typeof errorMsg === "string" ? errorMsg : "Submission failed"
+          );
+        }
+      } else {
+        // success: append to local comments and clear the whole form
+        // if API returns the created comment, we append it
+        if (data) setArtistComments((prev) => [...prev, data]);
+
+        setRatingForm({
+          phone_number: "",
+          otp: "",
+          name: "",
+          location: "",
+          comment: "",
+          rating: 5,
+        });
+        setRatingOtpRequired(false);
+        toast.success("Comment submitted successfully!");
+      }
+    } catch (err) {
+      console.error("Comment submit error:", err);
+      toast.error("Submission failed. Try again.");
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
   const pricing = [
     {
       title: "Bridal HD Makeup – ₹12,000 per function",
@@ -135,25 +240,25 @@ export default function MakeupArtistDetailPage() {
     "https://x.com/wedmacindia?s=21",
     "https://x.com/wedmacindia?s=21",
   ];
-const whatsappLinks = [
-  "https://wa.me/911234567890", // India
-  "https://wa.me/441234567890", // UK
-  "https://wa.me/19876543210",  // US
-  // aur bhi add kar lo
-];
-const WhatsAppIcon = (props: any) => (
-  <svg
-    width={props.size || 24}
-    height={props.size || 24}
-    viewBox="0 0 24 24"
-    fill={props.color || "currentColor"}
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <title>WhatsApp icon</title>
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-  </svg>
-);
+  const whatsappLinks = [
+    "https://wa.me/911234567890", // India
+    "https://wa.me/441234567890", // UK
+    "https://wa.me/19876543210", // US
+    // aur bhi add kar lo
+  ];
+  const WhatsAppIcon = (props: any) => (
+    <svg
+      width={props.size || 24}
+      height={props.size || 24}
+      viewBox="0 0 24 24"
+      fill={props.color || "currentColor"}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <title>WhatsApp icon</title>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  );
 
   function getRandomLink(links: string[]): string {
     return links[Math.floor(Math.random() * links.length)];
@@ -170,7 +275,7 @@ const WhatsAppIcon = (props: any) => (
     return "-";
   }
   useEffect(() => {
-    fetch("https://wedmac-be.onrender.com/api/artists/cards/", {
+    fetch("https://api.wedmacindia.com/api/artists/cards/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -203,11 +308,10 @@ const WhatsAppIcon = (props: any) => (
   useEffect(() => {
     if (!id) return;
 
-    fetch(`https://wedmac-be.onrender.com/api/artists/artist/${id}/`)
+    fetch(`https://api.wedmacindia.com/api/artists/artist/${id}/`)
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
-        
       })
       .then((data: ArtistDetail) => setArtist(data))
       .catch(() => toast.error("Failed to load artist details"))
@@ -243,7 +347,7 @@ const WhatsAppIcon = (props: any) => (
     setHelpErrors({});
     try {
       const res = await fetch(
-        "https://wedmac-be.onrender.com/api/public/contact-us/",
+        "https://api.wedmacindia.com/api/public/contact-us/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -406,18 +510,16 @@ const WhatsAppIcon = (props: any) => (
                           <Twitter className="w-4 h-4" />
                           Twitter
                         </Button>
-             <Button
-  variant="outline"
-  className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
-  onClick={() =>
-    window.open(getRandomLink(whatsappLinks), "_blank")
-  }
->
-  <WhatsAppIcon className="w-4 h-4" />
-  WhatsApp
-</Button>
-
-
+                        <Button
+                          variant="outline"
+                          className="border-pink-500 text-pink-500 w-full flex items-center justify-center gap-1"
+                          onClick={() =>
+                            window.open(getRandomLink(whatsappLinks), "_blank")
+                          }
+                        >
+                          <WhatsAppIcon className="w-4 h-4" />
+                          WhatsApp
+                        </Button>
                       </div>
 
                       <div className="flex gap-2 mb-4">
@@ -475,173 +577,306 @@ const WhatsAppIcon = (props: any) => (
                     </div>
 
                     {/* Album Tab Content */}
-{activeTab === "album" && (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {Array.isArray(artist.portfolio_photos) &&
-      artist.portfolio_photos.map((photoUrl: string, i: number) => (
-        <div
-          key={i}
-          className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
-        >
-          <Image
-            src={photoUrl}
-            alt={`Album ${i + 1}`}
-            width={200}
-            height={200}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      ))}
-  </div>
-)}
-
-
-
-
+                    {activeTab === "album" && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {Array.isArray(artist.portfolio_photos) &&
+                          artist.portfolio_photos.map(
+                            (photoUrl: string, i: number) => (
+                              <div
+                                key={i}
+                                className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
+                              >
+                                <Image
+                                  src={photoUrl}
+                                  alt={`Album ${i + 1}`}
+                                  width={200}
+                                  height={200}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                            )
+                          )}
+                      </div>
+                    )}
 
                     {/* Review Tab Content */}
                     {activeTab === "review" && (
                       <div className=" p-6 rounded-lg">
+                        {/* ===== Interactive Ratings Block (replace the old md:flex block) ===== */}
                         <div className="md:flex block gap-8">
-                          {/* Left Side - Overall Rating */}
+                          {/* Left Side - Overall Rating (dynamic) */}
                           <div className="text-center">
                             <div className="border border-[#D5D5D5] mb-3 p-4 ">
+                              {/* compute avg dynamically */}
                               <div className="text-5xl font-bold text-pink-500 mb-2">
-                                4.5
+                                {(() => {
+                                  // derive existing ratings from artistComments OR fallback to artist.rating
+                                  const existingRatings = artistComments.length
+                                    ? artistComments
+                                        .map((c) => Number(c.rating || 0))
+                                        .filter(Boolean)
+                                    : artist?.rating
+                                    ? [Number(artist.rating)]
+                                    : [];
+
+                                  const existingCount = existingRatings.length;
+                                  const existingSum = existingRatings.reduce(
+                                    (a, b) => a + b,
+                                    0
+                                  );
+                                  const existingAvg =
+                                    existingCount > 0
+                                      ? existingSum / existingCount
+                                      : 0;
+
+                                  // if user has selected a rating, show a preview average that includes it
+                                  const userSel =
+                                    Number(ratingForm.rating) || 0;
+
+                                  if (userSel > 0) {
+                                    // preview average including the user's selected rating
+                                    const previewAvg =
+                                      existingCount > 0
+                                        ? (existingSum + userSel) /
+                                          (existingCount + 1)
+                                        : userSel; // if no existing, preview is just the selected rating
+                                    return previewAvg.toFixed(1);
+                                  }
+
+                                  // otherwise show existing average (or artist.rating fallback)
+                                  if (existingCount > 0)
+                                    return existingAvg.toFixed(1);
+                                  return (artist?.rating ?? 0).toFixed(1);
+                                })()}
                               </div>
                               <div className="text-sm text-gray-600 text-[#00000099]">
                                 Total Rating
                               </div>
                             </div>
-                            <div className="flex justify-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className="w-4 h-4 fill-gray-300 text-gray-300"
-                                />
-                              ))}
+
+                            {/* Clickable stars for user to set rating */}
+                            <div
+                              className="flex justify-center gap-1 cursor-pointer select-none"
+                              aria-hidden
+                            >
+                              {[1, 2, 3, 4, 5].map((n) => {
+                                // show filled if n <= current selected rating (ratingForm.rating) otherwise outline
+                                const selected = Number(ratingForm.rating) >= n;
+                                return (
+                                  <button
+                                    key={n}
+                                    type="button"
+                                    onClick={() => {
+                                      setRatingForm((s) => ({
+                                        ...s,
+                                        rating: n,
+                                      }));
+                                      // make OTP input visible only if required later on submit
+                                    }}
+                                    className="p-1"
+                                    title={`Rate ${n} star${n > 1 ? "s" : ""}`}
+                                  >
+                                    <Star
+                                      className={`w-6 h-6 transition-transform ${
+                                        selected
+                                          ? "fill-pink-500 text-pink-500"
+                                          : "fill-gray-200 text-gray-300"
+                                      }`}
+                                    />
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            <div className="text-xs text-gray-500 mt-2">
+                              Click the stars to pick your rating
                             </div>
                           </div>
+
                           <div className="flex border-l border-gray-200 mb-6"></div>
 
-                          {/* Right Side - Rating Breakdown */}
-                          <div className="flex-1 space-y-2">
-                            {/* 5 Star */}
-                            <div className="flex items-center gap-6 ">
-                              <div className="flex gap-3">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-pink-500 text-pink-500"
-                                  />
-                                ))}
-                              </div>
-                              <div className="w-64 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-pink-500 h-2 rounded-full"
-                                  style={{ width: "60%" }}
-                                ></div>
-                              </div>
-                            </div>
+                          {/* Right Side - Rating Breakdown (dynamic if comments exist) */}
+                          <div className="flex-1 space-y-3">
+                            {(function () {
+                              // derive counts & percentages
+                              const counts = [0, 0, 0, 0, 0]; // index 0 => 5*, index 4 => 1*
+                              if (artistComments.length > 0) {
+                                artistComments.forEach((c) => {
+                                  const r = Math.max(
+                                    1,
+                                    Math.min(5, Number(c.rating || 0))
+                                  );
+                                  counts[5 - r] += 1; // 5 -> index 0, 1 -> index 4
+                                });
+                              }
 
-                            {/* 4 Star */}
-                            <div className="flex items-center gap-6">
-                              <div className="flex gap-3">
-                                {[...Array(4)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-pink-500 text-pink-500"
-                                  />
-                                ))}
-                                <Star className="w-4 h-4 fill-gray-300 text-gray-300" />
-                              </div>
-                              <div className="w-64 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-pink-500 h-2 rounded-full"
-                                  style={{ width: "10%" }}
-                                ></div>
-                              </div>
-                            </div>
+                              const total = counts.reduce((a, b) => a + b, 0);
 
-                            {/* 3 Star */}
-                            <div className="flex items-center gap-6">
-                              <div className="flex gap-3">
-                                {[...Array(3)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-pink-500 text-pink-500"
-                                  />
-                                ))}
-                                {[...Array(2)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-gray-300 text-gray-300"
-                                  />
-                                ))}
-                              </div>
-                              <div className="w-64 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-pink-500 h-2 rounded-full"
-                                  style={{ width: "10%" }}
-                                ></div>
-                              </div>
-                            </div>
+                              // fallback static (when no comments) — keep your previous visual %
+                              const fallbackPercents = [60, 10, 10, 0, 0];
 
-                            {/* 2 Star */}
-                            <div className="flex items-center gap-6">
-                              <div className="flex gap-3">
-                                {[...Array(2)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-pink-500 text-pink-500"
-                                  />
-                                ))}
-                                {[...Array(3)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-gray-300 text-gray-300"
-                                  />
-                                ))}
-                              </div>
-                              <div className="w-64 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-pink-500 h-2 rounded-full"
-                                  style={{ width: "0%" }}
-                                ></div>
-                              </div>
-                            </div>
+                              const rows = [5, 4, 3, 2, 1].map((star, idx) => {
+                                const count = total > 0 ? counts[idx] : 0;
+                                const pct =
+                                  total > 0
+                                    ? Math.round((count / total) * 100)
+                                    : fallbackPercents[idx];
+                                return { star, count, pct };
+                              });
 
-                            {/* 1 Star */}
-                            <div className="flex items-center gap-6">
-                              <div className="flex gap-3">
-                                <Star className="w-4 h-4 fill-pink-500 text-pink-500" />
-                                {[...Array(4)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className="w-4 h-4 fill-gray-300 text-gray-300"
-                                  />
-                                ))}
-                              </div>
-                              <div className="w-64 bg-gray-200 rounded-full h-2">
-                                <div
-                                  className="bg-pink-500 h-2 rounded-full"
-                                  style={{ width: "0%" }}
-                                ></div>
-                              </div>
-                            </div>
+                              return (
+                                <>
+                                  {rows.map((row) => (
+                                    <div
+                                      key={row.star}
+                                      className="flex items-center gap-4"
+                                    >
+                                      <div className="flex gap-2 items-center w-28">
+                                        <div className="flex items-center gap-1">
+                                          {[...Array(row.star)].map((_, i) => (
+                                            <Star
+                                              key={i}
+                                              className={`w-4 h-4 ${
+                                                row.star >= 4
+                                                  ? "fill-pink-500 text-pink-500"
+                                                  : "fill-pink-500 text-pink-500"
+                                              }`}
+                                            />
+                                          ))}
+                                        </div>
+                                        <span className="text-sm text-gray-600 ml-2">
+                                          {row.star}
+                                        </span>
+                                      </div>
+
+                                      <div className="flex-1">
+                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                          <div
+                                            className="bg-pink-500 h-2 rounded-full"
+                                            style={{ width: `${row.pct}%` }}
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="w-16 text-right text-sm text-gray-600">
+                                        {row.pct}%
+                                      </div>
+                                    </div>
+                                  ))}
+
+                                  {/* Optional: show counts and total */}
+                                  <div className="text-xs text-gray-500 mt-3">
+                                    {total > 0
+                                      ? `${total} ratings`
+                                      : `No detailed ratings yet`}
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                         </div>
+                        {/* ===== end interactive ratings block ===== */}
 
                         {/* Feedback Form */}
+                        {/* Feedback + Rating Form */}
                         <div className="mt-6">
-                          <Textarea
-                            placeholder="Tell us about your experience"
-                            className="mb-4 border-gray-300 bg-white"
-                            rows={6}
-                          />
-                          <Button className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium">
-                            Submit Feedback
-                          </Button>
+                          <form
+                            onSubmit={handleRatingSubmit}
+                            className="space-y-4"
+                          >
+                            <div className="grid md:grid-cols-2 gap-3">
+                              <Input
+                                name="name"
+                                placeholder="Your Name"
+                                value={ratingForm.name}
+                                onChange={handleRatingChange}
+                                className="mb-0"
+                              />
+                              <Input
+                                name="phone_number"
+                                placeholder="Phone Number"
+                                value={ratingForm.phone_number}
+                                onChange={handleRatingChange}
+                                className="mb-0"
+                              />
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-3">
+                              <Input
+                                name="location"
+                                placeholder="Location (City, State)"
+                                value={ratingForm.location}
+                                onChange={handleRatingChange}
+                              />
+
+                              <div>
+                                <label className="text-sm mb-1 block">
+                                  Rating
+                                </label>
+                                <select
+                                  name="rating"
+                                  value={String(ratingForm.rating)}
+                                  onChange={handleRatingChange as any}
+                                  className="w-full border p-2 rounded"
+                                >
+                                  <option value="5">5 — Excellent</option>
+                                  <option value="4">4 — Very Good</option>
+                                  <option value="3">3 — Good</option>
+                                  <option value="2">2 — Fair</option>
+                                  <option value="1">1 — Poor</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            {ratingOtpRequired && (
+                              <Input
+                                name="otp"
+                                placeholder="Enter OTP"
+                                value={ratingForm.otp}
+                                onChange={handleRatingChange}
+                              />
+                            )}
+
+                            <Textarea
+                              name="comment"
+                              placeholder="Tell us about your experience"
+                              className="mb-0"
+                              rows={6}
+                              value={ratingForm.comment}
+                              onChange={handleRatingChange}
+                            />
+
+                            <div className="flex items-center gap-3">
+                              <Button
+                                type="submit"
+                                className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium"
+                                disabled={ratingSubmitting}
+                              >
+                                {ratingSubmitting
+                                  ? "Submitting..."
+                                  : "Submit Feedback"}
+                              </Button>
+
+                              {/* Optional: clear/reset button */}
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setRatingForm({
+                                    phone_number: "",
+                                    otp: "",
+                                    name: "",
+                                    location: "",
+                                    comment: "",
+                                    rating: 5,
+                                  });
+                                  setRatingOtpRequired(false);
+                                }}
+                                className="rounded-none"
+                              >
+                                Reset
+                              </Button>
+                            </div>
+                          </form>
                         </div>
                       </div>
                     )}
@@ -664,18 +899,19 @@ const WhatsAppIcon = (props: any) => (
                   <div className="grid grid-cols-1 gap-6">
                     {alsoLike.slice(0, 1).map((a) => {
                       // pick best image: profile_photo_url or first portfolio photo
-                    const profileImageUrl = a.profile_photo_url || "/images/protfolio1.JPG";
+                      const profileImageUrl =
+                        a.profile_photo_url || "/images/protfolio1.JPG";
 
-const portfolioImageUrl =
-  a.portfolio_photos.find((p) => p.tag === "profile-photo")?.url ||
-  a.portfolio_photos[0]?.url ||
-  "/images/protfolio1.JPG";
+                      const portfolioImageUrl =
+                        a.portfolio_photos.find(
+                          (p) => p.tag === "profile-photo"
+                        )?.url ||
+                        a.portfolio_photos[0]?.url ||
+                        "/images/protfolio1.JPG";
 
                       return (
                         <Card key={a.id}>
                           <CardContent className="px-6 py-4">
-
-                            
                             <div className="relative mb-3">
                               <Image
                                 src={portfolioImageUrl}
@@ -730,7 +966,7 @@ const portfolioImageUrl =
               </div>
 
               {/* Makeup Certificate & Awards */}
-              <div className="border border-[#D5D5D5] rounded-xl p-4">
+              {/* <div className="border border-[#D5D5D5] rounded-xl p-4">
                 <h3 className="text-2xl font-inter font-[700] mb-4">
                   Makeup Certificate & Awards
                 </h3>
@@ -784,7 +1020,7 @@ const portfolioImageUrl =
                     </span>
                   </li>
                 </ul>
-              </div>
+              </div> */}
 
               {/* Follow Us On Social Media */}
               <div className="border border-[#D5D5D5] rounded-xl p-4">
@@ -935,63 +1171,63 @@ const portfolioImageUrl =
               </div>
 
               {/* Products Use */}
-           {/* Products Use */}
-<div className="border border-[#D5D5D5] rounded-xl p-4">
-  <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
-    Products Used
-  </h2>
+              {/* Products Use */}
+              <div className="border border-[#D5D5D5] rounded-xl p-4">
+                <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
+                  Products Used
+                </h2>
 
-  <div className="grid grid-cols-2 gap-3">
-    {[
-      "MAC",
-      "Estee Lauder",
-      "MARS",
-      "Color Pop",
-      "Maybelline",
-      "Loreal",
-      "PAC",
-      "Too Faced",
-      "Huda Beauty",
-      "Inglot",
-      "Charlotte Tilbury",
-      "Smashbox",
-      "Makeup Forever",
-      "Colorbar",
-      "Laura Mercier",
-      "Kylie Cosmetics",
-      "LAKMÉ",
-      "Nykaa",
-      "ELF",
-      "Fenty",
-    ].map((brand, i) => {
-      // safe check if artist and products_used exist
-      const used = Array.isArray(artist?.products_used)
-        ? artist!.products_used.some(
-            (p: string) => String(p).toLowerCase() === brand.toLowerCase()
-          )
-        : false;
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    "MAC",
+                    "Estee Lauder",
+                    "MARS",
+                    "Color Pop",
+                    "Maybelline",
+                    "Loreal",
+                    "PAC",
+                    "Too Faced",
+                    "Huda Beauty",
+                    "Inglot",
+                    "Charlotte Tilbury",
+                    "Smashbox",
+                    "Makeup Forever",
+                    "Colorbar",
+                    "Laura Mercier",
+                    "Kylie Cosmetics",
+                    "LAKMÉ",
+                    "Nykaa",
+                    "ELF",
+                    "Fenty",
+                  ].map((brand, i) => {
+                    // safe check if artist and products_used exist
+                    const used = Array.isArray(artist?.products_used)
+                      ? artist!.products_used.some(
+                          (p: string) =>
+                            String(p).toLowerCase() === brand.toLowerCase()
+                        )
+                      : false;
 
-      return (
-        <label
-          key={i}
-          className={`flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed ${
-            used ? "" : "opacity-60"
-          }`}
-        >
-          <input
-            type="checkbox"
-            checked={used}
-            readOnly
-            disabled
-            className="accent-[#FF577F] w-5 h-5"
-          />
-          <span>{brand}</span>
-        </label>
-      );
-    })}
-  </div>
-</div>
-
+                    return (
+                      <label
+                        key={i}
+                        className={`flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed ${
+                          used ? "" : "opacity-60"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={used}
+                          readOnly
+                          disabled
+                          className="accent-[#FF577F] w-5 h-5"
+                        />
+                        <span>{brand}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {/* Right Side - Travel Policy and CTA Banner */}
