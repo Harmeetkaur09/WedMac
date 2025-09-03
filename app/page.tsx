@@ -751,16 +751,19 @@ export default function HomePage() {
 
                       {/* Push Actions to Bottom */}
                       <div className="mt-auto flex space-x-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setShowModal(true)}
-                          className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                        >
-                          <span className="flex items-center gap-1">
-                            Book Now
-                            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                          </span>
-                        </Button>
+                                <Button
+  variant="outline"
+  onClick={() => {
+    setSelectedArtistId(artist.id);   // ✅ artist id set ho rhi h
+    setShowModal(true);
+  }}
+  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+>
+  <span className="flex items-center gap-1">
+    Book Now
+    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+  </span>
+</Button>
                         <Link
                           href={`/makeup-artist/details/${artist.id}`}
                           className="flex-1"
