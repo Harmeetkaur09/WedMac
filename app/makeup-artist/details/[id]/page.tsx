@@ -31,6 +31,8 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import BookModal from "./BookModal";
 interface ArtistDetail {
+  payment_methods: boolean;
+  travel_policy: string;
   location: any;
   id: number;
   full_name: string;
@@ -85,6 +87,7 @@ export default function MakeupArtistDetailPage() {
   const [helpName, setHelpName] = useState("");
   const [helpMobile, setHelpMobile] = useState("");
   const [helpMessage, setHelpMessage] = useState("");
+    const [paymentMethods, setPaymentMethods] = useState([]);
   const [helpErrors, setHelpErrors] = useState<{
     name?: string;
     mobile?: string;
@@ -810,9 +813,7 @@ export default function MakeupArtistDetailPage() {
                               />
 
                               <div>
-                                <label className="text-sm mb-1 block">
-                                  Rating
-                                </label>
+                               
                                 <select
                                   name="rating"
                                   value={String(ratingForm.rating)}
@@ -1163,12 +1164,19 @@ export default function MakeupArtistDetailPage() {
             {/* Left Side - Payment Policy and Products Use */}
             <div className="space-y-12">
               {/* Payment Policy */}
-              <div className="border border-[#D5D5D5] rounded-xl p-4">
-                <h2 className="text-2xl font-inter text-[#0d1b39] font-bold mb-6">
-                  Payment Policy
-                </h2>
-                <p className="text-gray-700 mb-4">Accept Online Payment</p>
-              </div>
+      <div className="border border-[#D5D5D5] rounded-xl p-4">
+  <h2 className="text-2xl font-inter text-[#0d1b39] font-bold mb-6">
+    Payment Policy
+  </h2>
+  <p className="text-gray-700 mb-4">
+    Accept{" "}
+    {Array.isArray(artist.payment_methods) && artist.payment_methods.length > 0
+      ? artist.payment_methods.map((method) => method.name).join(', ')
+      : "No payment methods"}{" "}
+    Payment
+  </p>
+</div>
+
 
               {/* Products Use */}
               {/* Products Use */}
@@ -1237,7 +1245,7 @@ export default function MakeupArtistDetailPage() {
                 <h2 className="text-2xl font-inter font-bold text-[#0d1b39] mb-6">
                   Travel Policy
                 </h2>
-                <p className="text-gray-700 mb-4">Only Travel Locally</p>
+                <p className="text-gray-700 mb-4">Only Travel {artist?.travel_policy}</p>
               </div>
 
               {/* Glam Up Banner */}
