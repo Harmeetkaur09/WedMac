@@ -26,18 +26,15 @@ type ApiPost = {
   hashtags?: string;
   author_name?: string;
   category?: string;
-  comments?: Comment[]; 
+  comments?: Comment[];
 };
 type Comment = {
-
   id?: number;
   name: string;
   location: string;
   comment: string;
   created_at?: string;
 };
-
-
 
 const sliderImages = [
   "/images/hero1.JPG",
@@ -71,7 +68,8 @@ export default function BlogDetailsPage() {
   const [otpRequired, setOtpRequired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-
+  // NEW: deleting comment state
+  const [deletingCommentId, setDeletingCommentId] = useState<number | null>(null);
 
   // ✅ Handle input
   function handleChange(
@@ -81,79 +79,71 @@ export default function BlogDetailsPage() {
   }
 
   // ✅ Submit comment
-  // ✅ Submit comment
+  async function handleSubmit() {
+    setSubmitting(true);
+    try {
+      const res = await fetch(
+        `https://api.wedmacindia.com/api/blogs/add-comment/${projectId}/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(commentForm),
+        }
+      );
 
-async function handleSubmit() {
-  setSubmitting(true);
-  try {
-    const res = await fetch(
-      `https://api.wedmacindia.com/api/blogs/add-comment/${projectId}/`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(commentForm),
+      const data = await res.json();
+
+      if (!res.ok) {
+        const errorMsg =
+          data.detail ||
+          (typeof data.error === "string" ? data.error : null) ||
+          data.error?.otp?.[0] ||
+          data.error?.message ||
+          "Unknown error";
+
+        if (errorMsg.toLowerCase().includes("otp")) {
+          await fetch(`https://api.wedmacindia.com/api/artist-comments/send-otp/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              phone_number: commentForm.phone_number,
+            }),
+          });
+          setOtpRequired(true);
+          toast.success("OTP Sent! Please check your phone.");
+        } else {
+          toast.error(errorMsg);
+        }
+      } else {
+        // ✅ Success
+        const newComment: Comment = {
+          id: data.id,
+          name: data.name ?? commentForm.name,
+          location: data.location ?? commentForm.location,
+          comment: data.comment ?? commentForm.comment,
+          created_at: data.created_at ?? new Date().toISOString(),
+        };
+
+        setComments((prev) => [...prev, newComment]);
+
+        setCommentForm({
+          phone_number: "",
+          otp: "",
+          name: "",
+          location: "",
+          comment: "",
+        });
+        setOtpRequired(false);
+
+        toast.success("Your comment has been submitted!");
       }
-    );
-
-    const data = await res.json();
-
-if (!res.ok) {
-  const errorMsg =
-    data.detail ||
-    (typeof data.error === "string" ? data.error : null) ||
-    data.error?.otp?.[0] ||
-    data.error?.message ||
-    "Unknown error";
-
-  if (errorMsg.toLowerCase().includes("otp")) {
-    await fetch(
-      `https://api.wedmacindia.com/api/artist-comments/send-otp/`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone_number: commentForm.phone_number,
-        }),
-      }
-    );
-    setOtpRequired(true);
-    toast.success("OTP Sent! Please check your phone.");
-  } else {
-    toast.error(errorMsg);
+    } catch (err) {
+      console.error("❌ Comment submit error:", err);
+      toast.error("Something went wrong. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
-} else {
-  // ✅ Success
-  const newComment: Comment = {
-    id: data.id,
-    name: data.name ?? commentForm.name,
-    location: data.location ?? commentForm.location,
-    comment: data.comment ?? commentForm.comment,
-    created_at: data.created_at ?? new Date().toISOString(),
-  };
-
-  setComments((prev) => [...prev, newComment]);
-
-  setCommentForm({
-    phone_number: "",
-    otp: "",
-    name: "",
-    location: "",
-    comment: "",
-  });
-  setOtpRequired(false);
-
-  toast.success("Your comment has been submitted!");
-}
-}
-
- catch (err) {
-   console.error("❌ Comment submit error:", err);
-   toast.error("Something went wrong. Try again.");
-  } finally {
-    setSubmitting(false);
-  }
-}
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,14 +151,6 @@ if (!res.ok) {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-  // Helper function to chunk array into groups of n
-  function chunkArray<T>(arr: T[], size: number): T[][] {
-    const chunks = [];
-    for (let i = 0; i < arr.length; i += size) {
-      chunks.push(arr.slice(i, i + size));
-    }
-    return chunks;
-  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -178,9 +160,7 @@ if (!res.ok) {
         process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
       const token =
         process.env.NEXT_PUBLIC_BLOG_TOKEN ||
-        (typeof window !== "undefined"
-          ? sessionStorage.getItem("accessToken")
-          : null);
+        (typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null);
 
       const url = `${apiBase}/api/blogs/get/${pid}/`;
       console.debug("🔎 Fetching blog by project_id:", url);
@@ -208,7 +188,7 @@ if (!res.ok) {
       try {
         const data = await fetchByProjectId(projectId);
         setPost(data);
-        setComments(data.comments || []); 
+        setComments(data.comments || []);
       } catch (err: any) {
         if (err.name !== "AbortError") {
           console.error("❌ Blog fetch error:", err);
@@ -265,27 +245,55 @@ if (!res.ok) {
     ));
   }
 
-  const popularTopics = [
-    "Life Style",
-    "Adventure",
-    "Technology",
-    "Education",
-    "Recipe",
-    "Design",
-  ];
+  // NEW: delete comment handler
+  const handleDeleteComment = async (commentId?: number) => {
+    if (!commentId) {
+      window.alert("Invalid comment id");
+      return;
+    }
 
-  const sidebarPosts = [
-    {
-      image: "/placeholder.svg?height=200&width=300",
-      title: "Increased Range, Faster Charge.",
-      category: "Technology",
-    },
-    {
-      image: "/placeholder.svg?height=200&width=300",
-      title: "Increased Range, Faster Charge.",
-      category: "Technology",
-    },
-  ];
+    const proceed = window.confirm("Are you sure you want to delete this comment?");
+    if (!proceed) return;
+
+    // ask for phone number as required by API
+    const phone = window.prompt(
+      "Enter phone number used to post the comment (include country code, e.g. 919876543210):",
+      commentForm.phone_number || ""
+    );
+    if (phone === null || phone.trim() === "") {
+      window.alert("Phone number is required to delete a comment.");
+      return;
+    }
+
+    setDeletingCommentId(commentId);
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
+      const url = `${apiBase}/api/blogs/delete-comment/${projectId}/${commentId}/`;
+
+      const resp = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: phone }),
+      });
+
+      const payload = await resp.json().catch(() => null);
+
+      if (!resp.ok) {
+        const msg = payload?.detail || payload?.message || `Failed: ${resp.status}`;
+        toast.error(msg);
+        return;
+      }
+
+      // remove from UI
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      toast.success("Comment deleted successfully");
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
+      toast.error("Failed to delete comment");
+    } finally {
+      setDeletingCommentId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -322,9 +330,7 @@ if (!res.ok) {
 
       <section className="py-12 -mt-20 relative z-30 px-4">
         <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
-          <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">
-            Blog
-          </h1>
+          <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Blog</h1>
         </div>
       </section>
 
@@ -355,222 +361,114 @@ if (!res.ok) {
             {/* Middle: Blog Post Content */}
             <div className="lg:col-span-2">
               {/* Dynamic category */}
-              <Badge className="bg-pink-500 rounded-md text-white mb-4">
-                {post?.category ?? "Print Design"}
-              </Badge>
+              <Badge className="bg-pink-500 rounded-md text-white mb-4">{post?.category ?? "Print Design"}</Badge>
 
               {/* Dynamic title */}
-              <h2 className="text-4xl font-inter font-bold mb-4">
-                {post?.title ?? "Growing a distributed product design team."}
-              </h2>
+              <h2 className="text-4xl font-inter font-bold mb-4">{post?.title ?? "Growing a distributed product design team."}</h2>
 
               {/* Dynamic meta */}
-              <p className="text-gray-600 text-xs mb-8">
-                {post?.author_name ?? "Jan Blomqvist"} |{" "}
-                {formatDate(post?.created_on)} | in{" "}
-                {post?.category ?? "Print Design"}
-              </p>
+              <p className="text-gray-600 text-xs mb-8">{post?.author_name ?? "Jan Blomqvist"} | {formatDate(post?.created_on)} | in {post?.category ?? "Print Design"}</p>
 
               {/* Dynamic content */}
               <div className="prose prose-lg max-w-none text-[#6c757d] break-words  font-inter leading-8 space-y-6 mb-8">
                 {loading && <p>Loading post content…</p>}
                 {error && <p className="text-red-600">Error: {error}</p>}
-                {!loading && !error && post && (
-                  <>{renderContent(post.content)}</>
-                )}
+                {!loading && !error && post && <>{renderContent(post.content)}</>}
 
                 {/* fallback static content if API not returned */}
               </div>
-              {/* Yeh code mujhe lagta hai 'Dynamic content' ke section ke baad add karna chahiye */}
+
               {post?.photos && post.photos.length > 0 && (
                 <div className="flex gap-4 mb-8">
-                  {/* Left side: First photo */}
                   <div className="flex-1">
-                    <Image
-                      src={post.photos[0]}
-                      alt={`Photo 1`}
-                      width={600}
-                      height={700}
-                      className="rounded-lg object-cover w-full h-full"
-                    />
+                    <Image src={post.photos[0]} alt={`Photo 1`} width={600} height={700} className="rounded-lg object-cover w-full h-full" />
                   </div>
-                  {/* Right side: Next two photos stacked vertically */}
                 </div>
               )}
 
-              {/* Additional static paragraph */}
+              <div className="flex flex-wrap gap-2 mb-2 border-y border-gray-200 py-5">{renderHashtags(post?.hashtags)}</div>
 
-              {/* Dynamic tags from hashtags */}
-              <div className="flex flex-wrap gap-2 mb-2 border-y border-gray-200 py-5">
-                {renderHashtags(post?.hashtags)}
-                {/* keep some static tags as fallback */}
-                {!post?.hashtags && (
-                  <>
-                    <Badge
-                      variant="secondary"
-                      className="bg-[#e26d5c] rounded-lg h-8 text-white"
-                    >
-                      Life Style
-                    </Badge>
-                    <Badge
-                      variant="secondary"
-                      className="bg-[#81b29a] rounded-lg h-8 text-white"
-                    >
-                      Education
-                    </Badge>
-                  </>
-                )}
-              </div>
-
-              {/* Author Profile (static except name) */}
               <div className="flex items-center gap-4 p-2 mb-2">
                 <div>
-                  <h3 className="text-xl font-inter font-[500] mb-3">
-                    BY {post?.author_name ?? "Jan Blomqvist"},{" "}
-                    {formatDate(post?.created_on)}
-                  </h3>
+                  <h3 className="text-xl font-inter font-[500] mb-3">BY {post?.author_name ?? "Jan Blomqvist"}, {formatDate(post?.created_on)}</h3>
                 </div>
               </div>
 
               {/* Comments Section (static) */}
-     <div className="mb-12">
-  <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">
-    {comments.length} comments
-  </h3>
-  <div className="space-y-8">
-    {comments.map((c, idx) => (
-      <div
-        key={c.id ?? idx}
-        className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0"
-      >
-        <div className="mb-2">
-          <h4 className="font-semibold font-inter">{c.name}</h4>
-          <p className="text-sm text-gray-500 py-1">
-            {c.location} • {formatDate(c.created_at)}
-          </p>
-        </div>
-        <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">
-          {c.comment}
-        </p>
-      </div>
-    ))}
-  </div>
-</div>
+              <div className="mb-12">
+                <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">{comments.length} comments</h3>
+                <div className="space-y-8">
+                  {comments.map((c, idx) => (
+                    <div key={c.id ?? idx} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                      <div className="mb-2">
+                        <h4 className="font-semibold font-inter">{c.name}</h4>
+                        <p className="text-sm text-gray-500 py-1">{c.location} • {formatDate(c.created_at)}</p>
+                      </div>
+                      <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">{c.comment}</p>
 
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(c.comment || ""); toast.success("Comment copied") }}>Copy</Button>
 
+                        {/* Delete button (visible for all; server will decide auth) */}
+                        <Button size="sm" className="text-white bg-[#FF577F] hover:bg-[#FF3D68]" onClick={() => handleDeleteComment(c.id)} disabled={deletingCommentId === c.id}>
+                          {deletingCommentId === c.id ? "Deleting..." : "Delete"}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* Add Comment Form */}
               <div>
-                <h3 className="text-2xl font-[600] font-inter mb-6">
-                  Add comment
-                </h3>
+                <h3 className="text-2xl font-[600] font-inter mb-6">Add comment</h3>
 
-                <Input
-                  name="name"
-                  placeholder="Your Name"
-                  value={commentForm.name}
-                  onChange={handleChange}
-                  className="mb-3"
-                />
-                <Input
-                  name="phone_number"
-                  placeholder="Phone Number"
-                  value={commentForm.phone_number}
-                  onChange={handleChange}
-                  className="mb-3"
-                />
-                <Input
-                  name="location"
-                  placeholder="Location"
-                  value={commentForm.location}
-                  onChange={handleChange}
-                  className="mb-3"
-                />
+                <Input name="name" placeholder="Your Name" value={commentForm.name} onChange={handleChange} className="mb-3" />
+                <Input name="phone_number" placeholder="Phone Number" value={commentForm.phone_number} onChange={handleChange} className="mb-3" />
+                <Input name="location" placeholder="Location" value={commentForm.location} onChange={handleChange} className="mb-3" />
 
-                {otpRequired && (
-                  <Input
-                    name="otp"
-                    placeholder="Enter OTP"
-                    value={commentForm.otp}
-                    onChange={handleChange}
-                    className="mb-3"
-                  />
-                )}
+                {otpRequired && <Input name="otp" placeholder="Enter OTP" value={commentForm.otp} onChange={handleChange} className="mb-3" />}
 
-                <Textarea
-                  name="comment"
-                  placeholder="Your message..."
-                  rows={5}
-                  value={commentForm.comment}
-                  onChange={handleChange}
-                  className="mb-4"
-                />
+                <Textarea name="comment" placeholder="Your message..." rows={5} value={commentForm.comment} onChange={handleChange} className="mb-4" />
 
-                <Button
-                  className="bg-pink-500 hover:bg-pink-600 text-white"
-                  disabled={submitting}
-                  onClick={handleSubmit}
-                >
-                  {submitting ? "Submitting..." : "Submit Comment"}
-                </Button>
+                <Button className="bg-pink-500 hover:bg-pink-600 text-white" disabled={submitting} onClick={handleSubmit}>{submitting ? "Submitting..." : "Submit Comment"}</Button>
               </div>
             </div>
 
             {/* Right Sidebar: Popular Topics & Sidebar Posts */}
             <div className="space-y-8 hidden lg:block">
               <div className="border border-[#D5D5D5] rounded-xl p-4">
-                <h3 className="text-xl font-inter font-[500] mb-4">
-                  Popular Topics:
-                </h3>
+                <h3 className="text-xl font-inter font-[500] mb-4">Popular Topics:</h3>
                 <div className="flex flex-wrap gap-2">
-                  {popularTopics.map((topic, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="bg-gray-100 font-inter rounded-md text-[#212529] hover:bg-pink-100 hover:text-pink-600 cursor-pointer"
-                    >
-                      {topic}
-                    </Badge>
+                  {[
+                    "Life Style",
+                    "Adventure",
+                    "Technology",
+                    "Education",
+                    "Recipe",
+                    "Design",
+                  ].map((topic, index) => (
+                    <Badge key={index} variant="outline" className="bg-gray-100 font-inter rounded-md text-[#212529] hover:bg-pink-100 hover:text-pink-600 cursor-pointer">{topic}</Badge>
                   ))}
                 </div>
               </div>
 
               {post?.photos && post.photos.length >= 5 && (
                 <div className="space-y-6">
-                  {/* Card 1 with first 2 images */}
                   <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
-                      Banner 1
-                    </p>
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 1</p>
                     <div className="grid grid-cols-2 gap-2">
-                      {post.photos.slice(0, 2).map((imgSrc:any, idx:any) => (
-                        <Image
-                          key={idx}
-                          src={imgSrc}
-                          alt={`Banner 1 Photo ${idx + 1}`}
-                          width={300}
-                          height={200}
-                          className="w-full h-full object-cover rounded-md"
-                        />
+                      {post.photos.slice(0, 2).map((imgSrc: any, idx: any) => (
+                        <Image key={idx} src={imgSrc} alt={`Banner 1 Photo ${idx + 1}`} width={300} height={200} className="w-full h-full object-cover rounded-md" />
                       ))}
                     </div>
                   </Card>
 
-                  {/* Card 2 with next 3 images */}
                   <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
-                      Banner 2
-                    </p>
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 2</p>
                     <div className="grid grid-cols-3 gap-2">
-                      {post.photos.slice(2, 5).map((imgSrc:any, idx:any) => (
-                        <Image
-                          key={idx}
-                          src={imgSrc}
-                          alt={`Banner 2 Photo ${idx + 1}`}
-                          width={300}
-                          height={200}
-                          className="w-full h-full object-cover rounded-md"
-                        />
+                      {post.photos.slice(2, 5).map((imgSrc: any, idx: any) => (
+                        <Image key={idx} src={imgSrc} alt={`Banner 2 Photo ${idx + 1}`} width={300} height={200} className="w-full h-full object-cover rounded-md" />
                       ))}
                     </div>
                   </Card>

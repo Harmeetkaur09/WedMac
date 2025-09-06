@@ -46,6 +46,7 @@ interface ArtistDetail {
   about: string;
   instagram_url: string;
   starting_price: number;
+  profile_photo_url: string;
   portfolio_photos: string[] | null;
   products_used?: string[];
 }
@@ -277,26 +278,61 @@ export default function MakeupArtistDetailPage() {
     }
     return "-";
   }
-  useEffect(() => {
-    fetch("https://api.wedmacindia.com/api/artists/cards/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        /* whatever your API expects */
-      }),
+// replace the existing useEffect that fetches cards with this block
+useEffect(() => {
+  setAlsoLoading(true);
+
+  fetch("https://api.wedmacindia.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ /* keep same body you had */ }),
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      // normalize possible response shapes
+      let cards: any[] = [];
+      if (Array.isArray(data)) cards = data;
+      else if (Array.isArray(data.results)) cards = data.results;
+      else if (Array.isArray((data as any).data)) cards = (data as any).data;
+      else if (Array.isArray((data as any).cards)) cards = (data as any).cards;
+      else cards = [];
+
+      const suggestions = cards.filter((c: any) => {
+        if (!c) return false;
+        if (Number(c.id) === Number(id)) return false;
+
+        // 1) top-level string `tag: "popular"`
+        const topLevelTag = String(c.tag ?? "").toLowerCase().trim();
+
+        // 2) top-level array `tags: ["popular", ...]`
+        const tagsArray =
+          Array.isArray(c.tags) && c.tags.map((t: any) => String(t).toLowerCase());
+
+        // 3) portfolio photo tags
+        const portfolioHasPopular =
+          Array.isArray(c.portfolio_photos) &&
+          c.portfolio_photos.some(
+            (p: any) => String(p?.tag ?? "").toLowerCase() === "popular"
+          );
+
+        const hasPopular =
+          topLevelTag === "popular" ||
+          (Array.isArray(tagsArray) && tagsArray.includes("popular")) ||
+          portfolioHasPopular;
+
+        return hasPopular;
+      });
+
+      // keep first suggestion (same as your previous slice(0,1))
+      setAlsoLike(suggestions.slice(0, 1));
     })
-      .then((r) => r.json())
-      .then((data) => {
-        const cards = Array.isArray(data.results) ? data.results : [];
-        // e.g. skip the current artist, then pick the first one
-        const suggestions = cards.filter(
-          (c: CardArtist) => c.id !== Number(id)
-        );
-        setAlsoLike(suggestions.slice(0, 1));
-      })
-      .catch(() => toast.error("Failed to load suggestions"))
-      .finally(() => setAlsoLoading(false));
-  }, [id]);
+    .catch((err) => {
+      console.error("Failed to load suggestions", err);
+      toast.error("Failed to load suggestions");
+    })
+    .finally(() => setAlsoLoading(false));
+}, [id]);
+
 
   const toggleSaveArtist = (id: number) => {
     setSavedArtists((prev) => {
@@ -427,7 +463,7 @@ export default function MakeupArtistDetailPage() {
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-1/3   p-4">
                       <Image
-                        src="/images/protfolio4.jpg?height=300&width=300"
+                        src={artist.profile_photo_url}
                         alt="Avneet Kaur"
                         width={300}
                         height={300}
