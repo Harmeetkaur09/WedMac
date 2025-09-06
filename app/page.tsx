@@ -326,39 +326,65 @@ export default function HomePage() {
     }
   };
 
-  useEffect(() => {
-    // Build filters based on selected tab
-    const filters: Record<string, string> = {};
-    if (selected !== "All") {
-      // For Mumbai and Pune, state is Maharashtra; for others, state equals selected
-      filters.state =
-        selected === "Mumbai" || selected === "Pune" ? "Maharashtra" : selected;
-      // city equals the selected tab
-      filters.city = selected;
-    }
-    setLoading(true);
+useEffect(() => {
+  // Build filters based on selected tab
+  const filters: Record<string, string> = {};
+  if (selected !== "All") {
+    filters.state =
+      selected === "Mumbai" || selected === "Pune" ? "Maharashtra" : selected;
+    filters.city = selected;
+  }
+  setLoading(true);
 
-    fetch("https://api.wedmacindia.com/api/artists/cards/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filters }),
+  fetch("https://api.wedmacindia.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ filters }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
     })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        const cards = Array.isArray(data.results) ? data.results : [];
-        setArtists(cards.slice(0, 3));
-      })
-      .catch((err) => {
-        console.error("Artist fetch failed:", err);
-        toast.error("Failed to load artists");
-      })
-      .finally(() => {
-        setLoading(false);
+    .then((data) => {
+      // normalize possible response shapes
+      let cards: any[] = [];
+      if (Array.isArray(data)) cards = data;
+      else if (Array.isArray((data as any).results)) cards = (data as any).results;
+      else if (Array.isArray((data as any).data)) cards = (data as any).data;
+      else cards = [];
+
+      // Filter only tag === "top" (support multiple shapes)
+      const topCards = cards.filter((c: any) => {
+        if (!c) return false;
+        const topLevelTag = String(c.tag ?? "").toLowerCase().trim();
+        const tagsArray =
+          Array.isArray(c.tags) && c.tags.map((t: any) => String(t).toLowerCase());
+        const portfolioHasTop =
+          Array.isArray(c.portfolio_photos) &&
+          c.portfolio_photos.some(
+            (p: any) => String(p?.tag ?? "").toLowerCase() === "top"
+          );
+
+        return (
+          topLevelTag === "top" ||
+          (Array.isArray(tagsArray) && tagsArray.includes("top")) ||
+          portfolioHasTop
+        );
       });
-  }, [selected]);
+
+      // limit to 3 results only
+      setArtists(topCards.slice(0, 3));
+    })
+    .catch((err) => {
+      console.error("Artist fetch failed:", err);
+      toast.error("Failed to load artists");
+      setArtists([]);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+}, [selected]);
+
 
   return (
     <>
