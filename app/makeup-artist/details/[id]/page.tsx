@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/collapsible";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import BookModal from "./BookModal";
 interface ArtistDetail {
@@ -201,35 +201,12 @@ export default function MakeupArtistDetailPage() {
     }
   };
 
-  const pricing = [
-    {
-      title: "Bridal HD Makeup – ₹12,000 per function",
-      details:
-        "Includes one bridal makeup look (up to 3 hours), a pre-wedding trial session, professional HD foundations, false lashes, and touch-up kit. Travel within city limits included.",
-    },
-    {
-      title: "Bridal HD Makeup + Hair Styling – ₹15,000 per function",
-      details:
-        "Everything in the ₹12,000 package, plus bridal hair styling (up to 3 hours), premium hair accessories, and on-site hair touch-ups throughout the event.",
-    },
-    {
-      title: "Party & Reception Makeup – ₹18,000 per function",
-      details:
-        "Party-ready HD makeup (up to 2 hours), false lashes, shimmer/highlight accents, and one hour of post-event touch-up support to keep you looking flawless.",
-    },
-    {
-      title: "Destination Bridal Makeup – ₹25,000 per function",
-      details:
-        "All inclusions of the ₹15,000 package, plus artist travel and accommodation (within India), an extra trial session, and 24×7 on-call support on your wedding day.",
-    },
-    {
-      title: "Airbrush Makeup Package – ₹18,000 per function",
-      details:
-        "Airbrush foundation application (ideal for photography), HD contouring, waterproof finishes, plus a mini trial to test coverage and tone ahead of your event.",
-    },
-  ];
+
+const [showPopular, setShowPopular] = useState(true); // NEW: control delayed reveal
+
   const [alsoLike, setAlsoLike] = useState<CardArtist[]>([]);
   const [alsoLoading, setAlsoLoading] = useState(true);
+  
   const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
@@ -286,59 +263,69 @@ export default function MakeupArtistDetailPage() {
     return "-";
   }
 // replace the existing useEffect that fetches cards with this block
+const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+const [currentIndex, setCurrentIndex] = useState(0);
+const [suggestions, setSuggestions] = useState<CardArtist[]>([]);
+
 useEffect(() => {
-  setAlsoLoading(true);
+  setAlsoLoading(true); // ✅ start loading
 
   fetch("https://api.wedmacindia.com/api/artists/cards/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ /* keep same body you had */ }),
+    body: JSON.stringify({}),
   })
     .then((r) => r.json())
     .then((data) => {
-      // normalize possible response shapes
       let cards: any[] = [];
       if (Array.isArray(data)) cards = data;
       else if (Array.isArray(data.results)) cards = data.results;
       else if (Array.isArray((data as any).data)) cards = (data as any).data;
       else if (Array.isArray((data as any).cards)) cards = (data as any).cards;
-      else cards = [];
 
-      const suggestions = cards.filter((c: any) => {
+      const filtered = cards.filter((c: any) => {
         if (!c) return false;
-        if (Number(c.id) === Number(id)) return false;
+        if (String(c.id) === String(id)) return false;
 
-        // 1) top-level string `tag: "popular"`
         const topLevelTag = String(c.tag ?? "").toLowerCase().trim();
-
-        // 2) top-level array `tags: ["popular", ...]`
         const tagsArray =
           Array.isArray(c.tags) && c.tags.map((t: any) => String(t).toLowerCase());
 
-        // 3) portfolio photo tags
         const portfolioHasPopular =
           Array.isArray(c.portfolio_photos) &&
           c.portfolio_photos.some(
             (p: any) => String(p?.tag ?? "").toLowerCase() === "popular"
           );
 
-        const hasPopular =
+        return (
           topLevelTag === "popular" ||
           (Array.isArray(tagsArray) && tagsArray.includes("popular")) ||
-          portfolioHasPopular;
-
-        return hasPopular;
+          portfolioHasPopular
+        );
       });
 
-      // keep first suggestion (same as your previous slice(0,1))
-      setAlsoLike(suggestions.slice(0, 1));
+      setSuggestions(filtered);
     })
-    .catch((err) => {
-      console.error("Failed to load suggestions", err);
-      toast.error("Failed to load suggestions");
-    })
-    .finally(() => setAlsoLoading(false));
+    .catch((err) => console.error("Failed to load suggestions", err))
+    .finally(() => {
+      setAlsoLoading(false); // ✅ stop loading
+    });
 }, [id]);
+
+
+// Auto-change every 5s
+useEffect(() => {
+  if (suggestions.length === 0) return;
+  const timer = setInterval(() => {
+    setCurrentIndex((prev) => (prev + 1) % suggestions.length);
+  }, 5000);
+  return () => clearInterval(timer);
+}, [suggestions]);
+
+
+
+
 
 
   const toggleSaveArtist = (id: number) => {
@@ -941,71 +928,89 @@ useEffect(() => {
                   <p className="text-center">Loading suggestions…</p>
                 ) : (
                   <div className="grid grid-cols-1 gap-6">
-                    {alsoLike.slice(0, 1).map((a) => {
-                      // pick best image: profile_photo_url or first portfolio photo
-                      const profileImageUrl =
-                        a.profile_photo_url || "/images/protfolio1.JPG";
+{!showPopular ? (
+  <Card>
+    <CardContent className="px-6 py-4">
+      <div className="relative mb-3 animate-pulse">
+        <div className="w-full h-48 bg-gray-200 rounded-lg" />
+        <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+          Popular
+        </Badge>
+      </div>
+      <div className="flex items-center mb-4">
+        <div className="w-10 h-10 rounded-full bg-gray-200 mr-3" />
+        <div className="flex-1">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
+        </div>
+        <div className="w-10 h-4 bg-gray-200 rounded ml-3" />
+      </div>
+      <div className="w-full h-10 bg-gray-200 rounded" />
+    </CardContent>
+  </Card>
+) : (
+ suggestions.length > 0 ? (
+  <Card key={suggestions[currentIndex].id}>
+    <CardContent className="px-6 py-4">
+      <div className="relative mb-3">
+        <Image
+          src={
+            suggestions[currentIndex].portfolio_photos[0]?.url ||
+            "/images/protfolio1.JPG"
+          }
+          alt={suggestions[currentIndex].full_name}
+          width={300}
+          height={200}
+          className="w-full h-48 object-cover rounded-lg"
+        />
+        <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+          Popular
+        </Badge>
+      </div>
+      <div className="flex items-center mb-4">
+        <Image
+          src={
+            suggestions[currentIndex].profile_photo_url ||
+            "/images/protfolio1.JPG"
+          }
+          alt={suggestions[currentIndex].full_name}
+          width={40}
+          height={40}
+          className="w-10 h-10 rounded-full mr-3 object-cover"
+        />
+        <div className="flex-1">
+          <h4 className="font-semibold">{suggestions[currentIndex].full_name}</h4>
+          <div className="flex items-center text-sm text-gray-500">
+            <MapPin className="w-4 h-4 mr-1 text-pink-500" />
+            <span>{formatLocation(suggestions[currentIndex].location)}</span>
+          </div>
+        </div>
+        <div className="flex items-center text-sm text-pink-500">
+          <Star className="w-4 h-4" />
+          <span className="ml-1">
+            {suggestions[currentIndex].average_rating.toFixed(1)}
+          </span>
+        </div>
+      </div>
+      <Link href={`/makeup-artist/details/${suggestions[currentIndex].id}`}>
+        <Button
+          size="sm"
+          className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
+        >
+          View Profile
+          <ArrowUpRight className="w-4 h-4" />
+        </Button>
+      </Link>
+    </CardContent>
+  </Card>
+) : (
+  <p className="text-center">No popular artists found.</p>
+)
 
-                      const portfolioImageUrl =
-                        a.portfolio_photos.find(
-                          (p) => p.tag === "profile-photo"
-                        )?.url ||
-                        a.portfolio_photos[0]?.url ||
-                        "/images/protfolio1.JPG";
+)}
 
-                      return (
-                        <Card key={a.id}>
-                          <CardContent className="px-6 py-4">
-                            <div className="relative mb-3">
-                              <Image
-                                src={portfolioImageUrl}
-                                alt={a.full_name}
-                                width={300}
-                                height={200}
-                                className="w-full h-48 object-cover rounded-lg"
-                              />
-                              <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
-                                Popular
-                              </Badge>
-                            </div>
-
-                            <div className="flex items-center mb-4">
-                              <Image
-                                src={profileImageUrl}
-                                alt={a.full_name}
-                                width={40}
-                                height={40}
-                                className="w-10 h-10 rounded-full mr-3 object-cover"
-                              />
-                              <div className="flex-1">
-                                <h4 className="font-semibold">{a.full_name}</h4>
-                                <div className="flex items-center text-sm text-gray-500">
-                                  <MapPin className="w-4 h-4 mr-1 text-pink-500" />
-                                  <span>{formatLocation(a.location)}</span>
-                                </div>
-                              </div>
-                              <div className="flex items-center text-sm text-pink-500">
-                                <Star className="w-4 h-4" />
-                                <span className="ml-1">
-                                  {a.average_rating.toFixed(1)}
-                                </span>
-                              </div>
-                            </div>
-
-                            <Link href={`/makeup-artist/details/${a.id}`}>
-                              <Button
-                                size="sm"
-                                className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
-                              >
-                                View Profile
-                                <ArrowUpRight className="w-4 h-4" />
-                              </Button>
-                            </Link>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
+  
+  </div>
                 )}
               </div>
 
@@ -1293,7 +1298,7 @@ useEffect(() => {
                 <h2 className="text-2xl font-inter font-bold text-[#0d1b39] mb-6">
                   Travel Policy
                 </h2>
-                <p className="text-gray-700 mb-4">Only Travel {artist?.travel_policy}</p>
+                <p className="text-gray-700 mb-4">Travel {artist?.travel_policy}</p>
               </div>
 
               {/* Glam Up Banner */}
