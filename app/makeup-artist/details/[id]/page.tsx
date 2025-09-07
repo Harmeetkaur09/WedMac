@@ -31,6 +31,14 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import BookModal from "./BookModal";
 interface ArtistDetail {
+   services: {
+    id: number;
+    name: string;
+    description: string;
+    price: number | string;   // backend से कभी string भी आ सकता है
+    created_at?: string;
+    updated_at?: string;
+  }[];
   payment_methods: boolean;
   travel_policy: string;
   location: any;
@@ -41,7 +49,6 @@ interface ArtistDetail {
   bio: string;
   rating: number;
   experience_years: number;
-  services: string[];
   profile_image: string | null;
   about: string;
   instagram_url: string;
@@ -1172,26 +1179,31 @@ useEffect(() => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-8 px-4 bg-white">
-        <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
-          <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
-          <div className="space-y-4">
-            {pricing.map((pkg, i) => (
-              <Collapsible key={i}>
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
-                  <span className="text-[#FF577F] text-sm font-medium">
-                    {pkg.title}
-                  </span>
-                  <ChevronDown className="w-5 h-5 text-[#FF577F]" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-4 rounded-b-lg bg-gray-50">
-                  <p className="text-gray-600 text-sm">{pkg.details}</p>
-                </CollapsibleContent>
-              </Collapsible>
-            ))}
-          </div>
-        </div>
-      </section>
+     <section className="py-8 px-4 bg-white">
+  <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
+    <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
+    <div className="space-y-4">
+      {Array.isArray(artist.services) && artist.services.length > 0 ? (
+        artist.services.map((pkg) => (
+          <Collapsible key={pkg.id}>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
+              <span className="text-[#FF577F] text-sm font-medium">
+                {pkg.name} – ₹{Number(pkg.price).toLocaleString("en-IN")} per function
+              </span>
+              <ChevronDown className="w-5 h-5 text-[#FF577F]" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="p-4 rounded-b-lg bg-gray-50">
+              <p className="text-gray-600 text-sm">{pkg.description}</p>
+            </CollapsibleContent>
+          </Collapsible>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500">No services listed</p>
+      )}
+    </div>
+  </div>
+</section>
+
 
       {/* Policies and Products Section */}
       <section className="py-16 px-4 ">

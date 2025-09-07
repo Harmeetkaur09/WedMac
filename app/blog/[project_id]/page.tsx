@@ -406,14 +406,14 @@ export default function BlogDetailsPage() {
                       </div>
                       <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">{c.comment}</p>
 
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(c.comment || ""); toast.success("Comment copied") }}>Copy</Button>
+                      {/* <div className="flex gap-2"> */}
+                        {/* <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(c.comment || ""); toast.success("Comment copied") }}>Copy</Button> */}
 
                         {/* Delete button (visible for all; server will decide auth) */}
-                        <Button size="sm" className="text-white bg-[#FF577F] hover:bg-[#FF3D68]" onClick={() => handleDeleteComment(c.id)} disabled={deletingCommentId === c.id}>
+                        {/* <Button size="sm" className="text-white bg-[#FF577F] hover:bg-[#FF3D68]" onClick={() => handleDeleteComment(c.id)} disabled={deletingCommentId === c.id}>
                           {deletingCommentId === c.id ? "Deleting..." : "Delete"}
-                        </Button>
-                      </div>
+                        </Button> */}
+                      {/* </div> */}
                     </div>
                   ))}
                 </div>
