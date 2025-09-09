@@ -683,14 +683,14 @@ useEffect(() => {
             {loading ? (
               <p className="text-center">Loading...</p>
             ) : (
-              <div
-                className={
-                  artists.length < 3
-                    ? "flex justify-center gap-8 max-w-2xl mx-auto"
-                    : "grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-                }
-              >
-                {artists.map((artist) => (
+<div
+  className={`grid gap-4 max-w-2xl mx-auto ${
+    artists.length === 1 ? "md:grid-cols-1 justify-items-center" :
+    artists.length === 2 ? "md:grid-cols-2 justify-items-center" :
+    "grid-cols-1 md:grid-cols-3"
+  }`}
+>
+  {artists.slice(0, 3).map((artist) => (
                   <div
                     key={artist.id}
                     className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
