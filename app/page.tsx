@@ -18,7 +18,7 @@ import {
   Volume2,
 } from "lucide-react";
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence,useAnimation  } from "framer-motion";
 
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
@@ -91,6 +91,42 @@ export default function HomePage() {
       setSelectedCity("");
     }
   }, [selectedState]);
+ const sliderRef = useRef<HTMLDivElement>(null);
+const frameRef = useRef<number | null>(null);
+const [offset, setOffset] = useState(0);
+const [paused, setPaused] = useState(false);
+
+useEffect(() => {
+  if (!sliderRef.current) return;
+
+  const totalWidth = sliderRef.current.scrollWidth; // full duplicated width
+  let x = 0;
+
+  const tick = () => {
+    if (!paused) {
+      x -= 1; // speed px/frame
+
+      // Jab ek loop complete ho jaye (poora duplicate chal gaya)
+      if (Math.abs(x) >= totalWidth / 2) {
+        // abhi yaha /2 ka use karo because artists twice render hue hai
+        x = 0; // seamlessly reset
+      }
+
+      setOffset(x);
+    }
+    frameRef.current = requestAnimationFrame(tick);
+  };
+
+  frameRef.current = requestAnimationFrame(tick);
+  return () => {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+  };
+}, [artists, paused]);
+
+
+
+
+
   // City options by state
 
   const videos = [
@@ -373,8 +409,7 @@ useEffect(() => {
       });
 
       // limit to 3 results only
-      setArtists(topCards.slice(0, 3));
-    })
+setArtists(topCards);    })
     .catch((err) => {
       console.error("Artist fetch failed:", err);
       toast.error("Failed to load artists");
@@ -646,176 +681,169 @@ useEffect(() => {
         </section>
 
         {/* Artist Profiles Section */}
-        <section className="py-8 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-6">
-              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
-                Artist Profiles
-              </h2>
+     {/* Artist Profiles Section */}
+<section className="py-8 bg-white">
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-6">
+      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
+        Artist Profiles
+      </h2>
 
-              <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
-                {tabs.map((tab) => (
-                  <div
-                    key={tab}
-                    className="relative cursor-pointer"
-                    onClick={() => setSelected(tab)}
-                  >
-                    {selected === tab && (
-                      <div className="absolute item-center -top-2.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-white shadow-md z-0 px-11 py-6 rounded-[25px] transition-colors"></div>
-                    )}
-                    <span
-                      className={`relative z-10 px-2 font-[400] transition-colors text-sm sm:text-base ${
-                        selected === tab
-                          ? "text-rose-500"
-                          : "text-black hover:text-rose-500"
-                      }`}
-                    >
-                      {tab}
+      <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
+        {tabs.map((tab) => (
+          <div
+            key={tab}
+            className="relative cursor-pointer"
+            onClick={() => setSelected(tab)}
+          >
+            {selected === tab && (
+              <div className="absolute item-center -top-2.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-white shadow-md z-0 px-11 py-6 rounded-[25px] transition-colors"></div>
+            )}
+            <span
+              className={`relative z-10 px-2 font-[400] transition-colors text-sm sm:text-base ${
+                selected === tab
+                  ? "text-rose-500"
+                  : "text-black hover:text-rose-500"
+              }`}
+            >
+              {tab}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
+
+  {loading ? (
+  <p className="text-center">Loading...</p>
+) : (
+ <div
+  className="relative overflow-hidden"
+  onMouseEnter={() => setPaused(true)}
+  onMouseLeave={() => setPaused(false)}
+>
+  <motion.div
+    ref={sliderRef}
+    className="flex space-x-6"
+    style={{ x: offset }}
+  >
+  {[...artists, ...artists].map((artist, idx) => (
+        <div
+          key={idx}
+          className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+        >
+          {/* Portfolio Grid */}
+          <div className="flex gap-2 p-4 h-[250px]">
+            <Image
+              src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
+              alt="Artist Work"
+              width={250}
+              height={220}
+              className="rounded-lg object-cover w-[65%] h-full"
+            />
+            <div className="flex flex-col gap-2 w-[35%]">
+              <Image
+                src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
+                alt="Artist Work"
+                width={100}
+                height={120}
+                className="rounded-lg object-cover w-full h-[130px]"
+              />
+              <Image
+                src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
+                alt="Artist Work"
+                width={100}
+                height={90}
+                className="rounded-lg object-cover w-full h-[88px]"
+              />
+            </div>
+          </div>
+
+          {/* Info & Avatar */}
+          <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center">
+                <Image
+                  src={
+                    artist.profile_photo_url ||
+                    "/placeholder.svg?height=50&width=50"
+                  }
+                  alt={artist.full_name}
+                  width={56}
+                  height={56}
+                  className="w-14 h-14 rounded-full mr-4"
+                />
+                <div>
+                  <h3 className="font-semibold">{artist.full_name}</h3>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                    <span>{formatLocation(artist.location)}</span>
+                    <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                      {artist.average_rating.toFixed(1)}
                     </span>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-            <p className="text-center text-red-500 font-gilroy">
-              Top Rated Artist
-            </p>
 
-            {loading ? (
-              <p className="text-center">Loading...</p>
-            ) : (
-<div
-  className={`grid gap-4 max-w-2xl mx-auto ${
-    artists.length === 1 ? "md:grid-cols-1 justify-items-center" :
-    artists.length === 2 ? "md:grid-cols-2 justify-items-center" :
-    "grid-cols-1 md:grid-cols-3"
-  }`}
->
-  {artists.slice(0, 3).map((artist) => (
-                  <div
-                    key={artist.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-                  >
-                    {/* Portfolio Grid */}
-                    <div className="flex gap-2 p-4 h-[250px]">
-                      <Image
-                        src={
-                          artist.portfolio_photos[0]?.url ||
-                          "/images/search1.png"
-                        }
-                        alt="Artist Work"
-                        width={250}
-                        height={220}
-                        className="rounded-lg object-cover w-[65%] h-full"
-                      />
-
-                      <div className="flex flex-col gap-2 w-[35%]">
-                        <Image
-                          src={
-                            artist.portfolio_photos[1]?.url ||
-                            "/images/search2.png"
-                          }
-                          alt="Artist Work"
-                          width={100}
-                          height={120}
-                          className="rounded-lg object-cover w-full h-[130px]"
-                        />
-                        <Image
-                          src={
-                            artist.portfolio_photos[2]?.url ||
-                            "/images/search3.png"
-                          }
-                          alt="Artist Work"
-                          width={100}
-                          height={90}
-                          className="rounded-lg object-cover w-full h-[88px]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Info & Avatar */}
-                    <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center">
-                          <Image
-                            src={
-                              artist.profile_photo_url ||
-                              "/placeholder.svg?height=50&width=50"
-                            }
-                            alt={artist.full_name}
-                            width={56}
-                            height={56}
-                            className="w-14 h-14 rounded-full mr-4"
-                          />
-                          <div>
-                            <h3 className="font-semibold">
-                              {artist.full_name}
-                            </h3>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                              <span>{formatLocation(artist.location)}</span>
-                              <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                                {artist.average_rating.toFixed(1)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Bookmark Icon */}
-                        <button
-                          onClick={() => toggleSaveArtist(artist.id)}
-                          className="text-[#FF577F] hover:text-pink-600 transition"
-                        >
-                          <Bookmark
-                            className={`w-6 h-6 cursor-pointer ${
-                              savedArtists.includes(artist.id)
-                                ? "fill-[#FF577F]"
-                                : "stroke-[#FF577F]"
-                            }`}
-                          />
-                        </button>
-                      </div>
-
-                      {/* Push Actions to Bottom */}
-                      <div className="mt-auto flex space-x-2">
-                                <Button
-  variant="outline"
-  onClick={() => {
-    setSelectedArtistId(artist.id);   // ✅ artist id set ho rhi h
-    setShowModal(true);
-  }}
-  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
->
-  <span className="flex items-center gap-1">
-    Book Now
-    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-  </span>
-</Button>
-                        <Link
-                          href={`/makeup-artist/details/${artist.id}`}
-                          className="flex-1"
-                        >
-                          <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                            View Profile
-                            <ArrowUpRight className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-10 text-center">
-              <Link
-                href="/search"
-                className="text-rose-500 font-semibold hover:underline text-lg"
+              {/* Bookmark */}
+              <button
+                onClick={() => toggleSaveArtist(artist.id)}
+                className="text-[#FF577F] hover:text-pink-600 transition"
               >
-                View All →
+                <Bookmark
+                  className={`w-6 h-6 cursor-pointer ${
+                    savedArtists.includes(artist.id)
+                      ? "fill-[#FF577F]"
+                      : "stroke-[#FF577F]"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-auto flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedArtistId(artist.id);
+                  setShowModal(true);
+                }}
+                className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+              >
+                <span className="flex items-center gap-1">
+                  Book Now
+                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                </span>
+              </Button>
+              <Link
+                href={`/makeup-artist/details/${artist.id}`}
+                className="flex-1"
+              >
+                <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                  View Profile
+                  <ArrowUpRight className="w-4 h-4" />
+                </Button>
               </Link>
             </div>
           </div>
-        </section>
+        </div>
+      ))}
+    </motion.div>
+  </div>
+)}
+
+    <div className="mt-10 text-center">
+      <Link
+        href="/search"
+        className="text-rose-500 font-semibold hover:underline text-lg"
+      >
+        View All →
+      </Link>
+    </div>
+  </div>
+</section>
+
 
         {/* Wedmac India Section */}
         <section className="py-20 ">
