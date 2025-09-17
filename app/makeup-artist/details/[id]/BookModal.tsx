@@ -187,18 +187,14 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
             </div>
             <div>
               <Label htmlFor="budget">Budget Range</Label>
-              <select
-                id="budget"
-                className="w-full border rounded px-2 py-1"
-                value={budgetRange}
-                onChange={(e) => setBudgetRange(Number(e.target.value))}
-              >
-                {masterBudgets.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.label}
-                  </option>
-                ))}
-              </select>
+           <input
+  id="budget"
+  type="number"
+  className="w-full border rounded px-2 py-1"
+  value={budgetRange}
+  onChange={(e) => setBudgetRange(Number(e.target.value))}
+/>
+
             </div>
 
             <div className="md:col-span-2">
