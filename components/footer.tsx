@@ -80,9 +80,7 @@ export default function Footer() {
               Investment Disclosure
             </h3>
             <p className="text-sm leading-relaxed">
-              We offer bespoke makeup services designed to complement your
-              unique beauty and style, ensuring you look and feel confident,
-              radiant, and unforgettable on your special day.
+    At Wedmac India, we don’t just do makeup — we create memories. Every brush stroke is crafted to highlight your natural elegance, making you feel timeless, confident, and radiant. Using only premium products and expert artistry, we ensure you shine from the first photo to the last dance. Your special day is once-in-a-lifetime — and we make sure you look unforgettable.”
             </p>
           </div>
 

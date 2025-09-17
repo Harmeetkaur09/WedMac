@@ -1052,7 +1052,7 @@ setArtists(topCards);    })
         <section className="py-4 px-2">
           <div className=" mx-auto max-w-5xl border border-[#D5D5D5] rounded-xl p-4 overflow-hidden">
             <h2 className="font-gilroy text-2xl font-[700] text-center mb-8">
-              WHAT OUR CUSTOMERS HAVE TO SAY
+              The Voices of Our Happy Artists
             </h2>
             <AnimatePresence mode="wait">
               <motion.div
@@ -1111,8 +1111,7 @@ setArtists(topCards);    })
         <section className="py-12 px-2 bg-white md:mb-20">
           <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
             <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
-              What Client Said About
-            </h2>
+Our Happy Clients Speak For Us            </h2>
             <h2 className="font-gilroy text-3xl font-[800] text-center mb-8">
               Wedmac
             </h2>
