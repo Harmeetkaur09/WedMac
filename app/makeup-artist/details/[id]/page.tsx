@@ -119,6 +119,39 @@ export default function MakeupArtistDetailPage() {
       [name]: name === "rating" ? Number(value) : value,
     }));
   }
+  // add near other useState declarations
+const [commentsLoading, setCommentsLoading] = useState(true);
+const [displayedCount, setDisplayedCount] = useState(2); // default show 2
+useEffect(() => {
+  if (!id) return;
+  setCommentsLoading(true);
+
+  fetch(`https://api.wedmacindia.com/api/artist-comments/get-comments/${id}/`)
+    .then((r) => r.json())
+    .then((data) => {
+      // API might return array or object — normalise to array
+      let arr: any[] = [];
+      if (Array.isArray(data)) arr = data;
+      else if (Array.isArray((data as any).results)) arr = (data as any).results;
+      else if (Array.isArray((data as any).data)) arr = (data as any).data;
+      else arr = [];
+
+      // sort newest first if `created_at` exists
+      arr.sort((a: any, b: any) => {
+        const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return tb - ta;
+      });
+
+      setArtistComments(arr);
+    })
+    .catch((err) => {
+      console.error("Failed to load comments", err);
+      setArtistComments([]);
+    })
+    .finally(() => setCommentsLoading(false));
+}, [id]);
+
 
   const handleRatingSubmit = async (e?: React.FormEvent) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
@@ -582,337 +615,246 @@ useEffect(() => {
                 </div>
 
                 {/* Albums and Ratings */}
-                <div className="mt-8 border border-[#D5D5D5] rounded-xl p-4">
-                  {/* Album Grid - Clickable */}
-                  <div className="">
-                    {/* Tab Navigation */}
-                    <div className="flex border-b border-gray-200 mb-6">
-                      <button
-                        onClick={() => setActiveTab("album")}
-                        className={`px-4 py-2 text-sm font-medium rounded-t-lg ${
-                          activeTab === "album"
-                            ? "text-gray-900 border-b-2 border-pink-500 bg-gray-100"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        Album
-                      </button>
-                      <button
-                        onClick={() => setActiveTab("review")}
-                        className={`px-4 py-2 text-sm font-medium rounded-t-lg ${
-                          activeTab === "review"
-                            ? "text-gray-900 border-b-2 border-pink-500 bg-gray-100"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        Review
-                      </button>
+              {/* Albums and Ratings (always show Album then Review) */}
+<div className="mt-8 border border-[#D5D5D5] rounded-xl p-4">
+  {/* Album Title */}
+  <div className="mb-4">
+    <h3 className="text-xl font-inter font-semibold">Album</h3>
+  </div>
+
+  {/* Album Grid - always visible */}
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    {Array.isArray(artist.portfolio_photos) && artist.portfolio_photos.length > 0 ? (
+      artist.portfolio_photos.map((photoUrl: string, i: number) => (
+        <div
+          key={i}
+          className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
+        >
+          <Image
+            src={photoUrl}
+            alt={`Album ${i + 1}`}
+            width={200}
+            height={200}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ))
+    ) : (
+      <div className="col-span-2 md:col-span-4 text-center text-sm text-gray-500 py-6">
+        No photos available
+      </div>
+    )}
+  </div>
+
+  {/* Divider between Album and Review */}
+  <div className="border-t border-gray-200 pt-6 mt-4">
+    <h3 className="text-xl font-inter font-semibold mb-4">Review</h3>
+
+    {/* Review Content (moved here, same as before) */}
+    <div className="p-0 rounded-lg">
+      {/* ===== Interactive Ratings Block (same layout as before) ===== */}
+      <div className="md:flex block gap-8">
+        {/* Left Side - Overall Rating */}
+        <div className="text-center">
+          <div className="border border-[#D5D5D5] mb-3 p-4 ">
+            <div className="text-5xl font-bold text-pink-500 mb-2">
+              {(() => {
+                const existingRatings = artistComments.length
+                  ? artistComments.map((c) => Number(c.rating || 0)).filter(Boolean)
+                  : artist?.rating ? [Number(artist.rating)] : [];
+                const existingCount = existingRatings.length;
+                const existingSum = existingRatings.reduce((a, b) => a + b, 0);
+                const existingAvg = existingCount > 0 ? existingSum / existingCount : 0;
+                const userSel = Number(ratingForm.rating) || 0;
+
+                if (userSel > 0) {
+                  const previewAvg = existingCount > 0 ? (existingSum + userSel) / (existingCount + 1) : userSel;
+                  return previewAvg.toFixed(1);
+                }
+                if (existingCount > 0) return existingAvg.toFixed(1);
+                return (artist?.rating ?? 0).toFixed(1);
+              })()}
+            </div>
+            <div className="text-sm text-gray-600 text-[#00000099]">Total Rating</div>
+          </div>
+
+          <div className="flex justify-center gap-1 cursor-pointer select-none" aria-hidden>
+            {[1, 2, 3, 4, 5].map((n) => {
+              const selected = Number(ratingForm.rating) >= n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setRatingForm((s) => ({ ...s, rating: n }))}
+                  className="p-1"
+                  title={`Rate ${n} star${n > 1 ? "s" : ""}`}
+                >
+                  <Star className={`w-6 h-6 transition-transform ${selected ? "fill-pink-500 text-pink-500" : "fill-gray-200 text-gray-300"}`} />
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="text-xs text-gray-500 mt-2">Click the stars to pick your rating</div>
+        </div>
+
+        <div className="flex border-l border-gray-200 mb-6" />
+
+        {/* Right Side - Rating Breakdown */}
+        <div className="flex-1 space-y-3">
+          {(function () {
+            const counts = [0, 0, 0, 0, 0];
+            if (artistComments.length > 0) {
+              artistComments.forEach((c) => {
+                const r = Math.max(1, Math.min(5, Number(c.rating || 0)));
+                counts[5 - r] += 1;
+              });
+            }
+            const total = counts.reduce((a, b) => a + b, 0);
+            const fallbackPercents = [60, 10, 10, 0, 0];
+            const rows = [5, 4, 3, 2, 1].map((star, idx) => {
+              const count = total > 0 ? counts[idx] : 0;
+              const pct = total > 0 ? Math.round((count / total) * 100) : fallbackPercents[idx];
+              return { star, count, pct };
+            });
+
+            return (
+              <>
+                {rows.map((row) => (
+                  <div key={row.star} className="flex items-center gap-4">
+                    <div className="flex gap-2 items-center w-28">
+                      <div className="flex items-center gap-1">
+                        {[...Array(row.star)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-pink-500 text-pink-500" />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600 ml-2">{row.star}</span>
                     </div>
 
-                    {/* Album Tab Content */}
-                    {activeTab === "album" && (
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {Array.isArray(artist.portfolio_photos) &&
-                          artist.portfolio_photos.map(
-                            (photoUrl: string, i: number) => (
-                              <div
-                                key={i}
-                                className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
-                              >
-                                <Image
-                                  src={photoUrl}
-                                  alt={`Album ${i + 1}`}
-                                  width={200}
-                                  height={200}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                              </div>
-                            )
-                          )}
+                    <div className="flex-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="bg-pink-500 h-2 rounded-full" style={{ width: `${row.pct}%` }} />
                       </div>
-                    )}
+                    </div>
 
-                    {/* Review Tab Content */}
-                    {activeTab === "review" && (
-                      <div className=" p-6 rounded-lg">
-                        {/* ===== Interactive Ratings Block (replace the old md:flex block) ===== */}
-                        <div className="md:flex block gap-8">
-                          {/* Left Side - Overall Rating (dynamic) */}
-                          <div className="text-center">
-                            <div className="border border-[#D5D5D5] mb-3 p-4 ">
-                              {/* compute avg dynamically */}
-                              <div className="text-5xl font-bold text-pink-500 mb-2">
-                                {(() => {
-                                  // derive existing ratings from artistComments OR fallback to artist.rating
-                                  const existingRatings = artistComments.length
-                                    ? artistComments
-                                        .map((c) => Number(c.rating || 0))
-                                        .filter(Boolean)
-                                    : artist?.rating
-                                    ? [Number(artist.rating)]
-                                    : [];
+                    <div className="w-16 text-right text-sm text-gray-600">{row.pct}%</div>
+                  </div>
+                ))}
 
-                                  const existingCount = existingRatings.length;
-                                  const existingSum = existingRatings.reduce(
-                                    (a, b) => a + b,
-                                    0
-                                  );
-                                  const existingAvg =
-                                    existingCount > 0
-                                      ? existingSum / existingCount
-                                      : 0;
+                <div className="text-xs text-gray-500 mt-3">
+                  {total > 0 ? `${total} ratings` : `No detailed ratings yet`}
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </div>
 
-                                  // if user has selected a rating, show a preview average that includes it
-                                  const userSel =
-                                    Number(ratingForm.rating) || 0;
+      {/* Feedback Form */}
+      <div className="mt-6">
+        <form onSubmit={handleRatingSubmit} className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-3">
+            <Input name="name" placeholder="Your Name" value={ratingForm.name} onChange={handleRatingChange} className="mb-0" />
+            <Input name="phone_number" placeholder="Phone Number" value={ratingForm.phone_number} onChange={handleRatingChange} className="mb-0" />
+          </div>
 
-                                  if (userSel > 0) {
-                                    // preview average including the user's selected rating
-                                    const previewAvg =
-                                      existingCount > 0
-                                        ? (existingSum + userSel) /
-                                          (existingCount + 1)
-                                        : userSel; // if no existing, preview is just the selected rating
-                                    return previewAvg.toFixed(1);
-                                  }
+          <div className="grid md:grid-cols-2 gap-3">
+            <Input name="location" placeholder="Location (City, State)" value={ratingForm.location} onChange={handleRatingChange} />
+            <div>
+              <select name="rating" value={String(ratingForm.rating)} onChange={handleRatingChange as any} className="w-full border p-2 rounded">
+                <option value="5">5 — Excellent</option>
+                <option value="4">4 — Very Good</option>
+                <option value="3">3 — Good</option>
+                <option value="2">2 — Fair</option>
+                <option value="1">1 — Poor</option>
+              </select>
+            </div>
+          </div>
 
-                                  // otherwise show existing average (or artist.rating fallback)
-                                  if (existingCount > 0)
-                                    return existingAvg.toFixed(1);
-                                  return (artist?.rating ?? 0).toFixed(1);
-                                })()}
-                              </div>
-                              <div className="text-sm text-gray-600 text-[#00000099]">
-                                Total Rating
-                              </div>
-                            </div>
+          {ratingOtpRequired && <Input name="otp" placeholder="Enter OTP" value={ratingForm.otp} onChange={handleRatingChange} />}
 
-                            {/* Clickable stars for user to set rating */}
-                            <div
-                              className="flex justify-center gap-1 cursor-pointer select-none"
-                              aria-hidden
-                            >
-                              {[1, 2, 3, 4, 5].map((n) => {
-                                // show filled if n <= current selected rating (ratingForm.rating) otherwise outline
-                                const selected = Number(ratingForm.rating) >= n;
-                                return (
-                                  <button
-                                    key={n}
-                                    type="button"
-                                    onClick={() => {
-                                      setRatingForm((s) => ({
-                                        ...s,
-                                        rating: n,
-                                      }));
-                                      // make OTP input visible only if required later on submit
-                                    }}
-                                    className="p-1"
-                                    title={`Rate ${n} star${n > 1 ? "s" : ""}`}
-                                  >
-                                    <Star
-                                      className={`w-6 h-6 transition-transform ${
-                                        selected
-                                          ? "fill-pink-500 text-pink-500"
-                                          : "fill-gray-200 text-gray-300"
-                                      }`}
-                                    />
-                                  </button>
-                                );
-                              })}
-                            </div>
+          <Textarea name="comment" placeholder="Tell us about your experience" className="mb-0" rows={6} value={ratingForm.comment} onChange={handleRatingChange} />
 
-                            <div className="text-xs text-gray-500 mt-2">
-                              Click the stars to pick your rating
-                            </div>
-                          </div>
+          <div className="flex items-center gap-3">
+            <Button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium" disabled={ratingSubmitting}>
+              {ratingSubmitting ? "Submitting..." : "Submit Feedback"}
+            </Button>
 
-                          <div className="flex border-l border-gray-200 mb-6"></div>
+            <Button variant="outline" onClick={() => {
+              setRatingForm({ phone_number: "", otp: "", name: "", location: "", comment: "", rating: 5 });
+              setRatingOtpRequired(false);
+            }} className="rounded-none">
+              Reset
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {/* end Review Content */}
+  </div>
+</div>
 
-                          {/* Right Side - Rating Breakdown (dynamic if comments exist) */}
-                          <div className="flex-1 space-y-3">
-                            {(function () {
-                              // derive counts & percentages
-                              const counts = [0, 0, 0, 0, 0]; // index 0 => 5*, index 4 => 1*
-                              if (artistComments.length > 0) {
-                                artistComments.forEach((c) => {
-                                  const r = Math.max(
-                                    1,
-                                    Math.min(5, Number(c.rating || 0))
-                                  );
-                                  counts[5 - r] += 1; // 5 -> index 0, 1 -> index 4
-                                });
-                              }
+{/* Ratings Preview Card - show 2 by default, +10 on each View more */}
+<Card className="mt-6 border border-[#D5D5D5] rounded-xl">
+  <CardContent className="p-4">
+    <div className="flex items-center justify-between mb-4">
+      <h4 className="text-lg font-semibold">User Ratings</h4>
+      <div className="text-sm text-gray-500">{artistComments.length} reviews</div>
+    </div>
 
-                              const total = counts.reduce((a, b) => a + b, 0);
-
-                              // fallback static (when no comments) — keep your previous visual %
-                              const fallbackPercents = [60, 10, 10, 0, 0];
-
-                              const rows = [5, 4, 3, 2, 1].map((star, idx) => {
-                                const count = total > 0 ? counts[idx] : 0;
-                                const pct =
-                                  total > 0
-                                    ? Math.round((count / total) * 100)
-                                    : fallbackPercents[idx];
-                                return { star, count, pct };
-                              });
-
-                              return (
-                                <>
-                                  {rows.map((row) => (
-                                    <div
-                                      key={row.star}
-                                      className="flex items-center gap-4"
-                                    >
-                                      <div className="flex gap-2 items-center w-28">
-                                        <div className="flex items-center gap-1">
-                                          {[...Array(row.star)].map((_, i) => (
-                                            <Star
-                                              key={i}
-                                              className={`w-4 h-4 ${
-                                                row.star >= 4
-                                                  ? "fill-pink-500 text-pink-500"
-                                                  : "fill-pink-500 text-pink-500"
-                                              }`}
-                                            />
-                                          ))}
-                                        </div>
-                                        <span className="text-sm text-gray-600 ml-2">
-                                          {row.star}
-                                        </span>
-                                      </div>
-
-                                      <div className="flex-1">
-                                        <div className="w-full bg-gray-200 rounded-full h-2">
-                                          <div
-                                            className="bg-pink-500 h-2 rounded-full"
-                                            style={{ width: `${row.pct}%` }}
-                                          />
-                                        </div>
-                                      </div>
-
-                                      <div className="w-16 text-right text-sm text-gray-600">
-                                        {row.pct}%
-                                      </div>
-                                    </div>
-                                  ))}
-
-                                  {/* Optional: show counts and total */}
-                                  <div className="text-xs text-gray-500 mt-3">
-                                    {total > 0
-                                      ? `${total} ratings`
-                                      : `No detailed ratings yet`}
-                                  </div>
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                        {/* ===== end interactive ratings block ===== */}
-
-                        {/* Feedback Form */}
-                        {/* Feedback + Rating Form */}
-                        <div className="mt-6">
-                          <form
-                            onSubmit={handleRatingSubmit}
-                            className="space-y-4"
-                          >
-                            <div className="grid md:grid-cols-2 gap-3">
-                              <Input
-                                name="name"
-                                placeholder="Your Name"
-                                value={ratingForm.name}
-                                onChange={handleRatingChange}
-                                className="mb-0"
-                              />
-                              <Input
-                                name="phone_number"
-                                placeholder="Phone Number"
-                                value={ratingForm.phone_number}
-                                onChange={handleRatingChange}
-                                className="mb-0"
-                              />
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-3">
-                              <Input
-                                name="location"
-                                placeholder="Location (City, State)"
-                                value={ratingForm.location}
-                                onChange={handleRatingChange}
-                              />
-
-                              <div>
-                               
-                                <select
-                                  name="rating"
-                                  value={String(ratingForm.rating)}
-                                  onChange={handleRatingChange as any}
-                                  className="w-full border p-2 rounded"
-                                >
-                                  <option value="5">5 — Excellent</option>
-                                  <option value="4">4 — Very Good</option>
-                                  <option value="3">3 — Good</option>
-                                  <option value="2">2 — Fair</option>
-                                  <option value="1">1 — Poor</option>
-                                </select>
-                              </div>
-                            </div>
-
-                            {ratingOtpRequired && (
-                              <Input
-                                name="otp"
-                                placeholder="Enter OTP"
-                                value={ratingForm.otp}
-                                onChange={handleRatingChange}
-                              />
-                            )}
-
-                            <Textarea
-                              name="comment"
-                              placeholder="Tell us about your experience"
-                              className="mb-0"
-                              rows={6}
-                              value={ratingForm.comment}
-                              onChange={handleRatingChange}
-                            />
-
-                            <div className="flex items-center gap-3">
-                              <Button
-                                type="submit"
-                                className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium"
-                                disabled={ratingSubmitting}
-                              >
-                                {ratingSubmitting
-                                  ? "Submitting..."
-                                  : "Submit Feedback"}
-                              </Button>
-
-                              {/* Optional: clear/reset button */}
-                              <Button
-                                variant="outline"
-                                onClick={() => {
-                                  setRatingForm({
-                                    phone_number: "",
-                                    otp: "",
-                                    name: "",
-                                    location: "",
-                                    comment: "",
-                                    rating: 5,
-                                  });
-                                  setRatingOtpRequired(false);
-                                }}
-                                className="rounded-none"
-                              >
-                                Reset
-                              </Button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    )}
+    {commentsLoading ? (
+      <p className="text-center py-4 text-sm text-gray-500">Loading reviews…</p>
+    ) : artistComments.length === 0 ? (
+      <p className="text-center py-4 text-sm text-gray-500">No reviews yet</p>
+    ) : (
+      <>
+        <div className="space-y-4">
+          {artistComments.slice(0, displayedCount).map((c: any) => (
+            <div key={c.id} className="p-3 border rounded-lg">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <div className="font-medium">{c.name || "Anonymous"}</div>
+                    <div className="text-xs text-gray-500">{c.location}</div>
+                  </div>
+                  <div className="flex items-center gap-1 mt-2">
+                    {[1,2,3,4,5].map((n) => (
+                      <Star
+                        key={n}
+                        className={`w-4 h-4 ${n <= Number(c.rating || 0) ? "fill-pink-500 text-pink-500" : "fill-gray-200 text-gray-300"}`}
+                      />
+                    ))}
                   </div>
                 </div>
+                <div className="text-xs text-gray-400">
+                  {c.created_at ? new Date(c.created_at).toLocaleDateString() : ""}
+                </div>
+              </div>
+
+              <p className="mt-3 text-sm text-gray-700">{c.comment}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* View More button - each click shows +10 more */}
+        {artistComments.length > displayedCount && (
+          <div className="mt-4 flex justify-center">
+            <Button
+              onClick={() =>
+                setDisplayedCount((prev) => Math.min(prev + 10, artistComments.length))
+              }
+              className="bg-pink-500 hover:bg-pink-600 text-white"
+            >
+              View more
+            </Button>
+          </div>
+        )}
+      </>
+    )}
+  </CardContent>
+</Card>
+
+
               </div>
             </div>
 
