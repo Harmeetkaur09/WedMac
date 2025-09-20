@@ -254,12 +254,12 @@ useEffect(() => {
         "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
     },
       {
-      name: "asde Verma",
-      title: "Party – Jaipur",
-      image: "/images/new25.JPG",
+      name: "Kavya Malhotra",
+      title: "Bride – Lucknow",
+      image: "/images/img5.JPEG",
       avatar: "/images/fdprofile.png",
       feedback:
-        "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
+        "From start to finish, everything was on point—my wedding look turned out even better than I imagined!",
     },
   ];
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -558,14 +558,11 @@ setArtists(topCards);    })
 
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-            <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-              Style That Turns Heads <br />
-              Every Special Day
+<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+             Be the Reason They Can’t<br/>Take Their Eyes Off You
             </h1>
             <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-              Make your presence unforgettable with premium beauty and fashion
-              services <br />
-              designed for life’s most special moments
+         From weddings to celebrations, we design looks that turn admiration into memories.
             </p>
           </div>
         </section>
@@ -767,7 +764,7 @@ setArtists(topCards);    })
                           index === 3
                             ? "Haldi Makeup"
                             : index === 1 || index === 2
-                            ? "Haldi Makeup"
+                            ? "Mehndi Makeup"
                             : "Haldi Makeup"
                         }
                         width={300}
@@ -781,7 +778,7 @@ setArtists(topCards);    })
                           ? "Haldi Makeup"
                           : index === 1 || index === 2
                           ? "Party Makeup"
-                          : "Engagement Makeup"}
+                          : "Mehndi Makeup"}
                       </span>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>

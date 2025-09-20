@@ -101,14 +101,14 @@ export default function ContactPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>

@@ -41,15 +41,14 @@ export default function Privacy() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
-          </p>
+                   From weddings to celebrations, we design looks that turn admiration into memories.
+
         </div>
       </section>
 
@@ -81,11 +80,10 @@ export default function Privacy() {
             </h2>
             <ul className="list-disc list-inside ">
               <li>
-                <strong>Platform:</strong> Refers to Wedmac India,
-                including its website, mobile applications, backend
-                infrastructure, and any associated technology, services, or
-                digital assets used to connect Artists and Clients for beauty
-                and makeup services.
+                <strong>Platform:</strong> Refers to Wedmac India, including its
+                website, mobile applications, backend infrastructure, and any
+                associated technology, services, or digital assets used to
+                connect Artists and Clients for beauty and makeup services.
               </li>
               <li>
                 <strong>Artist:</strong> A trained, verified, and registered
@@ -298,8 +296,8 @@ export default function Privacy() {
               5. Disclaimer & Platform Role
             </h2>
             <p>
-              Wedmac India only connects Clients and Artists. We are not liable for
-              service quality, cancellations, or payment disputes. All
+              Wedmac India only connects Clients and Artists. We are not liable
+              for service quality, cancellations, or payment disputes. All
               transactions and agreements are strictly between Client and
               Artist.
             </p>

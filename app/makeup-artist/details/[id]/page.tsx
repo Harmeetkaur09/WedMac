@@ -31,11 +31,11 @@ import { useState, useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import BookModal from "./BookModal";
 interface ArtistDetail {
-   services: {
+  services: {
     id: number;
     name: string;
     description: string;
-    price: number | string;   // backend से कभी string भी आ सकता है
+    price: number | string; // backend से कभी string भी आ सकता है
     created_at?: string;
     updated_at?: string;
   }[];
@@ -95,7 +95,7 @@ export default function MakeupArtistDetailPage() {
   const [helpName, setHelpName] = useState("");
   const [helpMobile, setHelpMobile] = useState("");
   const [helpMessage, setHelpMessage] = useState("");
-    const [paymentMethods, setPaymentMethods] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [helpErrors, setHelpErrors] = useState<{
     name?: string;
     mobile?: string;
@@ -120,38 +120,38 @@ export default function MakeupArtistDetailPage() {
     }));
   }
   // add near other useState declarations
-const [commentsLoading, setCommentsLoading] = useState(true);
-const [displayedCount, setDisplayedCount] = useState(2); // default show 2
-useEffect(() => {
-  if (!id) return;
-  setCommentsLoading(true);
+  const [commentsLoading, setCommentsLoading] = useState(true);
+  const [displayedCount, setDisplayedCount] = useState(2); // default show 2
+  useEffect(() => {
+    if (!id) return;
+    setCommentsLoading(true);
 
-  fetch(`https://api.wedmacindia.com/api/artist-comments/get-comments/${id}/`)
-    .then((r) => r.json())
-    .then((data) => {
-      // API might return array or object — normalise to array
-      let arr: any[] = [];
-      if (Array.isArray(data)) arr = data;
-      else if (Array.isArray((data as any).results)) arr = (data as any).results;
-      else if (Array.isArray((data as any).data)) arr = (data as any).data;
-      else arr = [];
+    fetch(`https://api.wedmacindia.com/api/artist-comments/get-comments/${id}/`)
+      .then((r) => r.json())
+      .then((data) => {
+        // API might return array or object — normalise to array
+        let arr: any[] = [];
+        if (Array.isArray(data)) arr = data;
+        else if (Array.isArray((data as any).results))
+          arr = (data as any).results;
+        else if (Array.isArray((data as any).data)) arr = (data as any).data;
+        else arr = [];
 
-      // sort newest first if `created_at` exists
-      arr.sort((a: any, b: any) => {
-        const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return tb - ta;
-      });
+        // sort newest first if `created_at` exists
+        arr.sort((a: any, b: any) => {
+          const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return tb - ta;
+        });
 
-      setArtistComments(arr);
-    })
-    .catch((err) => {
-      console.error("Failed to load comments", err);
-      setArtistComments([]);
-    })
-    .finally(() => setCommentsLoading(false));
-}, [id]);
-
+        setArtistComments(arr);
+      })
+      .catch((err) => {
+        console.error("Failed to load comments", err);
+        setArtistComments([]);
+      })
+      .finally(() => setCommentsLoading(false));
+  }, [id]);
 
   const handleRatingSubmit = async (e?: React.FormEvent) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
@@ -234,12 +234,11 @@ useEffect(() => {
     }
   };
 
-
-const [showPopular, setShowPopular] = useState(true); // NEW: control delayed reveal
+  const [showPopular, setShowPopular] = useState(true); // NEW: control delayed reveal
 
   const [alsoLike, setAlsoLike] = useState<CardArtist[]>([]);
   const [alsoLoading, setAlsoLoading] = useState(true);
-  
+
   const [savedArtists, setSavedArtists] = useState<number[]>(() =>
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
@@ -295,71 +294,69 @@ const [showPopular, setShowPopular] = useState(true); // NEW: control delayed re
     }
     return "-";
   }
-// replace the existing useEffect that fetches cards with this block
-const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // replace the existing useEffect that fetches cards with this block
+  const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-const [currentIndex, setCurrentIndex] = useState(0);
-const [suggestions, setSuggestions] = useState<CardArtist[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [suggestions, setSuggestions] = useState<CardArtist[]>([]);
 
-useEffect(() => {
-  setAlsoLoading(true); // ✅ start loading
+  useEffect(() => {
+    setAlsoLoading(true); // ✅ start loading
 
-  fetch("https://api.wedmacindia.com/api/artists/cards/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
-  })
-    .then((r) => r.json())
-    .then((data) => {
-      let cards: any[] = [];
-      if (Array.isArray(data)) cards = data;
-      else if (Array.isArray(data.results)) cards = data.results;
-      else if (Array.isArray((data as any).data)) cards = (data as any).data;
-      else if (Array.isArray((data as any).cards)) cards = (data as any).cards;
-
-      const filtered = cards.filter((c: any) => {
-        if (!c) return false;
-        if (String(c.id) === String(id)) return false;
-
-        const topLevelTag = String(c.tag ?? "").toLowerCase().trim();
-        const tagsArray =
-          Array.isArray(c.tags) && c.tags.map((t: any) => String(t).toLowerCase());
-
-        const portfolioHasPopular =
-          Array.isArray(c.portfolio_photos) &&
-          c.portfolio_photos.some(
-            (p: any) => String(p?.tag ?? "").toLowerCase() === "popular"
-          );
-
-        return (
-          topLevelTag === "popular" ||
-          (Array.isArray(tagsArray) && tagsArray.includes("popular")) ||
-          portfolioHasPopular
-        );
-      });
-
-      setSuggestions(filtered);
+    fetch("https://api.wedmacindia.com/api/artists/cards/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
     })
-    .catch((err) => console.error("Failed to load suggestions", err))
-    .finally(() => {
-      setAlsoLoading(false); // ✅ stop loading
-    });
-}, [id]);
+      .then((r) => r.json())
+      .then((data) => {
+        let cards: any[] = [];
+        if (Array.isArray(data)) cards = data;
+        else if (Array.isArray(data.results)) cards = data.results;
+        else if (Array.isArray((data as any).data)) cards = (data as any).data;
+        else if (Array.isArray((data as any).cards))
+          cards = (data as any).cards;
 
+        const filtered = cards.filter((c: any) => {
+          if (!c) return false;
+          if (String(c.id) === String(id)) return false;
 
-// Auto-change every 5s
-useEffect(() => {
-  if (suggestions.length === 0) return;
-  const timer = setInterval(() => {
-    setCurrentIndex((prev) => (prev + 1) % suggestions.length);
-  }, 5000);
-  return () => clearInterval(timer);
-}, [suggestions]);
+          const topLevelTag = String(c.tag ?? "")
+            .toLowerCase()
+            .trim();
+          const tagsArray =
+            Array.isArray(c.tags) &&
+            c.tags.map((t: any) => String(t).toLowerCase());
 
+          const portfolioHasPopular =
+            Array.isArray(c.portfolio_photos) &&
+            c.portfolio_photos.some(
+              (p: any) => String(p?.tag ?? "").toLowerCase() === "popular"
+            );
 
+          return (
+            topLevelTag === "popular" ||
+            (Array.isArray(tagsArray) && tagsArray.includes("popular")) ||
+            portfolioHasPopular
+          );
+        });
 
+        setSuggestions(filtered);
+      })
+      .catch((err) => console.error("Failed to load suggestions", err))
+      .finally(() => {
+        setAlsoLoading(false); // ✅ stop loading
+      });
+  }, [id]);
 
-
+  // Auto-change every 5s
+  useEffect(() => {
+    if (suggestions.length === 0) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % suggestions.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [suggestions]);
 
   const toggleSaveArtist = (id: number) => {
     setSavedArtists((prev) => {
@@ -459,14 +456,14 @@ useEffect(() => {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>
@@ -615,246 +612,380 @@ useEffect(() => {
                 </div>
 
                 {/* Albums and Ratings */}
-              {/* Albums and Ratings (always show Album then Review) */}
-<div className="mt-8 border border-[#D5D5D5] rounded-xl p-4">
-  {/* Album Title */}
-  <div className="mb-4">
-    <h3 className="text-xl font-inter font-semibold">Album</h3>
-  </div>
+                {/* Albums and Ratings (always show Album then Review) */}
+                <div className="mt-8 border border-[#D5D5D5] rounded-xl p-4">
+                  {/* Album Title */}
+                  <div className="mb-4">
+                    <h3 className="text-xl font-inter font-semibold">Album</h3>
+                  </div>
 
-  {/* Album Grid - always visible */}
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-    {Array.isArray(artist.portfolio_photos) && artist.portfolio_photos.length > 0 ? (
-      artist.portfolio_photos.map((photoUrl: string, i: number) => (
-        <div
-          key={i}
-          className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
-        >
-          <Image
-            src={photoUrl}
-            alt={`Album ${i + 1}`}
-            width={200}
-            height={200}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      ))
-    ) : (
-      <div className="col-span-2 md:col-span-4 text-center text-sm text-gray-500 py-6">
-        No photos available
-      </div>
-    )}
-  </div>
-
-  {/* Divider between Album and Review */}
-  <div className="border-t border-gray-200 pt-6 mt-4">
-    <h3 className="text-xl font-inter font-semibold mb-4">Review</h3>
-
-    {/* Review Content (moved here, same as before) */}
-    <div className="p-0 rounded-lg">
-      {/* ===== Interactive Ratings Block (same layout as before) ===== */}
-      <div className="md:flex block gap-8">
-        {/* Left Side - Overall Rating */}
-        <div className="text-center">
-          <div className="border border-[#D5D5D5] mb-3 p-4 ">
-            <div className="text-5xl font-bold text-pink-500 mb-2">
-              {(() => {
-                const existingRatings = artistComments.length
-                  ? artistComments.map((c) => Number(c.rating || 0)).filter(Boolean)
-                  : artist?.rating ? [Number(artist.rating)] : [];
-                const existingCount = existingRatings.length;
-                const existingSum = existingRatings.reduce((a, b) => a + b, 0);
-                const existingAvg = existingCount > 0 ? existingSum / existingCount : 0;
-                const userSel = Number(ratingForm.rating) || 0;
-
-                if (userSel > 0) {
-                  const previewAvg = existingCount > 0 ? (existingSum + userSel) / (existingCount + 1) : userSel;
-                  return previewAvg.toFixed(1);
-                }
-                if (existingCount > 0) return existingAvg.toFixed(1);
-                return (artist?.rating ?? 0).toFixed(1);
-              })()}
-            </div>
-            <div className="text-sm text-gray-600 text-[#00000099]">Total Rating</div>
-          </div>
-
-          <div className="flex justify-center gap-1 cursor-pointer select-none" aria-hidden>
-            {[1, 2, 3, 4, 5].map((n) => {
-              const selected = Number(ratingForm.rating) >= n;
-              return (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setRatingForm((s) => ({ ...s, rating: n }))}
-                  className="p-1"
-                  title={`Rate ${n} star${n > 1 ? "s" : ""}`}
-                >
-                  <Star className={`w-6 h-6 transition-transform ${selected ? "fill-pink-500 text-pink-500" : "fill-gray-200 text-gray-300"}`} />
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="text-xs text-gray-500 mt-2">Click the stars to pick your rating</div>
-        </div>
-
-        <div className="flex border-l border-gray-200 mb-6" />
-
-        {/* Right Side - Rating Breakdown */}
-        <div className="flex-1 space-y-3">
-          {(function () {
-            const counts = [0, 0, 0, 0, 0];
-            if (artistComments.length > 0) {
-              artistComments.forEach((c) => {
-                const r = Math.max(1, Math.min(5, Number(c.rating || 0)));
-                counts[5 - r] += 1;
-              });
-            }
-            const total = counts.reduce((a, b) => a + b, 0);
-            const fallbackPercents = [60, 10, 10, 0, 0];
-            const rows = [5, 4, 3, 2, 1].map((star, idx) => {
-              const count = total > 0 ? counts[idx] : 0;
-              const pct = total > 0 ? Math.round((count / total) * 100) : fallbackPercents[idx];
-              return { star, count, pct };
-            });
-
-            return (
-              <>
-                {rows.map((row) => (
-                  <div key={row.star} className="flex items-center gap-4">
-                    <div className="flex gap-2 items-center w-28">
-                      <div className="flex items-center gap-1">
-                        {[...Array(row.star)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-pink-500 text-pink-500" />
-                        ))}
+                  {/* Album Grid - always visible */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    {Array.isArray(artist.portfolio_photos) &&
+                    artist.portfolio_photos.length > 0 ? (
+                      artist.portfolio_photos.map(
+                        (photoUrl: string, i: number) => (
+                          <div
+                            key={i}
+                            className="aspect-square overflow-hidden rounded-lg cursor-pointer group"
+                          >
+                            <Image
+                              src={photoUrl}
+                              alt={`Album ${i + 1}`}
+                              width={200}
+                              height={200}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )
+                      )
+                    ) : (
+                      <div className="col-span-2 md:col-span-4 text-center text-sm text-gray-500 py-6">
+                        No photos available
                       </div>
-                      <span className="text-sm text-gray-600 ml-2">{row.star}</span>
+                    )}
+                  </div>
+
+                  {/* Divider between Album and Review */}
+                  <div className="border-t border-gray-200 pt-6 mt-4">
+                    <h3 className="text-xl font-inter font-semibold mb-4">
+                      Review
+                    </h3>
+
+                    {/* Review Content (moved here, same as before) */}
+                    <div className="p-0 rounded-lg">
+                      {/* ===== Interactive Ratings Block (same layout as before) ===== */}
+                      <div className="md:flex block gap-8">
+                        {/* Left Side - Overall Rating */}
+                        <div className="text-center">
+                          <div className="border border-[#D5D5D5] mb-3 p-4 ">
+                            <div className="text-5xl font-bold text-pink-500 mb-2">
+                              {(() => {
+                                const existingRatings = artistComments.length
+                                  ? artistComments
+                                      .map((c) => Number(c.rating || 0))
+                                      .filter(Boolean)
+                                  : artist?.rating
+                                  ? [Number(artist.rating)]
+                                  : [];
+                                const existingCount = existingRatings.length;
+                                const existingSum = existingRatings.reduce(
+                                  (a, b) => a + b,
+                                  0
+                                );
+                                const existingAvg =
+                                  existingCount > 0
+                                    ? existingSum / existingCount
+                                    : 0;
+                                const userSel = Number(ratingForm.rating) || 0;
+
+                                if (userSel > 0) {
+                                  const previewAvg =
+                                    existingCount > 0
+                                      ? (existingSum + userSel) /
+                                        (existingCount + 1)
+                                      : userSel;
+                                  return previewAvg.toFixed(1);
+                                }
+                                if (existingCount > 0)
+                                  return existingAvg.toFixed(1);
+                                return (artist?.rating ?? 0).toFixed(1);
+                              })()}
+                            </div>
+                            <div className="text-sm text-gray-600 text-[#00000099]">
+                              Total Rating
+                            </div>
+                          </div>
+
+                          <div
+                            className="flex justify-center gap-1 cursor-pointer select-none"
+                            aria-hidden
+                          >
+                            {[1, 2, 3, 4, 5].map((n) => {
+                              const selected = Number(ratingForm.rating) >= n;
+                              return (
+                                <button
+                                  key={n}
+                                  type="button"
+                                  onClick={() =>
+                                    setRatingForm((s) => ({ ...s, rating: n }))
+                                  }
+                                  className="p-1"
+                                  title={`Rate ${n} star${n > 1 ? "s" : ""}`}
+                                >
+                                  <Star
+                                    className={`w-6 h-6 transition-transform ${
+                                      selected
+                                        ? "fill-pink-500 text-pink-500"
+                                        : "fill-gray-200 text-gray-300"
+                                    }`}
+                                  />
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="text-xs text-gray-500 mt-2">
+                            Click the stars to pick your rating
+                          </div>
+                        </div>
+
+                        <div className="flex border-l border-gray-200 mb-6" />
+
+                        {/* Right Side - Rating Breakdown */}
+                        <div className="flex-1 space-y-3">
+                          {(function () {
+                            const counts = [0, 0, 0, 0, 0];
+                            if (artistComments.length > 0) {
+                              artistComments.forEach((c) => {
+                                const r = Math.max(
+                                  1,
+                                  Math.min(5, Number(c.rating || 0))
+                                );
+                                counts[5 - r] += 1;
+                              });
+                            }
+                            const total = counts.reduce((a, b) => a + b, 0);
+                            const fallbackPercents = [60, 10, 10, 0, 0];
+                            const rows = [5, 4, 3, 2, 1].map((star, idx) => {
+                              const count = total > 0 ? counts[idx] : 0;
+                              const pct =
+                                total > 0
+                                  ? Math.round((count / total) * 100)
+                                  : fallbackPercents[idx];
+                              return { star, count, pct };
+                            });
+
+                            return (
+                              <>
+                                {rows.map((row) => (
+                                  <div
+                                    key={row.star}
+                                    className="flex items-center gap-4"
+                                  >
+                                    <div className="flex gap-2 items-center w-28">
+                                      <div className="flex items-center gap-1">
+                                        {[...Array(row.star)].map((_, i) => (
+                                          <Star
+                                            key={i}
+                                            className="w-4 h-4 fill-pink-500 text-pink-500"
+                                          />
+                                        ))}
+                                      </div>
+                                      <span className="text-sm text-gray-600 ml-2">
+                                        {row.star}
+                                      </span>
+                                    </div>
+
+                                    <div className="flex-1">
+                                      <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div
+                                          className="bg-pink-500 h-2 rounded-full"
+                                          style={{ width: `${row.pct}%` }}
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="w-16 text-right text-sm text-gray-600">
+                                      {row.pct}%
+                                    </div>
+                                  </div>
+                                ))}
+
+                                <div className="text-xs text-gray-500 mt-3">
+                                  {total > 0
+                                    ? `${total} ratings`
+                                    : `No detailed ratings yet`}
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Feedback Form */}
+                      <div className="mt-6">
+                        <form
+                          onSubmit={handleRatingSubmit}
+                          className="space-y-4"
+                        >
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <Input
+                              name="name"
+                              placeholder="Your Name"
+                              value={ratingForm.name}
+                              onChange={handleRatingChange}
+                              className="mb-0"
+                            />
+                            <Input
+                              name="phone_number"
+                              placeholder="Phone Number"
+                              value={ratingForm.phone_number}
+                              onChange={handleRatingChange}
+                              className="mb-0"
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <Input
+                              name="location"
+                              placeholder="Location (City, State)"
+                              value={ratingForm.location}
+                              onChange={handleRatingChange}
+                            />
+                            <div>
+                              <select
+                                name="rating"
+                                value={String(ratingForm.rating)}
+                                onChange={handleRatingChange as any}
+                                className="w-full border p-2 rounded"
+                              >
+                                <option value="5">5 — Excellent</option>
+                                <option value="4">4 — Very Good</option>
+                                <option value="3">3 — Good</option>
+                                <option value="2">2 — Fair</option>
+                                <option value="1">1 — Poor</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {ratingOtpRequired && (
+                            <Input
+                              name="otp"
+                              placeholder="Enter OTP"
+                              value={ratingForm.otp}
+                              onChange={handleRatingChange}
+                            />
+                          )}
+
+                          <Textarea
+                            name="comment"
+                            placeholder="Tell us about your experience"
+                            className="mb-0"
+                            rows={6}
+                            value={ratingForm.comment}
+                            onChange={handleRatingChange}
+                          />
+
+                          <div className="flex items-center gap-3">
+                            <Button
+                              type="submit"
+                              className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium"
+                              disabled={ratingSubmitting}
+                            >
+                              {ratingSubmitting
+                                ? "Submitting..."
+                                : "Submit Feedback"}
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setRatingForm({
+                                  phone_number: "",
+                                  otp: "",
+                                  name: "",
+                                  location: "",
+                                  comment: "",
+                                  rating: 5,
+                                });
+                                setRatingOtpRequired(false);
+                              }}
+                              className="rounded-none"
+                            >
+                              Reset
+                            </Button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    {/* end Review Content */}
+                  </div>
+                </div>
+
+                {/* Ratings Preview Card - show 2 by default, +10 on each View more */}
+                <Card className="mt-6 border border-[#D5D5D5] rounded-xl">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold">User Ratings</h4>
+                      <div className="text-sm text-gray-500">
+                        {artistComments.length} reviews
+                      </div>
                     </div>
 
-                    <div className="flex-1">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-pink-500 h-2 rounded-full" style={{ width: `${row.pct}%` }} />
-                      </div>
-                    </div>
+                    {commentsLoading ? (
+                      <p className="text-center py-4 text-sm text-gray-500">
+                        Loading reviews…
+                      </p>
+                    ) : artistComments.length === 0 ? (
+                      <p className="text-center py-4 text-sm text-gray-500">
+                        No reviews yet
+                      </p>
+                    ) : (
+                      <>
+                        <div className="space-y-4">
+                          {artistComments
+                            .slice(0, displayedCount)
+                            .map((c: any) => (
+                              <div key={c.id} className="p-3 border rounded-lg">
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="font-medium">
+                                        {c.name || "Anonymous"}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        {c.location}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-2">
+                                      {[1, 2, 3, 4, 5].map((n) => (
+                                        <Star
+                                          key={n}
+                                          className={`w-4 h-4 ${
+                                            n <= Number(c.rating || 0)
+                                              ? "fill-pink-500 text-pink-500"
+                                              : "fill-gray-200 text-gray-300"
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                  <div className="text-xs text-gray-400">
+                                    {c.created_at
+                                      ? new Date(
+                                          c.created_at
+                                        ).toLocaleDateString()
+                                      : ""}
+                                  </div>
+                                </div>
 
-                    <div className="w-16 text-right text-sm text-gray-600">{row.pct}%</div>
-                  </div>
-                ))}
+                                <p className="mt-3 text-sm text-gray-700">
+                                  {c.comment}
+                                </p>
+                              </div>
+                            ))}
+                        </div>
 
-                <div className="text-xs text-gray-500 mt-3">
-                  {total > 0 ? `${total} ratings` : `No detailed ratings yet`}
-                </div>
-              </>
-            );
-          })()}
-        </div>
-      </div>
-
-      {/* Feedback Form */}
-      <div className="mt-6">
-        <form onSubmit={handleRatingSubmit} className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-3">
-            <Input name="name" placeholder="Your Name" value={ratingForm.name} onChange={handleRatingChange} className="mb-0" />
-            <Input name="phone_number" placeholder="Phone Number" value={ratingForm.phone_number} onChange={handleRatingChange} className="mb-0" />
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-3">
-            <Input name="location" placeholder="Location (City, State)" value={ratingForm.location} onChange={handleRatingChange} />
-            <div>
-              <select name="rating" value={String(ratingForm.rating)} onChange={handleRatingChange as any} className="w-full border p-2 rounded">
-                <option value="5">5 — Excellent</option>
-                <option value="4">4 — Very Good</option>
-                <option value="3">3 — Good</option>
-                <option value="2">2 — Fair</option>
-                <option value="1">1 — Poor</option>
-              </select>
-            </div>
-          </div>
-
-          {ratingOtpRequired && <Input name="otp" placeholder="Enter OTP" value={ratingForm.otp} onChange={handleRatingChange} />}
-
-          <Textarea name="comment" placeholder="Tell us about your experience" className="mb-0" rows={6} value={ratingForm.comment} onChange={handleRatingChange} />
-
-          <div className="flex items-center gap-3">
-            <Button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-none font-medium" disabled={ratingSubmitting}>
-              {ratingSubmitting ? "Submitting..." : "Submit Feedback"}
-            </Button>
-
-            <Button variant="outline" onClick={() => {
-              setRatingForm({ phone_number: "", otp: "", name: "", location: "", comment: "", rating: 5 });
-              setRatingOtpRequired(false);
-            }} className="rounded-none">
-              Reset
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-    {/* end Review Content */}
-  </div>
-</div>
-
-{/* Ratings Preview Card - show 2 by default, +10 on each View more */}
-<Card className="mt-6 border border-[#D5D5D5] rounded-xl">
-  <CardContent className="p-4">
-    <div className="flex items-center justify-between mb-4">
-      <h4 className="text-lg font-semibold">User Ratings</h4>
-      <div className="text-sm text-gray-500">{artistComments.length} reviews</div>
-    </div>
-
-    {commentsLoading ? (
-      <p className="text-center py-4 text-sm text-gray-500">Loading reviews…</p>
-    ) : artistComments.length === 0 ? (
-      <p className="text-center py-4 text-sm text-gray-500">No reviews yet</p>
-    ) : (
-      <>
-        <div className="space-y-4">
-          {artistComments.slice(0, displayedCount).map((c: any) => (
-            <div key={c.id} className="p-3 border rounded-lg">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <div className="font-medium">{c.name || "Anonymous"}</div>
-                    <div className="text-xs text-gray-500">{c.location}</div>
-                  </div>
-                  <div className="flex items-center gap-1 mt-2">
-                    {[1,2,3,4,5].map((n) => (
-                      <Star
-                        key={n}
-                        className={`w-4 h-4 ${n <= Number(c.rating || 0) ? "fill-pink-500 text-pink-500" : "fill-gray-200 text-gray-300"}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="text-xs text-gray-400">
-                  {c.created_at ? new Date(c.created_at).toLocaleDateString() : ""}
-                </div>
-              </div>
-
-              <p className="mt-3 text-sm text-gray-700">{c.comment}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* View More button - each click shows +10 more */}
-        {artistComments.length > displayedCount && (
-          <div className="mt-4 flex justify-center">
-            <Button
-              onClick={() =>
-                setDisplayedCount((prev) => Math.min(prev + 10, artistComments.length))
-              }
-              className="bg-pink-500 hover:bg-pink-600 text-white"
-            >
-              View more
-            </Button>
-          </div>
-        )}
-      </>
-    )}
-  </CardContent>
-</Card>
-
-
+                        {/* View More button - each click shows +10 more */}
+                        {artistComments.length > displayedCount && (
+                          <div className="mt-4 flex justify-center">
+                            <Button
+                              onClick={() =>
+                                setDisplayedCount((prev) =>
+                                  Math.min(prev + 10, artistComments.length)
+                                )
+                              }
+                              className="bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              View more
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </div>
 
@@ -870,89 +1001,94 @@ useEffect(() => {
                   <p className="text-center">Loading suggestions…</p>
                 ) : (
                   <div className="grid grid-cols-1 gap-6">
-{!showPopular ? (
-  <Card>
-    <CardContent className="px-6 py-4">
-      <div className="relative mb-3 animate-pulse">
-        <div className="w-full h-48 bg-gray-200 rounded-lg" />
-        <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
-          Popular
-        </Badge>
-      </div>
-      <div className="flex items-center mb-4">
-        <div className="w-10 h-10 rounded-full bg-gray-200 mr-3" />
-        <div className="flex-1">
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-          <div className="h-3 bg-gray-200 rounded w-1/2" />
-        </div>
-        <div className="w-10 h-4 bg-gray-200 rounded ml-3" />
-      </div>
-      <div className="w-full h-10 bg-gray-200 rounded" />
-    </CardContent>
-  </Card>
-) : (
- suggestions.length > 0 ? (
-  <Card key={suggestions[currentIndex].id}>
-    <CardContent className="px-6 py-4">
-      <div className="relative mb-3">
-        <Image
-          src={
-            suggestions[currentIndex].portfolio_photos[0]?.url ||
-            "/images/protfolio1.JPG"
-          }
-          alt={suggestions[currentIndex].full_name}
-          width={300}
-          height={200}
-          className="w-full h-48 object-cover rounded-lg"
-        />
-        <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
-          Popular
-        </Badge>
-      </div>
-      <div className="flex items-center mb-4">
-        <Image
-          src={
-            suggestions[currentIndex].profile_photo_url ||
-            "/images/protfolio1.JPG"
-          }
-          alt={suggestions[currentIndex].full_name}
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full mr-3 object-cover"
-        />
-        <div className="flex-1">
-          <h4 className="font-semibold">{suggestions[currentIndex].full_name}</h4>
-          <div className="flex items-center text-sm text-gray-500">
-            <MapPin className="w-4 h-4 mr-1 text-pink-500" />
-            <span>{formatLocation(suggestions[currentIndex].location)}</span>
-          </div>
-        </div>
-        <div className="flex items-center text-sm text-pink-500">
-          <Star className="w-4 h-4" />
-          <span className="ml-1">
-            {suggestions[currentIndex].average_rating.toFixed(1)}
-          </span>
-        </div>
-      </div>
-      <Link href={`/makeup-artist/details/${suggestions[currentIndex].id}`}>
-        <Button
-          size="sm"
-          className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
-        >
-          View Profile
-          <ArrowUpRight className="w-4 h-4" />
-        </Button>
-      </Link>
-    </CardContent>
-  </Card>
-) : (
-  <p className="text-center">No popular artists found.</p>
-)
-
-)}
-
-  
-  </div>
+                    {!showPopular ? (
+                      <Card>
+                        <CardContent className="px-6 py-4">
+                          <div className="relative mb-3 animate-pulse">
+                            <div className="w-full h-48 bg-gray-200 rounded-lg" />
+                            <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+                              Popular
+                            </Badge>
+                          </div>
+                          <div className="flex items-center mb-4">
+                            <div className="w-10 h-10 rounded-full bg-gray-200 mr-3" />
+                            <div className="flex-1">
+                              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                              <div className="h-3 bg-gray-200 rounded w-1/2" />
+                            </div>
+                            <div className="w-10 h-4 bg-gray-200 rounded ml-3" />
+                          </div>
+                          <div className="w-full h-10 bg-gray-200 rounded" />
+                        </CardContent>
+                      </Card>
+                    ) : suggestions.length > 0 ? (
+                      <Card key={suggestions[currentIndex].id}>
+                        <CardContent className="px-6 py-4">
+                          <div className="relative mb-3">
+                            <Image
+                              src={
+                                suggestions[currentIndex].portfolio_photos[0]
+                                  ?.url || "/images/protfolio1.JPG"
+                              }
+                              alt={suggestions[currentIndex].full_name}
+                              width={300}
+                              height={200}
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
+                              Popular
+                            </Badge>
+                          </div>
+                          <div className="flex items-center mb-4">
+                            <Image
+                              src={
+                                suggestions[currentIndex].profile_photo_url ||
+                                "/images/protfolio1.JPG"
+                              }
+                              alt={suggestions[currentIndex].full_name}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 rounded-full mr-3 object-cover"
+                            />
+                            <div className="flex-1">
+                              <h4 className="font-semibold">
+                                {suggestions[currentIndex].full_name}
+                              </h4>
+                              <div className="flex items-center text-sm text-gray-500">
+                                <MapPin className="w-4 h-4 mr-1 text-pink-500" />
+                                <span>
+                                  {formatLocation(
+                                    suggestions[currentIndex].location
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center text-sm text-pink-500">
+                              <Star className="w-4 h-4" />
+                              <span className="ml-1">
+                                {suggestions[
+                                  currentIndex
+                                ].average_rating.toFixed(1)}
+                              </span>
+                            </div>
+                          </div>
+                          <Link
+                            href={`/makeup-artist/details/${suggestions[currentIndex].id}`}
+                          >
+                            <Button
+                              size="sm"
+                              className="w-full flex items-center justify-center gap-1 bg-[#FF577F] hover:bg-pink-600 text-white"
+                            >
+                              View Profile
+                              <ArrowUpRight className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <p className="text-center">No popular artists found.</p>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -1071,9 +1207,12 @@ useEffect(() => {
       <section className="py-6 px-4 bg-[url('/images/banner-help.jpg')] bg-cover bg-center bg-no-repeat relative">
         <div className="absolute inset-0 " />
         <div className="relative max-w-2xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-1">We’d Love to Know You Better</h2>
+          <h2 className="text-4xl font-bold mb-1">
+            We’d Love to Know You Better
+          </h2>
           <p className="text-sm mb-6">
-         Because your beauty deserves something unique — tell us a little about yourself
+            Because your beauty deserves something unique — tell us a little
+            about yourself
           </p>
           <form onSubmit={handleHelpSubmit} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
@@ -1125,31 +1264,31 @@ useEffect(() => {
       </section>
 
       {/* Pricing Section */}
-     <section className="py-8 px-4 bg-white">
-  <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
-    <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
-    <div className="space-y-4">
-      {Array.isArray(artist.services) && artist.services.length > 0 ? (
-        artist.services.map((pkg) => (
-          <Collapsible key={pkg.id}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
-              <span className="text-[#FF577F] text-sm font-medium">
-                {pkg.name} – ₹{Number(pkg.price).toLocaleString("en-IN")} per function
-              </span>
-              <ChevronDown className="w-5 h-5 text-[#FF577F]" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="p-4 rounded-b-lg bg-gray-50">
-              <p className="text-gray-600 text-sm">{pkg.description}</p>
-            </CollapsibleContent>
-          </Collapsible>
-        ))
-      ) : (
-        <p className="text-sm text-gray-500">No services listed</p>
-      )}
-    </div>
-  </div>
-</section>
-
+      <section className="py-8 px-4 bg-white">
+        <div className="max-w-4xl mx-auto border border-[#D5D5D5] rounded-xl p-4">
+          <h2 className="text-2xl font-inter font-bold mb-8">Pricing</h2>
+          <div className="space-y-4">
+            {Array.isArray(artist.services) && artist.services.length > 0 ? (
+              artist.services.map((pkg) => (
+                <Collapsible key={pkg.id}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-4 border border-[#ffbecd] rounded-lg hover:bg-gray-100">
+                    <span className="text-[#FF577F] text-sm font-medium">
+                      {pkg.name} – ₹{Number(pkg.price).toLocaleString("en-IN")}{" "}
+                      per function
+                    </span>
+                    <ChevronDown className="w-5 h-5 text-[#FF577F]" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="p-4 rounded-b-lg bg-gray-50">
+                    <p className="text-gray-600 text-sm">{pkg.description}</p>
+                  </CollapsibleContent>
+                </Collapsible>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No services listed</p>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Policies and Products Section */}
       <section className="py-16 px-4 ">
@@ -1158,19 +1297,21 @@ useEffect(() => {
             {/* Left Side - Payment Policy and Products Use */}
             <div className="space-y-12">
               {/* Payment Policy */}
-      <div className="border border-[#D5D5D5] rounded-xl p-4">
-  <h2 className="text-2xl font-inter text-[#0d1b39] font-bold mb-6">
-    Payment Policy
-  </h2>
-  <p className="text-gray-700 mb-4">
-    Accept{" "}
-    {Array.isArray(artist.payment_methods) && artist.payment_methods.length > 0
-      ? artist.payment_methods.map((method) => method.name).join(', ')
-      : "No payment methods"}{" "}
-    Payment
-  </p>
-</div>
-
+              <div className="border border-[#D5D5D5] rounded-xl p-4">
+                <h2 className="text-2xl font-inter text-[#0d1b39] font-bold mb-6">
+                  Payment Policy
+                </h2>
+                <p className="text-gray-700 mb-4">
+                  Accept{" "}
+                  {Array.isArray(artist.payment_methods) &&
+                  artist.payment_methods.length > 0
+                    ? artist.payment_methods
+                        .map((method) => method.name)
+                        .join(", ")
+                    : "No payment methods"}{" "}
+                  Payment
+                </p>
+              </div>
 
               {/* Products Use */}
               {/* Products Use */}
@@ -1239,7 +1380,9 @@ useEffect(() => {
                 <h2 className="text-2xl font-inter font-bold text-[#0d1b39] mb-6">
                   Travel Policy
                 </h2>
-                <p className="text-gray-700 mb-4">Travel {artist?.travel_policy}</p>
+                <p className="text-gray-700 mb-4">
+                  Travel {artist?.travel_policy}
+                </p>
               </div>
 
               {/* Glam Up Banner */}

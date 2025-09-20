@@ -2,23 +2,23 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-  const sliderImages = [
-    "/images/hero1.JPG",
-    "/images/hero2.JPG",
-    "/images/hero3.JPG",
-    "/images/hero4.JPG",
-    "/images/hero5.JPG",
-  ];
+const sliderImages = [
+  "/images/hero1.JPG",
+  "/images/hero2.JPG",
+  "/images/hero3.JPG",
+  "/images/hero4.JPG",
+  "/images/hero5.JPG",
+];
 export default function TermsPage() {
-    const [current, setCurrent] = useState(0);
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % sliderImages.length);
-      }, 4000); // Change image every 4 seconds
-      return () => clearInterval(interval);
-    }, []);
-  
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % sliderImages.length);
+    }, 4000); // Change image every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -41,14 +41,14 @@ export default function TermsPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>

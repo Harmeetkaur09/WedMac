@@ -104,7 +104,7 @@ export default function PortfolioPage() {
 
         {/* Centered Heading Text */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
             Make Your Interior More
             <br />
             Minimalistic & Modern

@@ -90,42 +90,49 @@ export default function SearchPage() {
     return [];
   });
   // lazy init from sessionStorage (only runs on client because "use client")
-const getInitialFilters = () => {
-  if (typeof window === "undefined") return { state: "", city: "", makeuptype: [] as string[] };
-  try {
-    const raw = sessionStorage.getItem("artistFilters");
-    if (!raw) return { state: "", city: "", makeuptype: [] as string[] };
-    const parsed = JSON.parse(raw);
-    const makeuptypesArr = parsed?.makeuptype
-      ? Array.isArray(parsed.makeuptype)
-        ? parsed.makeuptype.map(String)
-        : String(parsed.makeuptype).split(",").map((s: string) => s.trim()).filter(Boolean)
-      : [];
-    return { state: parsed?.state || "", city: parsed?.city || "", makeuptype: makeuptypesArr };
-  } catch {
-    return { state: "", city: "", makeuptype: [] as string[] };
-  }
-};
-// helper (inside component, near other hooks)
-// helper to clear the saved filters key
-const clearArtistFilters = () => {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.removeItem("artistFilters");
-    
-    // page reload after removing
-    window.location.reload();
+  const getInitialFilters = () => {
+    if (typeof window === "undefined")
+      return { state: "", city: "", makeuptype: [] as string[] };
+    try {
+      const raw = sessionStorage.getItem("artistFilters");
+      if (!raw) return { state: "", city: "", makeuptype: [] as string[] };
+      const parsed = JSON.parse(raw);
+      const makeuptypesArr = parsed?.makeuptype
+        ? Array.isArray(parsed.makeuptype)
+          ? parsed.makeuptype.map(String)
+          : String(parsed.makeuptype)
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean)
+        : [];
+      return {
+        state: parsed?.state || "",
+        city: parsed?.city || "",
+        makeuptype: makeuptypesArr,
+      };
+    } catch {
+      return { state: "", city: "", makeuptype: [] as string[] };
+    }
+  };
+  // helper (inside component, near other hooks)
+  // helper to clear the saved filters key
+  const clearArtistFilters = () => {
+    if (typeof window === "undefined") return;
+    try {
+      sessionStorage.removeItem("artistFilters");
 
-    // useful for debugging:
-    // console.log("artistFilters cleared");
-  } catch (err) {
-    console.warn("Failed to clear artistFilters", err);
-  }
-};
+      // page reload after removing
+      window.location.reload();
 
+      // useful for debugging:
+      // console.log("artistFilters cleared");
+    } catch (err) {
+      console.warn("Failed to clear artistFilters", err);
+    }
+  };
 
-const initial = getInitialFilters();
- const didMountRef = useRef(false);
+  const initial = getInitialFilters();
+  const didMountRef = useRef(false);
 
   useEffect(() => {
     // Skip clearing on the initial mount (when we may be hydrating from sessionStorage)
@@ -242,63 +249,67 @@ const initial = getInitialFilters();
     }
   }, []); // run once on mount
 
-useEffect(() => {
-  // build filters object only with values set
-  const filters: Record<string, unknown> = {};
-  if (selectedMakeupTypes.length) {
-    filters.makeuptype = selectedMakeupTypes.map((s) => s.toLowerCase()).join(",");
-  }
-  if (selectedState) filters.state = selectedState.toLowerCase();
-  if (selectedCity) filters.city = selectedCity.toLowerCase();
-  if (selectedRating && selectedRating !== "") {
-    filters.rating = Number(selectedRating);
-  }
-
-  const controller = new AbortController();
-  const signal = controller.signal;
-  setLoading(true);
-
-  // optional: unique request id to check stale result
-  let didCancel = false;
-
-  (async () => {
-    try {
-      const res = await fetch("https://api.wedmacindia.com/api/artists/cards/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filters }),
-        signal,
-      });
-
-      if (!res.ok) throw new Error(res.statusText);
-      const data = await res.json();
-
-      if (signal.aborted) {
-        // aborted, ignore
-        return;
-      }
-
-      // set only when not aborted
-      setArtists(Array.isArray(data.results) ? data.results : []);
-    } catch (err: any) {
-      if (err.name === "AbortError") {
-        // request was cancelled, ignore silently
-        return;
-      }
-      console.error("Fetch artists failed:", err);
-      toast.error("Failed to load artists");
-    } finally {
-      if (!signal.aborted) setLoading(false);
+  useEffect(() => {
+    // build filters object only with values set
+    const filters: Record<string, unknown> = {};
+    if (selectedMakeupTypes.length) {
+      filters.makeuptype = selectedMakeupTypes
+        .map((s) => s.toLowerCase())
+        .join(",");
     }
-  })();
+    if (selectedState) filters.state = selectedState.toLowerCase();
+    if (selectedCity) filters.city = selectedCity.toLowerCase();
+    if (selectedRating && selectedRating !== "") {
+      filters.rating = Number(selectedRating);
+    }
 
-  // cleanup: abort this fetch if deps change / component unmounts
-  return () => {
-    controller.abort();
-    didCancel = true;
-  };
-}, [selectedState, selectedCity, selectedMakeupTypes, selectedRating]);
+    const controller = new AbortController();
+    const signal = controller.signal;
+    setLoading(true);
 
+    // optional: unique request id to check stale result
+    let didCancel = false;
+
+    (async () => {
+      try {
+        const res = await fetch(
+          "https://api.wedmacindia.com/api/artists/cards/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filters }),
+            signal,
+          }
+        );
+
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+
+        if (signal.aborted) {
+          // aborted, ignore
+          return;
+        }
+
+        // set only when not aborted
+        setArtists(Array.isArray(data.results) ? data.results : []);
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          // request was cancelled, ignore silently
+          return;
+        }
+        console.error("Fetch artists failed:", err);
+        toast.error("Failed to load artists");
+      } finally {
+        if (!signal.aborted) setLoading(false);
+      }
+    })();
+
+    // cleanup: abort this fetch if deps change / component unmounts
+    return () => {
+      controller.abort();
+      didCancel = true;
+    };
+  }, [selectedState, selectedCity, selectedMakeupTypes, selectedRating]);
 
   const budgetIsFull =
     budgetRange[0] === BUDGET_MIN && budgetRange[1] === BUDGET_MAX;
@@ -364,14 +375,14 @@ useEffect(() => {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>
@@ -394,50 +405,48 @@ useEffect(() => {
               <div className="mt-4 mb-8 h-[1px] bg-black w-full mx-auto rounded-full" />
 
               {/* Location Filter */}
-            {/* City input */}
-{/* City input */}
-<div className="mb-6">
-  <h3 className="font-[400] font-inter mb-3">City</h3>
-  <div className="relative">
-    <input
-      list="cities-list"
-      className="w-full border border-[#D5D5D5] rounded-lg px-3 py-2 text-sm text-[#303A4280]"
-      placeholder="Start typing your city..."
-      value={selectedCity}
-      onChange={(e) => {
-        const v = e.target.value;
-        setSelectedCity(v);
-        // clear session key the moment the city becomes empty
-        if (v.trim() === "") clearArtistFilters();
-      }}
-    />
+              {/* City input */}
+              {/* City input */}
+              <div className="mb-6">
+                <h3 className="font-[400] font-inter mb-3">City</h3>
+                <div className="relative">
+                  <input
+                    list="cities-list"
+                    className="w-full border border-[#D5D5D5] rounded-lg px-3 py-2 text-sm text-[#303A4280]"
+                    placeholder="Start typing your city..."
+                    value={selectedCity}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setSelectedCity(v);
+                      // clear session key the moment the city becomes empty
+                      if (v.trim() === "") clearArtistFilters();
+                    }}
+                  />
 
-    <datalist id="cities-list">
-      {allCityOptions.map((ct) => (
-        <option key={ct.value.toLowerCase()} value={ct.value}>
-          {ct.label}
-        </option>
-      ))}
-    </datalist>
+                  <datalist id="cities-list">
+                    {allCityOptions.map((ct) => (
+                      <option key={ct.value.toLowerCase()} value={ct.value}>
+                        {ct.label}
+                      </option>
+                    ))}
+                  </datalist>
 
-    {/* Clear button (optional but good UX) */}
-    {selectedCity && (
-      <button
-        type="button"
-        onClick={() => {
-          setSelectedCity("");
-          clearArtistFilters();
-        }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
-        aria-label="Clear city"
-      >
-        Clear
-      </button>
-    )}
-  </div>
-</div>
-
-
+                  {/* Clear button (optional but good UX) */}
+                  {selectedCity && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedCity("");
+                        clearArtistFilters();
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200"
+                      aria-label="Clear city"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
 
               {/* Budget Filter */}
               <div className="mb-6">
@@ -756,19 +765,19 @@ useEffect(() => {
 
                           {/* CTA Buttons always at bottom */}
                           <div className="mt-auto flex space-x-2">
-                         <Button
-  variant="outline"
-  onClick={() => {
-    setSelectedArtistId(artist.id);   // ✅ artist id set ho rhi h
-    setShowModal(true);
-  }}
-  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
->
-  <span className="flex items-center gap-1">
-    Book Now
-    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-  </span>
-</Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedArtistId(artist.id); // ✅ artist id set ho rhi h
+                                setShowModal(true);
+                              }}
+                              className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                            >
+                              <span className="flex items-center gap-1">
+                                Book Now
+                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                              </span>
+                            </Button>
 
                             <Link
                               href={`/makeup-artist/details/${artist.id}`}
@@ -790,16 +799,15 @@ useEffect(() => {
           </div>
         </div>
       </div>
-    {showModal && selectedArtistId && (
-  <BookModal
-    artistId={selectedArtistId}   // ✅ ab requested_artist sahi id jaegi
-    onClose={() => {
-      setShowModal(false);
-      setSelectedArtistId(null);
-    }}
-  />
-)}
-
+      {showModal && selectedArtistId && (
+        <BookModal
+          artistId={selectedArtistId} // ✅ ab requested_artist sahi id jaegi
+          onClose={() => {
+            setShowModal(false);
+            setSelectedArtistId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

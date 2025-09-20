@@ -50,7 +50,7 @@ export default function MakeupArtistPagesPage() {
     }
     return [];
   });
-  
+
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [showOnlySaved, setShowOnlySaved] = useState(false);
@@ -247,14 +247,14 @@ export default function MakeupArtistPagesPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-5xl md:text-7xl font-gilroy-bold mb-6">
-            Style That Turns Heads <br />
-            Every Special Day
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-            Make your presence unforgettable with premium beauty and fashion
-            services <br />
-            designed for life’s most special moments
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>
@@ -593,19 +593,19 @@ export default function MakeupArtistPagesPage() {
 
                           {/* CTA Buttons always at bottom */}
                           <div className="mt-auto flex space-x-2">
-                                    <Button
-  variant="outline"
-  onClick={() => {
-    setSelectedArtistId(artist.id);   // ✅ artist id set ho rhi h
-    setShowModal(true);
-  }}
-  className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
->
-  <span className="flex items-center gap-1">
-    Book Now
-    <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-  </span>
-</Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedArtistId(artist.id); // ✅ artist id set ho rhi h
+                                setShowModal(true);
+                              }}
+                              className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                            >
+                              <span className="flex items-center gap-1">
+                                Book Now
+                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                              </span>
+                            </Button>
 
                             <Link
                               href={`/makeup-artist/details/${artist.id}`}
@@ -627,15 +627,15 @@ export default function MakeupArtistPagesPage() {
           </div>
         </div>
       </div>
-          {showModal && selectedArtistId && (
-           <BookModal
-             artistId={selectedArtistId}   // ✅ ab requested_artist sahi id jaegi
-             onClose={() => {
-               setShowModal(false);
-               setSelectedArtistId(null);
-             }}
-           />
-         )}
+      {showModal && selectedArtistId && (
+        <BookModal
+          artistId={selectedArtistId} // ✅ ab requested_artist sahi id jaegi
+          onClose={() => {
+            setShowModal(false);
+            setSelectedArtistId(null);
+          }}
+        />
+      )}
     </div>
   );
 }
