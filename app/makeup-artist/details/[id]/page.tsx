@@ -1071,10 +1071,9 @@ useEffect(() => {
       <section className="py-6 px-4 bg-[url('/images/banner-help.jpg')] bg-cover bg-center bg-no-repeat relative">
         <div className="absolute inset-0 " />
         <div className="relative max-w-2xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-1">Help Us With Your Details</h2>
+          <h2 className="text-4xl font-bold mb-1">We’d Love to Know You Better</h2>
           <p className="text-sm mb-6">
-            Our executives will call you to understand your requirements to find
-            suitable vendors
+         Because your beauty deserves something unique — tell us a little about yourself
           </p>
           <form onSubmit={handleHelpSubmit} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">

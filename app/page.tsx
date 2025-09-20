@@ -253,7 +253,119 @@ useEffect(() => {
       feedback:
         "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
     },
+      {
+      name: "asde Verma",
+      title: "Party – Jaipur",
+      image: "/images/new25.JPG",
+      avatar: "/images/fdprofile.png",
+      feedback:
+        "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
+    },
   ];
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+const trackRef = useRef<HTMLDivElement | null>(null);
+const firstCardRef = useRef<HTMLDivElement | null>(null);
+
+const [visibleCount, setVisibleCount] = useState<number>(3); // responsive visible cards
+const [cardWidth, setCardWidth] = useState<number>(300); // px width of each card (computed)
+const [slideIndex, setSlideIndex] = useState<number>(0); // 0..(testimonials.length*2 -1)
+const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
+
+// slides = duplicated array for seamless looping
+const slides = [...testimonials, ...testimonials];
+
+// compute measurements & responsive visibleCount
+useEffect(() => {
+  const compute = () => {
+    const w = typeof window !== "undefined" ? window.innerWidth : 1200;
+    if (w >= 768) setVisibleCount(3);
+    else if (w >= 640) setVisibleCount(2);
+    else setVisibleCount(1);
+
+    // viewport width to derive card width
+    const viewW = viewportRef.current?.clientWidth ?? Math.min(w, 1100);
+    const cardW = Math.floor(viewW / (visibleCount || 1));
+    setCardWidth(cardW);
+  };
+
+  compute();
+  const onResize = () => {
+    compute();
+  };
+  window.addEventListener("resize", onResize);
+  return () => window.removeEventListener("resize", onResize);
+}, [visibleCount]); // visibleCount may update but compute handles it
+
+// translate (px) derived from slideIndex * cardWidth (we move left)
+const translate = -(slideIndex * cardWidth);
+
+// helpers for manual nav
+const manualNext = () => {
+  if (testimonials.length <= visibleCount) return;
+  setIsTransitioning(true);
+  setSlideIndex((s) => s + 1);
+};
+const manualPrev = () => {
+  if (testimonials.length <= visibleCount) return;
+  setIsTransitioning(true);
+  // if at 0, jump to duplicates end set with no-transition then move prev with transition
+  if (slideIndex === 0) {
+    // jump to originalLength (which is the same visual) without transition then decrement
+    const jumpTo = testimonials.length;
+    // set non-transition jump immediately
+    setIsTransitioning(false);
+    setSlideIndex(jumpTo);
+    // next tick, go one back with transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setIsTransitioning(true);
+        setSlideIndex(jumpTo - 1);
+      });
+    });
+  } else {
+    setSlideIndex((s) => s - 1);
+  }
+};
+
+// auto-advance interval (per-card)
+useEffect(() => {
+  if (testimonials.length <= visibleCount) return;
+  const id = setInterval(() => {
+    if (!paused) {
+      setIsTransitioning(true);
+      setSlideIndex((s) => s + 1);
+    }
+  }, 3500);
+  return () => clearInterval(id);
+}, [testimonials.length, visibleCount, paused]);
+
+// when we reach the end of the first set, we need to snap back to index 0 (no transition)
+function handleTransitionEnd() {
+  // when sliding forward: if we've just moved into the duplicated set past original length
+  if (slideIndex >= testimonials.length) {
+    // disable transition then snap to index 0 (same visual)
+    setIsTransitioning(false);
+    setSlideIndex(slideIndex - testimonials.length);
+    // re-enable transition next tick so subsequent moves animate
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setIsTransitioning(true);
+      });
+    });
+  }
+  // when sliding backward: if index < 0 (we handle prev via manualPrev jump logic), else no-op
+}
+
+// keep slideIndex in valid range defensively
+useEffect(() => {
+  if (testimonials.length === 0) return;
+  // normalize very large indices (safety)
+  if (slideIndex < 0) {
+    setSlideIndex(((slideIndex % testimonials.length) + testimonials.length) % testimonials.length);
+  } else if (slideIndex > testimonials.length * 2) {
+    setSlideIndex(slideIndex % testimonials.length);
+  }
+}, [slideIndex, testimonials.length]);
   useEffect(() => {
     fetch(
       "https://api.wedmacindia.com/api/admin/master/list/?type=makeup_types"
@@ -907,11 +1019,10 @@ setArtists(topCards);    })
           <div className="absolute inset-0 " />
           <div className="max-w-4xl mx-auto px-4 text-start relative z-10">
             <h2 className="text-4xl md:text-5xl text-[#FF577F] font-bold mb-4">
-              Help Us With Your Details
+          We’d Love to Know You Better
             </h2>
             <p className="text-md mb-4 text-black opacity-90">
-              Get personalized recommendations from our beauty experts
-            </p>
+Because your beauty deserves something unique — tell us a little about yourself            </p>
 
             <form
               onSubmit={handleHelpSubmit}
@@ -1108,67 +1219,83 @@ setArtists(topCards);    })
         </section>
 
         {/* Wedmac Testimonials Section */}
-        <section className="py-12 px-2 bg-white md:mb-20">
-          <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
-            <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
-Our Happy Clients Speak For Us            </h2>
-            <h2 className="font-gilroy text-3xl font-[800] text-center mb-8">
-              Wedmac
-            </h2>
+     <section className="py-12 px-2 bg-white md:mb-20">
+  <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
+    <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
+      Our Happy Clients Speak For Us
+    </h2>
+    <h2 className="font-gilroy text-3xl font-[800] text-center mb-8">
+      Wedmac
+    </h2>
 
-            <div className="relative flex items-center justify-center">
-              {/* Left arrow */}
-              <button className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
+    <div
+      className="relative flex items-center justify-center"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Left arrow */}
+      <button
+        onClick={() => manualPrev()}
+        className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
+        aria-label="Previous testimonial"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                {testimonials.map((client, index) => (
-                  <div
-                    key={index}
-                    className="relative w-full h-[430px] overflow-hidden rounded-2xl"
-                  >
-                    {/* Background Image */}
-                    <Image
-                      src={client.image}
-                      alt={client.name}
-                      fill
-                      className="object-cover w-full h-full"
-                    />
-
-                    {/* White feedback card inside image */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
-                      {/* Horizontal line + avatar */}
-
-                      {/* Text content */}
-                      <h3 className="font-semibold text-md font-gilroy">
-                        {client.name}
-                      </h3>
-                      <p className="text-[10px] font-gilroy text-[#1E1E1E]">
-                        {client.title}
-                      </p>
-                      <p className="font-gilroy text-[#1E1E1E] text-sm  my-3">
-                        "{client.feedback}"
-                      </p>
-
-                      {/* Stars */}
-                      <div className="flex justify-center text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-yellow-400" />
-                        ))}
-                      </div>
+      {/* Carousel viewport */}
+      <div className="w-full overflow-hidden px-4 md:px-8">
+        <div
+          ref={viewportRef}
+          className="relative"
+          style={{ width: "100%" }}
+        >
+          <div
+            ref={trackRef}
+            className="flex will-change-transform"
+            onTransitionEnd={handleTransitionEnd}
+            style={{
+              transform: `translateX(${translate}px)`,
+              transition: isTransitioning ? "transform 600ms ease" : "none",
+            }}
+          >
+            {slides.map((client, idx) => (
+              <div
+                key={idx}
+                ref={idx === 0 ? firstCardRef : undefined}
+                className="flex-shrink-0 p-2"
+                style={{ width: `${cardWidth}px` }}
+              >
+                <div className="relative w-full h-[430px] overflow-hidden rounded-2xl">
+                  <Image src={client.image} alt={client.name} fill className="object-cover w-full h-full" />
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] h-[200px] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
+                    <h3 className="font-semibold text-md font-gilroy">{client.name}</h3>
+                    <p className="text-[10px] font-gilroy text-[#1E1E1E]">{client.title}</p>
+                    <p className="font-gilroy text-[#1E1E1E] text-sm my-3">"{client.feedback}"</p>
+                    <div className="flex justify-center text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400" />
+                      ))}
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
-
-              {/* Right arrow */}
-              <button className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10">
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </div>
+
+      {/* Right arrow */}
+      <button
+        onClick={() => manualNext()}
+        className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
+        aria-label="Next testimonial"
+      >
+        <ArrowRight className="w-5 h-5" />
+      </button>
+    </div>
+  </div>
+</section>
+
 
         {/* Footer */}
         {showModal && selectedArtistId && (
