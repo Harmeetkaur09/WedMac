@@ -48,7 +48,7 @@ export default function Privacy() {
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
                    From weddings to celebrations, we design looks that turn admiration into memories.
-
+</p>
         </div>
       </section>
 
