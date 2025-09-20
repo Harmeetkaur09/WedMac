@@ -51,12 +51,12 @@ interface MakeupType {
 }
 
 const imagePaths = [
-  { primary: "/images/new22.JPG", secondary: "/images/new24.JPG" },
-  { primary: "/images/img22.jpg", secondary: "/images/new22.JPG" },
-  { primary: "/images/img2.jpeg", secondary: "/images/img3.jpeg" },
-  { primary: "/images/img8.jpg", secondary: "/images/new44.JPG" },
-  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg" },
-  { primary: "/images/new27.JPG", secondary: "/images/new1.JPG" },
+  { primary: "/images/new22.JPG", secondary: "/images/new24.JPG", label: "Party Makeup" },
+  { primary: "/images/img22.jpg", secondary: "/images/new22.JPG", label: "Bridal Makeup" },
+  { primary: "/images/img2.jpeg", secondary: "/images/img3.jpeg", label: "Airbrush Makeup" },
+  { primary: "/images/img8.jpg", secondary: "/images/new44.JPG", label: "Haldi Makeup" },
+  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg", label: "Engagement Makeup" },
+  { primary: "/images/new27.JPG", secondary: "/images/new1.JPG", label: "Mehndi Makeup" },
 ];
 
 export default function HomePage() {
@@ -227,6 +227,7 @@ useEffect(() => {
       ? JSON.parse(localStorage.getItem("savedArtists") || "[]")
       : []
   );
+
 
   const testimonials = [
     {
@@ -558,10 +559,10 @@ setArtists(topCards);    })
 
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+<h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
              Be the Reason They Can’t<br/>Take Their Eyes Off You
             </h1>
-            <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
+            <p className="text-lg md:text-xl font-gilroy font-400 opacity-90">
          From weddings to celebrations, we design looks that turn admiration into memories.
             </p>
           </div>
@@ -755,35 +756,24 @@ setArtists(topCards);    })
             {/* Mobile Version */}
             <div className="block lg:hidden">
               <div className="grid grid-cols-2 gap-4">
-                {shuffledImages.map((img, index) => (
-                  <div key={index} className="relative group cursor-pointer">
-                    <div className="aspect-square">
-                      <Image
-                        src={img.primary}
-                        alt={
-                          index === 3
-                            ? "Haldi Makeup"
-                            : index === 1 || index === 2
-                            ? "Mehndi Makeup"
-                            : "Haldi Makeup"
-                        }
-                        width={300}
-                        height={300}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
-                      <span className="text-xs font-medium">
-                        {index === 3
-                          ? "Haldi Makeup"
-                          : index === 1 || index === 2
-                          ? "Party Makeup"
-                          : "Mehndi Makeup"}
-                      </span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                ))}
+               {shuffledImages.map((img, index) => (
+  <div key={index} className="relative group cursor-pointer">
+    <div className="aspect-square">
+      <Image
+        src={img.primary}
+        alt={img.label}
+        width={300}
+        height={300}
+        className="w-full h-full object-cover rounded-lg"
+      />
+    </div>
+    <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
+      <span className="text-xs font-medium">{img.label}</span>
+      <ArrowUpRight className="w-3 h-3" />
+    </div>
+  </div>
+))}
+
               </div>
             </div>
           </div>

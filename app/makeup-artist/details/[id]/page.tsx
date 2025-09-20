@@ -1315,62 +1315,33 @@ export default function MakeupArtistDetailPage() {
 
               {/* Products Use */}
               {/* Products Use */}
-              <div className="border border-[#D5D5D5] rounded-xl p-4">
-                <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
-                  Products Used
-                </h2>
+             <div className="border border-[#D5D5D5] rounded-xl p-4">
+  <h2 className="text-2xl font-bold text-[#0d1b39] font-inter mb-6">
+    Products Used
+  </h2>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    "MAC",
-                    "Estee Lauder",
-                    "MARS",
-                    "Color Pop",
-                    "Maybelline",
-                    "Loreal",
-                    "PAC",
-                    "Too Faced",
-                    "Huda Beauty",
-                    "Inglot",
-                    "Charlotte Tilbury",
-                    "Smashbox",
-                    "Makeup Forever",
-                    "Colorbar",
-                    "Laura Mercier",
-                    "Kylie Cosmetics",
-                    "LAKMÉ",
-                    "Nykaa",
-                    "ELF",
-                    "Fenty",
-                  ].map((brand, i) => {
-                    // safe check if artist and products_used exist
-                    const used = Array.isArray(artist?.products_used)
-                      ? artist!.products_used.some(
-                          (p: string) =>
-                            String(p).toLowerCase() === brand.toLowerCase()
-                        )
-                      : false;
+  <div className="grid grid-cols-2 gap-3">
+    {Array.isArray(artist?.products_used) && artist.products_used.length > 0 ? (
+      artist.products_used.map((brand: string, i: number) => (
+        <label
+          key={i}
+          className="flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed"
+        >
+          <input
+            type="checkbox"
+            checked
+            readOnly
+            className="accent-[#FF577F] w-5 h-5"
+          />
+          <span>{brand}</span>
+        </label>
+      ))
+    ) : (
+      <p className="text-sm text-gray-500 col-span-2">No products listed.</p>
+    )}
+  </div>
+</div>
 
-                    return (
-                      <label
-                        key={i}
-                        className={`flex items-center gap-2 p-2 rounded font-medium text-sm cursor-not-allowed ${
-                          used ? "" : "opacity-60"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={used}
-                          readOnly
-                          disabled
-                          className="accent-[#FF577F] w-5 h-5"
-                        />
-                        <span>{brand}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
             {/* Right Side - Travel Policy and CTA Banner */}
