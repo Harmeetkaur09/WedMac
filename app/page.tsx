@@ -257,7 +257,7 @@ useEffect(() => {
       {
       name: "Kavya Malhotra",
       title: "Bride – Lucknow",
-      image: "/images/img5.JPEG",
+      image: "/images/img5.jpeg",
       avatar: "/images/fdprofile.png",
       feedback:
         "From start to finish, everything was on point—my wedding look turned out even better than I imagined!",
