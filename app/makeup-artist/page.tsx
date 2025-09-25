@@ -247,7 +247,7 @@ export default function MakeupArtistPagesPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
@@ -514,7 +514,7 @@ export default function MakeupArtistPagesPage() {
                         className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full"
                       >
                         {/* Portfolio Grid */}
-                        <div className="flex gap-2 p-4 h-[250px]">
+                        <div className="flex gap-2 p-4 md:h-[250px]">
                           <Image
                             src={
                               artist.portfolio_photos[0]?.url ||

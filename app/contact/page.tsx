@@ -101,7 +101,7 @@ export default function ContactPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
@@ -148,6 +148,7 @@ export default function ContactPage() {
                     placeholder="First name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    maxLength={20}
                     className="w-full h-12 border border-[#D5D5D5] rounded-lg px-6 py-2 placeholder:text-[#303A4280]"
                   />
                   {errors.name && (
@@ -159,9 +160,10 @@ export default function ContactPage() {
                     Mobile Number
                   </label>
                   <Input
-                    placeholder="Enter your number"
+                    placeholder="Mobile number"
                     value={mobile}
                     onChange={(e) => setMobile(e.target.value)}
+                    maxLength={10}
                     className="w-full h-12 border border-[#D5D5D5] rounded-lg px-6 py-2 placeholder:text-[#303A4280]"
                   />
                   {errors.mobile && (
@@ -173,9 +175,10 @@ export default function ContactPage() {
                     What can we help you with?
                   </label>
                   <Textarea
-                    placeholder="Type your message here..."
+                    placeholder="Type your message here... ( 50 words max )"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    maxLength={300}
                     className="w-full border border-[#D5D5D5] rounded-lg px-6 py-2 placeholder:text-[#303A4280] h-36"
                   />
                 </div>

@@ -363,7 +363,7 @@ export default function BlogDetailsPage() {
               <Badge className="bg-pink-500 rounded-md text-white mb-4">{post?.category ?? "Print Design"}</Badge>
 
               {/* Dynamic title */}
-              <h2 className="text-4xl font-inter font-bold mb-4">{post?.title ?? "Growing a distributed product design team."}</h2>
+              <h2 className="text-4xl font-inter font-bold break-all mb-4">{post?.title ?? "Growing a distributed product design team."}</h2>
 
               {/* Dynamic meta */}
               <p className="text-gray-600 text-xs mb-8">{post?.author_name ?? "Jan Blomqvist"} | {formatDate(post?.created_on)} | in {post?.category ?? "Print Design"}</p>
@@ -385,7 +385,7 @@ export default function BlogDetailsPage() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 mb-2 border-y border-gray-200 py-5">{renderHashtags(post?.hashtags)}</div>
+              <div className="flex flex-wrap gap-2 mb-2 break-all border-y border-gray-200 py-5">{renderHashtags(post?.hashtags)}</div>
 
               <div className="flex items-center gap-4 p-2 mb-2">
                 <div>

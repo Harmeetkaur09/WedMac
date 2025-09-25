@@ -41,7 +41,7 @@ export default function TermsPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You

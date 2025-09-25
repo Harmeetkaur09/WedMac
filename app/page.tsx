@@ -55,7 +55,7 @@ const imagePaths = [
   { primary: "/images/img22.jpg", secondary: "/images/new22.JPG", label: "Bridal Makeup" },
   { primary: "/images/img2.jpeg", secondary: "/images/img3.jpeg", label: "Airbrush Makeup" },
   { primary: "/images/img8.jpg", secondary: "/images/new44.JPG", label: "Haldi Makeup" },
-  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg", label: "Engagement Makeup" },
+  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg", label: "Nude Makeup" },
   { primary: "/images/new27.JPG", secondary: "/images/new1.JPG", label: "Mehndi Makeup" },
 ];
 
@@ -96,8 +96,19 @@ const frameRef = useRef<number | null>(null);
 const [offset, setOffset] = useState(0);
 const [paused, setPaused] = useState(false);
 
+// replace your existing RAF useEffect with this
 useEffect(() => {
+  // Only run marquee if we have more than 3 artists
   if (!sliderRef.current) return;
+  if ((artists?.length ?? 0) <= 3) {
+    // ensure offset reset and stop animation
+    setOffset(0);
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+    return;
+  }
 
   const totalWidth = sliderRef.current.scrollWidth; // full duplicated width
   let x = 0;
@@ -105,13 +116,9 @@ useEffect(() => {
   const tick = () => {
     if (!paused) {
       x -= 1; // speed px/frame
-
-      // Jab ek loop complete ho jaye (poora duplicate chal gaya)
       if (Math.abs(x) >= totalWidth / 2) {
-        // abhi yaha /2 ka use karo because artists twice render hue hai
-        x = 0; // seamlessly reset
+        x = 0;
       }
-
       setOffset(x);
     }
     frameRef.current = requestAnimationFrame(tick);
@@ -119,13 +126,12 @@ useEffect(() => {
 
   frameRef.current = requestAnimationFrame(tick);
   return () => {
-    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
   };
 }, [artists, paused]);
-
-
-
-
 
   // City options by state
 
@@ -475,6 +481,37 @@ useEffect(() => {
     }
   };
 
+// Add this helper (put it near top of the component, before useEffect)
+function hasTopTag(c: any): boolean {
+  if (!c) return false;
+
+  const tags: string[] = [];
+
+  // tag could be array or string
+  if (Array.isArray(c.tag)) {
+    tags.push(...c.tag.map((t: any) => String(t || "").toLowerCase()));
+  } else if (typeof c.tag === "string" && c.tag.trim()) {
+    tags.push(c.tag.toLowerCase());
+  }
+
+  // also consider `tags` (alternative field name)
+  if (Array.isArray((c as any).tags)) {
+    tags.push(...(c as any).tags.map((t: any) => String(t || "").toLowerCase()));
+  } else if (typeof (c as any).tags === "string" && (c as any).tags.trim()) {
+    tags.push(((c as any).tags as string).toLowerCase());
+  }
+
+  // portfolio_photos might have tag metadata too
+  if (Array.isArray(c.portfolio_photos)) {
+    c.portfolio_photos.forEach((p: any) => {
+      if (p && p.tag) tags.push(String(p.tag).toLowerCase());
+    });
+  }
+
+  return tags.includes("top");
+}
+
+// Replace the existing fetch useEffect with this:
 useEffect(() => {
   // Build filters based on selected tab
   const filters: Record<string, string> = {};
@@ -502,27 +539,14 @@ useEffect(() => {
       else if (Array.isArray((data as any).data)) cards = (data as any).data;
       else cards = [];
 
-      // Filter only tag === "top" (support multiple shapes)
-      const topCards = cards.filter((c: any) => {
-        if (!c) return false;
-        const topLevelTag = String(c.tag ?? "").toLowerCase().trim();
-        const tagsArray =
-          Array.isArray(c.tags) && c.tags.map((t: any) => String(t).toLowerCase());
-        const portfolioHasTop =
-          Array.isArray(c.portfolio_photos) &&
-          c.portfolio_photos.some(
-            (p: any) => String(p?.tag ?? "").toLowerCase() === "top"
-          );
+      // Filter only artists that have 'top' tag (robust check)
+      const topCards = cards.filter(hasTopTag);
 
-        return (
-          topLevelTag === "top" ||
-          (Array.isArray(tagsArray) && tagsArray.includes("top")) ||
-          portfolioHasTop
-        );
-      });
+      // Optional: limit results (uncomment if you want only first 3)
+      // setArtists(topCards.slice(0, 3));
 
-      // limit to 3 results only
-setArtists(topCards);    })
+      setArtists(topCards);
+    })
     .catch((err) => {
       console.error("Artist fetch failed:", err);
       toast.error("Failed to load artists");
@@ -533,6 +557,20 @@ setArtists(topCards);    })
     });
 }, [selected]);
 
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+const isMobile = useIsMobile();
 
   return (
     <>
@@ -814,123 +852,205 @@ setArtists(topCards);    })
 
     <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
 
-  {loading ? (
+{loading ? (
   <p className="text-center">Loading...</p>
 ) : (
- <div
-  className="relative overflow-hidden"
-  onMouseEnter={() => setPaused(true)}
-  onMouseLeave={() => setPaused(false)}
->
-  <motion.div
-    ref={sliderRef}
-    className="flex space-x-6"
-    style={{ x: offset }}
-  >
-  {[...artists, ...artists].map((artist, idx) => (
-        <div
-          key={idx}
-          className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-        >
-          {/* Portfolio Grid */}
-          <div className="flex gap-2 p-4 h-[250px]">
-            <Image
-              src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
-              alt="Artist Work"
-              width={250}
-              height={220}
-              className="rounded-lg object-cover w-[65%] h-full"
-            />
-            <div className="flex flex-col gap-2 w-[35%]">
-              <Image
-                src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
-                alt="Artist Work"
-                width={100}
-                height={120}
-                className="rounded-lg object-cover w-full h-[130px]"
-              />
-              <Image
-                src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
-                alt="Artist Work"
-                width={100}
-                height={90}
-                className="rounded-lg object-cover w-full h-[88px]"
-              />
-            </div>
-          </div>
-
-          {/* Info & Avatar */}
-          <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center">
+  <>
+    {/* CASE A: small count -> static centered row (no sliding) */}
+    { artists.length > 0 && artists.length <= 3 ? (
+  <div className="flex justify-center px-4">
+        <div className="md:flex block gap-6 px-4">
+          {artists.map((artist) => (
+            <div
+              key={artist.id}
+              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+            >
+              {/* same card markup as before (portfolio + info) */}
+              <div className="flex gap-2 p-4 h-[250px]">
                 <Image
-                  src={
-                    artist.profile_photo_url ||
-                    "/placeholder.svg?height=50&width=50"
-                  }
-                  alt={artist.full_name}
-                  width={56}
-                  height={56}
-                  className="w-14 h-14 rounded-full mr-4"
+                  src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
+                  alt="Artist Work"
+                  width={250}
+                  height={220}
+                  className="rounded-lg object-cover w-[65%] h-full"
                 />
-                <div>
-                  <h3 className="font-semibold">{artist.full_name}</h3>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                    <span>{formatLocation(artist.location)}</span>
-                    <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                      {artist.average_rating.toFixed(1)}
-                    </span>
-                  </div>
+                <div className="flex flex-col gap-2 w-[35%]">
+                  <Image
+                    src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
+                    alt="Artist Work"
+                    width={100}
+                    height={120}
+                    className="rounded-lg object-cover w-full h-[130px]"
+                  />
+                  <Image
+                    src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
+                    alt="Artist Work"
+                    width={100}
+                    height={90}
+                    className="rounded-lg object-cover w-full h-[88px]"
+                  />
                 </div>
               </div>
 
-              {/* Bookmark */}
-              <button
-                onClick={() => toggleSaveArtist(artist.id)}
-                className="text-[#FF577F] hover:text-pink-600 transition"
-              >
-                <Bookmark
-                  className={`w-6 h-6 cursor-pointer ${
-                    savedArtists.includes(artist.id)
-                      ? "fill-[#FF577F]"
-                      : "stroke-[#FF577F]"
-                  }`}
-                />
-              </button>
-            </div>
+              <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center">
+                    <Image
+                      src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
+                      alt={artist.full_name}
+                      width={56}
+                      height={56}
+                      className="w-14 h-14 rounded-full mr-4"
+                    />
+                    <div>
+                      <h3 className="font-semibold">{artist.full_name}</h3>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                        <span>{formatLocation(artist.location)}</span>
+                        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                          {artist.average_rating.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Actions */}
-            <div className="mt-auto flex space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSelectedArtistId(artist.id);
-                  setShowModal(true);
-                }}
-                className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-              >
-                <span className="flex items-center gap-1">
-                  Book Now
-                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                </span>
-              </Button>
-              <Link
-                href={`/makeup-artist/details/${artist.id}`}
-                className="flex-1"
-              >
-                <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                  View Profile
-                  <ArrowUpRight className="w-4 h-4" />
-                </Button>
-              </Link>
+                  <button
+                    onClick={() => toggleSaveArtist(artist.id)}
+                    className="text-[#FF577F] hover:text-pink-600 transition"
+                  >
+                    <Bookmark
+                      className={`w-6 h-6 cursor-pointer ${savedArtists.includes(artist.id) ? "fill-[#FF577F]" : "stroke-[#FF577F]"}`}
+                    />
+                  </button>
+                </div>
+
+                <div className="mt-auto flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedArtistId(artist.id);
+                      setShowModal(true);
+                    }}
+                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                  >
+                    <span className="flex items-center gap-1">
+                      Book Now
+                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </span>
+                  </Button>
+                  <Link href={`/makeup-artist/details/${artist.id}`} className="flex-1">
+                    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                      View Profile
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
-      ))}
-    </motion.div>
-  </div>
+      </div>
+    ) : (
+      /* CASE B: many cards -> existing sliding marquee (duplicate for seamless loop) */
+      <div
+        className="relative overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <motion.div ref={sliderRef} className="flex space-x-6" style={{ x: offset }}>
+          {[...artists, ...artists].map((artist, idx) => (
+            <div
+              key={`${artist.id}-${idx}`} // keep unique keys with idx for duplicated set
+              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+            >
+            <div className="flex gap-2 p-4 h-[250px]">
+                <Image
+                  src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
+                  alt="Artist Work"
+                  width={250}
+                  height={220}
+                  className="rounded-lg object-cover w-[65%] h-full"
+                />
+                <div className="flex flex-col gap-2 w-[35%]">
+                  <Image
+                    src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
+                    alt="Artist Work"
+                    width={100}
+                    height={120}
+                    className="rounded-lg object-cover w-full h-[130px]"
+                  />
+                  <Image
+                    src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
+                    alt="Artist Work"
+                    width={100}
+                    height={90}
+                    className="rounded-lg object-cover w-full h-[88px]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center">
+                    <Image
+                      src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
+                      alt={artist.full_name}
+                      width={56}
+                      height={56}
+                      className="w-14 h-14 rounded-full mr-4"
+                    />
+                    <div>
+                      <h3 className="font-semibold">{artist.full_name}</h3>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                        <span>{formatLocation(artist.location)}</span>
+                        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                          {artist.average_rating.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => toggleSaveArtist(artist.id)}
+                    className="text-[#FF577F] hover:text-pink-600 transition"
+                  >
+                    <Bookmark
+                      className={`w-6 h-6 cursor-pointer ${savedArtists.includes(artist.id) ? "fill-[#FF577F]" : "stroke-[#FF577F]"}`}
+                    />
+                  </button>
+                </div>
+
+                <div className="mt-auto flex space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedArtistId(artist.id);
+                      setShowModal(true);
+                    }}
+                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                  >
+                    <span className="flex items-center gap-1">
+                      Book Now
+                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </span>
+                  </Button>
+                  <Link href={`/makeup-artist/details/${artist.id}`} className="flex-1">
+                    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                      View Profile
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    )}
+  </>
 )}
+
 
     <div className="mt-10 text-center">
       <Link
@@ -1017,9 +1137,11 @@ Because your beauty deserves something unique — tell us a little about yoursel
             >
               <div className="w-full md:w-[22%]">
                 <Input
-                  placeholder="Your Name"
+                  placeholder="Name"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpName}
+                    maxLength={20}
+
                   onChange={(e) => setHelpName(e.target.value)}
                 />
                 {helpErrors.name && (
@@ -1028,9 +1150,11 @@ Because your beauty deserves something unique — tell us a little about yoursel
               </div>
               <div className="w-full md:w-[22%]">
                 <Input
-                  placeholder="Your Number"
+                  placeholder="Number"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpMobile}
+                    maxLength={10}
+
                   onChange={(e) => setHelpMobile(e.target.value)}
                 />
                 {helpErrors.mobile && (
@@ -1041,9 +1165,11 @@ Because your beauty deserves something unique — tell us a little about yoursel
               </div>
               <div className="w-full md:w-[22%]">
                 <Input
-                  placeholder="Your Message"
+                  placeholder="Message ( 50 words max )"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpMessage}
+                    maxLength={300}
+
                   onChange={(e) => setHelpMessage(e.target.value)}
                 />
               </div>
@@ -1073,9 +1199,9 @@ Because your beauty deserves something unique — tell us a little about yoursel
                   off on premium makeup services from top-rated artists. Limited
                   time offer with special packages designed just for you.
                 </p>
-                <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white w-80 px-8 py-4 text-lg font-semibold rounded-md">
+                {/* <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white w-80 px-8 py-4 text-lg font-semibold rounded-md">
                   Shop Now
-                </Button>
+                </Button> */}
 
                 <div className="space-y-4">
                   {/* Label */}
@@ -1257,7 +1383,7 @@ Because your beauty deserves something unique — tell us a little about yoursel
                   <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] h-[200px] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
                     <h3 className="font-semibold text-md font-gilroy">{client.name}</h3>
                     <p className="text-[10px] font-gilroy text-[#1E1E1E]">{client.title}</p>
-                    <p className="font-gilroy text-[#1E1E1E] text-sm my-3">"{client.feedback}"</p>
+                    <p className="font-gilroy text-[#1E1E1E] md:text-sm text-xs my-3">"{client.feedback}"</p>
                     <div className="flex justify-center text-yellow-400">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 fill-yellow-400" />

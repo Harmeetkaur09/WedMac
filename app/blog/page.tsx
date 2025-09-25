@@ -103,6 +103,12 @@ export default function BlogPage() {
 
   // fallback placeholder image
   const placeholderImage = "/images/blog.png";
+  function truncateWords(text: string, wordLimit: number) {
+    if (!text) return "";
+    const words = text.trim().split(/\s+/); // split by any whitespace
+    const sliced = words.slice(0, wordLimit).join(" ");
+    return words.length > wordLimit ? sliced + "..." : sliced;
+  }
 
   return (
     <div className="min-h-screen">
@@ -118,7 +124,7 @@ export default function BlogPage() {
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/0 via-black/30 to-black/0" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
@@ -174,7 +180,7 @@ export default function BlogPage() {
                             alt={post.title}
                             width={400}
                             height={300}
-                            className="w-full h-48 object-cover"
+                            className="w-full h-48 object-cover object-top"
                           />
                           <Badge
                             className={`absolute top-4 right-4 p-1 font-inter rounded-none text-white`}
@@ -184,7 +190,7 @@ export default function BlogPage() {
                         </div>
                         <CardContent className="p-4">
                           <h3 className="text-xl font-inter font-[500] mb-3">
-                            {post.title.split(" ").slice(0, 4).join(" ")}...
+                            {truncateWords(post.title, 3)}
                           </h3>
 
                           <p className="text-[#6c757d] text-sm font-inter mb-4">

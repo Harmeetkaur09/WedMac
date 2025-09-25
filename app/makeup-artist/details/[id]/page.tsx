@@ -299,55 +299,175 @@ export default function MakeupArtistDetailPage() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [suggestions, setSuggestions] = useState<CardArtist[]>([]);
+// helper to extract all tags from a card object
+// add near top of component (above useEffect)
+function capitalizeTag(s: string) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
-  useEffect(() => {
-    setAlsoLoading(true); // ✅ start loading
+function extractTagsFromCard(c: any): string[] {
+  const set = new Set<string>();
 
-    fetch("https://api.wedmacindia.com/api/artists/cards/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        let cards: any[] = [];
-        if (Array.isArray(data)) cards = data;
-        else if (Array.isArray(data.results)) cards = data.results;
-        else if (Array.isArray((data as any).data)) cards = (data as any).data;
-        else if (Array.isArray((data as any).cards))
-          cards = (data as any).cards;
-
-        const filtered = cards.filter((c: any) => {
-          if (!c) return false;
-          if (String(c.id) === String(id)) return false;
-
-          const topLevelTag = String(c.tag ?? "")
-            .toLowerCase()
-            .trim();
-          const tagsArray =
-            Array.isArray(c.tags) &&
-            c.tags.map((t: any) => String(t).toLowerCase());
-
-          const portfolioHasPopular =
-            Array.isArray(c.portfolio_photos) &&
-            c.portfolio_photos.some(
-              (p: any) => String(p?.tag ?? "").toLowerCase() === "popular"
-            );
-
-          return (
-            topLevelTag === "popular" ||
-            (Array.isArray(tagsArray) && tagsArray.includes("popular")) ||
-            portfolioHasPopular
-          );
-        });
-
-        setSuggestions(filtered);
-      })
-      .catch((err) => console.error("Failed to load suggestions", err))
-      .finally(() => {
-        setAlsoLoading(false); // ✅ stop loading
+  try {
+    // tag (string or array)
+    if (Array.isArray(c?.tag)) {
+      c.tag.forEach((t: any) => {
+        if (t) set.add(String(t).toLowerCase());
       });
-  }, [id]);
+    } else if (typeof c?.tag === "string" && c.tag.trim()) {
+      set.add(c.tag.toLowerCase());
+    }
+
+    // tags alternative field
+    if (Array.isArray(c?.tags)) {
+      c.tags.forEach((t: any) => {
+        if (t) set.add(String(t).toLowerCase());
+      });
+    } else if (typeof c?.tags === "string" && c.tags.trim()) {
+      set.add(c.tags.toLowerCase());
+    }
+
+    // portfolio_photos[].tag
+    if (Array.isArray(c?.portfolio_photos)) {
+      c.portfolio_photos.forEach((p: any) => {
+        if (!p) return;
+        if (typeof p === "string") {
+          // sometimes portfolio_photos might be array of urls only — skip
+        } else if (p?.tag) {
+          set.add(String(p.tag).toLowerCase());
+        }
+      });
+    }
+
+    // makeup_types (helpful)
+    if (Array.isArray(c?.makeup_types)) {
+      c.makeup_types.forEach((t: any) => {
+        if (t) set.add(String(t).toLowerCase());
+      });
+    }
+  } catch (err) {
+    // fail-safe
+    console.warn("extractTagsFromCard error", err);
+  }
+
+  return Array.from(set);
+}
+
+
+useEffect(() => {
+  setAlsoLoading(true);
+
+  fetch("https://api.wedmacindia.com/api/artists/cards/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      let cards: any[] = [];
+      if (Array.isArray(data)) cards = data;
+      else if (Array.isArray(data.results)) cards = data.results;
+      else if (Array.isArray((data as any).data)) cards = (data as any).data;
+      else if (Array.isArray((data as any).cards)) cards = (data as any).cards;
+
+      // helper: normalize any kind of input into a Set of lowercase tags
+      const normalizeToSet = (input: any): Set<string> => {
+        const s = new Set<string>();
+        const add = (val: any) => {
+          if (val === null || val === undefined) return;
+          if (Array.isArray(val)) {
+            val.forEach((v) => add(v));
+          } else if (typeof val === "string") {
+            val
+              .split(",")
+              .map((t) => t.trim().toLowerCase())
+              .filter(Boolean)
+              .forEach((t) => s.add(t));
+          } else if (typeof val === "object") {
+            // object might be { name: 'Popular' } or similar
+            Object.values(val).forEach((v) => add(v));
+          } else {
+            // other scalar (number etc)
+            s.add(String(val).toLowerCase());
+          }
+        };
+        add(input);
+        return s;
+      };
+
+      const tagsForCard = (c: any): Set<string> => {
+        const set = new Set<string>();
+        // common places
+        const maybe = (v: any) => {
+          const o = normalizeToSet(v);
+          o.forEach((t) => set.add(t));
+        };
+        maybe(c.tag ?? c.tags ?? []);
+        // sometimes tags are in different fields
+        if (c?.tags && !Array.isArray(c.tags)) maybe(c.tags);
+        if (Array.isArray(c.portfolio_photos)) {
+          c.portfolio_photos.forEach((p: any) => {
+            if (p?.tag) maybe(p.tag);
+            if (p?.tags) maybe(p.tags);
+          });
+        }
+        // any other fields that might contain tag-like info
+        if (c?.category) maybe(c.category);
+        return set;
+      };
+
+      // exclude current artist id
+      const others = cards.filter((c: any) => String(c?.id) !== String(id));
+
+      // first try: only popular
+      const popularOnly = others.filter((c: any) =>
+        tagsForCard(c).has("popular")
+      );
+
+      // fallback: try 'top'
+      const topOnly = popularOnly.length === 0
+        ? others.filter((c: any) => tagsForCard(c).has("top"))
+        : [];
+
+      // final fallback: any other cards (exclude current)
+      const finalFallback =
+        popularOnly.length === 0 && topOnly.length === 0
+          ? others.slice(0, 6) // show first few if nothing else
+          : [];
+
+      const finalList =
+        popularOnly.length > 0
+          ? popularOnly
+          : topOnly.length > 0
+          ? topOnly
+          : finalFallback;
+
+      // debug logs (dev only — remove in production if you want)
+      console.log(
+        "[suggestions] cards:",
+        cards.length,
+        "popular:",
+        popularOnly.length,
+        "top:",
+        topOnly.length,
+        "final:",
+        finalList.length
+      );
+
+      setSuggestions(finalList);
+      setCurrentIndex(0); // reset slider to first item
+    })
+    .catch((err) => {
+      console.error("Failed to load suggestions", err);
+      setSuggestions([]);
+    })
+    .finally(() => {
+      setAlsoLoading(false);
+    });
+}, [id]);
+
+
 
   // Auto-change every 5s
   useEffect(() => {
@@ -456,7 +576,7 @@ export default function MakeupArtistDetailPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
@@ -476,7 +596,7 @@ export default function MakeupArtistDetailPage() {
       </section>
 
       {/* Make Up Artists Section */}
-      <section className="py-16 px-4 bg-white">
+      <section className="md:py-16 py-8 px-4 bg-white">
         <div className="container mx-auto px-4">
           <div className="md:grid block lg:grid-cols-3 gap-8">
             {/* Left Side - Artist Profile and About */}
@@ -498,7 +618,7 @@ export default function MakeupArtistDetailPage() {
                     <div className="md:w-2/3 md:pt-6 md:pr-8 p-4 md:p-0">
                       <div className="flex items-start justify-between mb-2">
                         {/* Left side: Name + Verified */}
-                        <div className="flex items-center gap-2">
+                        <div className="md:flex block items-center gap-2">
                           <h3 className="text-2xl font-inter font-bold">
                             {artist.full_name}
                           </h3>
@@ -1221,6 +1341,8 @@ export default function MakeupArtistDetailPage() {
                   placeholder="Your Name"
                   className="rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                   value={helpName}
+                    maxLength={20}
+
                   onChange={(e) => setHelpName(e.target.value)}
                 />
                 {helpErrors.name && (
@@ -1232,6 +1354,7 @@ export default function MakeupArtistDetailPage() {
                   placeholder="Your Mobile"
                   className="rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                   value={helpMobile}
+                    maxLength={10}
                   onChange={(e) => setHelpMobile(e.target.value)}
                 />
                 {helpErrors.mobile && (
@@ -1243,10 +1366,11 @@ export default function MakeupArtistDetailPage() {
             </div>
             <div>
               <Textarea
-                placeholder="Write here your Doubt"
+                placeholder="Write here your Doubt ( 50 words max )"
                 className="mb-2 rounded-none text-black border-none focus:border-pink-500 focus:ring-pink-500"
                 rows={4}
                 value={helpMessage}
+                  maxLength={300}
                 onChange={(e) => setHelpMessage(e.target.value)}
               />
             </div>
