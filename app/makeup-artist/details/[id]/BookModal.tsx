@@ -31,6 +31,7 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
   const [requirements, setRequirements] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState(""); // ✅ New state for location
 
   const [masterMakeupTypes, setMasterMakeupTypes] = useState<MasterItem[]>([]);
   const [masterBudgets, setMasterBudgets] = useState<MasterItem[]>([]);
@@ -79,6 +80,8 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
         requested_artist: artistId,
         status: "new",
         notes,
+                location, // ✅ Add location to payload
+
       };
 
       const res = await fetch(
@@ -189,21 +192,30 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
               <Label htmlFor="budget">Budget Range</Label>
            <input
   id="budget"
-  type="number"
+  type="text"
   className="w-full border rounded px-2 py-1"
   value={budgetRange}
   onChange={(e) => setBudgetRange(Number(e.target.value))}
 />
 
             </div>
-
-            <div className="md:col-span-2">
+    <div className="md:col-span-2">
+            <Label htmlFor="location">Location</Label>
+            <Input
+              id="location"
+              required
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+            <div className="md:col-span-3">
               <Label htmlFor="req">Requirements</Label>
               <Textarea
                 id="req"
                 required
                 rows={3}
                 value={requirements}
+                maxLength={500}
                 onChange={(e) => setRequirements(e.target.value)}
               />
             </div>
