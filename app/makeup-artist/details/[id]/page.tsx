@@ -418,7 +418,7 @@ useEffect(() => {
       };
 
       // exclude current artist id
-      const others = cards.filter((c: any) => String(c?.id) !== String(id));
+      const others = cards;
 
       // first try: only popular
       const popularOnly = others.filter((c: any) =>
