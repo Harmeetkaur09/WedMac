@@ -207,7 +207,7 @@ export default function AboutPage() {
                 </div>
 
                 {/* Second Image - Darrell Steward - Front card overlapping */}
-                <div className="absolute top-16 left-8 z-20 md:w-64 w-40 text-center">
+                {/* <div className="absolute top-16 left-8 z-20 md:w-64 w-40 text-center">
                   <img
                     src="/images/Founder.JPG"
                     alt="Anukalp Shrivastav"
@@ -219,7 +219,7 @@ export default function AboutPage() {
                     </h3>
                     <p className="text-sm text-gray-600">Founder</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
