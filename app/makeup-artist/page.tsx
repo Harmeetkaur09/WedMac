@@ -507,47 +507,42 @@ export default function MakeupArtistPagesPage() {
 
                 // otherwise render the grid
                 return (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {visibleArtists.map((artist) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto p-2 max-w-full lg:max-w-6xl sm:max-w-2xl">
+                {visibleArtists.map((artist) => (
                       <div
                         key={artist.id}
                         className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full"
                       >
                         {/* Portfolio Grid */}
-                        <div className="flex gap-2 p-4 md:h-[250px]">
-                          <Image
-                            src={
-                              artist.portfolio_photos[0]?.url ||
-                              "/images/search1.png"
-                            }
-                            alt="Artist Work"
-                            width={250}
-                            height={220}
-                            className="rounded-lg object-cover w-[65%] h-full"
-                          />
-                          <div className="flex flex-col gap-2 w-[35%]">
-                            <Image
-                              src={
-                                artist.portfolio_photos[1]?.url ||
-                                "/images/search2.png"
-                              }
-                              alt="Artist Work"
-                              width={100}
-                              height={120}
-                              className="rounded-lg object-cover w-full h-[130px]"
-                            />
-                            <Image
-                              src={
-                                artist.portfolio_photos[2]?.url ||
-                                "/images/search3.png"
-                              }
-                              alt="Artist Work"
-                              width={100}
-                              height={90}
-                              className="rounded-lg object-cover w-full h-[88px]"
-                            />
-                          </div>
-                        </div>
+                     <div className="flex gap-2 p-4 md:h-[250px]">
+  {/* Left Image */}
+  <Image
+    src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
+    alt="Artist Work"
+    width={250}
+    height={220}
+    className="rounded-lg object-cover w-[65%] h-full"
+  />
+
+  {/* Right Images */}
+  <div className="flex flex-col gap-2 w-[35%] h-full">
+    <Image
+      src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
+      alt="Artist Work"
+      width={100}
+      height={120}
+      className="rounded-lg object-cover w-full flex-1"
+    />
+    <Image
+      src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
+      alt="Artist Work"
+      width={100}
+      height={90}
+      className="rounded-lg object-cover w-full flex-1"
+    />
+  </div>
+</div>
+
 
                         {/* Info & Avatar */}
                         <div className="flex-1 flex flex-col px-4 pb-4 pt-0">

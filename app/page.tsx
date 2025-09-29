@@ -285,23 +285,27 @@ const slides = [...testimonials, ...testimonials];
 useEffect(() => {
   const compute = () => {
     const w = typeof window !== "undefined" ? window.innerWidth : 1200;
-    if (w >= 768) setVisibleCount(3);
-    else if (w >= 640) setVisibleCount(2);
-    else setVisibleCount(1);
 
-    // viewport width to derive card width
+    // determine visible count
+    let count = 1;
+    if (w >= 1024) count = 3;
+    else if (w >= 640) count = 2;
+
+    setVisibleCount(count);
+
+    // compute card width based on viewport
     const viewW = viewportRef.current?.clientWidth ?? Math.min(w, 1100);
-    const cardW = Math.floor(viewW / (visibleCount || 1));
+    const cardW = Math.floor(viewW / count);
     setCardWidth(cardW);
   };
 
   compute();
-  const onResize = () => {
-    compute();
-  };
+
+  const onResize = () => compute();
   window.addEventListener("resize", onResize);
   return () => window.removeEventListener("resize", onResize);
-}, [visibleCount]); // visibleCount may update but compute handles it
+}, []); // run only once on mount and on resize
+
 
 // translate (px) derived from slideIndex * cardWidth (we move left)
 const translate = -(slideIndex * cardWidth);
@@ -607,7 +611,7 @@ const isMobile = useIsMobile();
         </section>
         <section className="py-10 -mt-28 relative z-30 px-4">
           <div className="max-w-5xl mx-auto bg-white rounded-lg p-3 shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               {/* Makeup Type */}
               <div className="text-left ">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -616,7 +620,7 @@ const isMobile = useIsMobile();
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
-                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="lg:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">All Types</option>
                   {makeupTypes.map((mt) => (
@@ -635,7 +639,7 @@ const isMobile = useIsMobile();
                 <select
                   value={selectedState}
                   onChange={(e) => setSelectedState(e.target.value)}
-                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="lg:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="">Select State</option>
                   {states.map((st) => (
@@ -655,7 +659,7 @@ const isMobile = useIsMobile();
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
                   disabled={!cities.length}
-                  className="md:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
+                  className="lg:w-60 w-full border-none rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
                 >
                   <option value="">Select City</option>
                   {cities.map((ct) => (
@@ -863,7 +867,7 @@ const isMobile = useIsMobile();
           {artists.map((artist) => (
             <div
               key={artist.id}
-              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col mb-2"
             >
               {/* same card markup as before (portfolio + info) */}
               <div className="flex gap-2 p-4 h-[250px]">
@@ -1066,7 +1070,7 @@ const isMobile = useIsMobile();
 
         {/* Wedmac India Section */}
         <section className="py-20 ">
-          <div className="px-4 md:px-0 md:pr-4">
+          <div className="px-4 lg:px-0 lg:pr-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Top Image on the Left */}
@@ -1356,7 +1360,7 @@ Because your beauty deserves something unique — tell us a little about yoursel
       </button>
 
       {/* Carousel viewport */}
-      <div className="w-full overflow-hidden px-4 md:px-8">
+      <div className="w-full overflow-hidden px-4 lg:px-8">
         <div
           ref={viewportRef}
           className="relative"

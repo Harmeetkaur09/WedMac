@@ -191,7 +191,7 @@ export default function AboutPage() {
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative w-full max-w-lg h-96">
                 {/* First Image - Ronald Richards - Back card */}
-                <div className="absolute top-0 right-8 z-10 md:w-64 w-40 text-right ">
+                <div className="absolute top-0 right-8 z-10 md:w-64 w-64 text-right ">
                   <img
                     src="/images/Co-founder.JPG"
                     alt="Abhishek Shrivastav"

@@ -34,7 +34,7 @@ export default function Header() {
 
 
               {/* Desktop Menu */}
-              <div className="hidden md:flex items-center space-x-8">
+              <div className="hidden lg:flex items-center space-x-8">
                 <Link href="/" className="text-gray-700 hover:text-rose-500">
                   Home
                 </Link>
@@ -73,7 +73,7 @@ export default function Header() {
 
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden text-gray-700"
+                className="lg:hidden text-gray-700"
                 onClick={() => setMenuOpen(!menuOpen)}
               >
                 {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -83,7 +83,7 @@ export default function Header() {
 
           {/* Mobile Menu Dropdown */}
          {menuOpen && (
-  <div className="md:hidden px-4 pt-4 pb-6 space-y-3 bg-white shadow-lg border-t border-gray-200">
+  <div className="lg:hidden px-4 pt-4 pb-6 space-y-3 bg-white shadow-lg border-t border-gray-200">
     <Link href="/" onClick={() => setMenuOpen(false)} className="block text-gray-700 hover:text-rose-500">
       Home
     </Link>
