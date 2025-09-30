@@ -119,7 +119,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-pink-400 mt-8 pt-8 text-center">
-          <p className="text-sm">Wedmac India 2022 © All Rights Reserved</p>
+          <p className="text-sm">Wedmac India 2025 © All Rights Reserved</p>
         </div>
       </div>
     </footer>
