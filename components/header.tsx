@@ -56,13 +56,13 @@ export default function Header() {
 
               <div className="flex items-center space-x-4">
   <button
-    onClick={() => window.location.href = 'https://wedmac-artist.vercel.app/login'}
+    onClick={() => window.location.href = 'https://artist.wedmacindia.com/login'}
     className="bg-[#FF577F] h-8 px-6 hover:bg-rose-600 text-white rounded"
   >
     Login
   </button>
   <button
-    onClick={() => window.location.href = 'https://wedmac-artist.vercel.app/signup'}
+    onClick={() => window.location.href = 'https://artist.wedmacindia.com/signup'}
     className="bg-[#FF577F] hover:bg-rose-600 h-8 px-6 text-white rounded"
   >
     Sign Up
@@ -105,11 +105,11 @@ export default function Header() {
 
     <div className="pt-4 flex flex-col space-y-2">
         <Button 
-            onClick={() => window.location.href = 'https://wedmac-artist.vercel.app/login'}
+            onClick={() => window.location.href = 'https://artist.wedmacindia.com/login'}
  className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
           Login
         </Button>
-        <Button onClick={() => window.location.href = 'https://wedmac-artist.vercel.app/signup'} className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
+        <Button onClick={() => window.location.href = 'https://artist.wedmacindia.com/signup'} className="w-full bg-[#FF577F] hover:bg-rose-600 text-white">
           Sign Up
         </Button>
     </div>
