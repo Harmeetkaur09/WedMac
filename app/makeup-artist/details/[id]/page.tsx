@@ -225,6 +225,7 @@ export default function MakeupArtistDetailPage() {
         });
         setRatingOtpRequired(false);
         toast.success("Comment submitted successfully!");
+        window.location.reload(); // simple reload to refresh data
       }
     } catch (err) {
       console.error("Comment submit error:", err);
