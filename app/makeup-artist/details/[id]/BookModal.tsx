@@ -77,6 +77,7 @@ export default function BookModal({ artistId, onClose }: BookModalProps) {
         budget_range: budgetRange,
         makeup_types: makeupTypes,
         source: "website",
+        max_claims:1,
         requested_artist: artistId,
         status: "new",
         notes,
