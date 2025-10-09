@@ -37,9 +37,9 @@ interface ArtistCard {
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
-  "/images/hero3.JPG",
+  "/images/img49.JPG",
   "/images/hero4.JPG",
-  "/images/hero5.JPG",
+  "/images/new2.PNG",
 ];
 const BUDGET_MIN = 500;
 const BUDGET_MAX = 50000;
@@ -375,7 +375,7 @@ export default function SearchPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
@@ -689,8 +689,9 @@ export default function SearchPage() {
                         <div className="flex gap-2 p-4 h-[250px]">
                           <Image
                             src={
-                              artist.portfolio_photos[0]?.url ||
-                              "/images/search1.png"
+                              artist.portfolio_photos[0]?.url 
+                              ||
+                              "/images/search3.png"
                             }
                             alt="Artist Work"
                             width={250}
@@ -700,8 +701,9 @@ export default function SearchPage() {
                           <div className="flex flex-col gap-2 w-[35%]">
                             <Image
                               src={
-                                artist.portfolio_photos[1]?.url ||
-                                "/images/search2.png"
+                                artist.portfolio_photos[1]?.url 
+                                ||
+                              "/images/search3.png"
                               }
                               alt="Artist Work"
                               width={100}
@@ -710,8 +712,9 @@ export default function SearchPage() {
                             />
                             <Image
                               src={
-                                artist.portfolio_photos[2]?.url ||
-                                "/images/search3.png"
+                                artist.portfolio_photos[2]?.url 
+                                ||
+                              "/images/search3.png"
                               }
                               alt="Artist Work"
                               width={100}

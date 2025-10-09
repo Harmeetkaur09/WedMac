@@ -414,8 +414,7 @@ export default function PortfolioPage() {
                       {/* Left large */}
                       <Image
                         src={
-                          artist.portfolio_photos[0]?.file_url ||
-                          "/images/search1.png"
+                          artist.portfolio_photos[0]?.file_url 
                         }
                         alt="Artist Work"
                         width={250}
@@ -426,8 +425,7 @@ export default function PortfolioPage() {
                       <div className="flex flex-col gap-2 w-[35%]">
                         <Image
                           src={
-                            artist.portfolio_photos[1]?.file_url ||
-                            "/images/search2.png"
+                            artist.portfolio_photos[1]?.file_url 
                           }
                           alt="Artist Work"
                           width={100}
@@ -436,8 +434,7 @@ export default function PortfolioPage() {
                         />
                         <Image
                           src={
-                            artist.portfolio_photos[2]?.file_url ||
-                            "/images/search3.png"
+                            artist.portfolio_photos[2]?.file_url 
                           }
                           alt="Artist Work"
                           width={100}

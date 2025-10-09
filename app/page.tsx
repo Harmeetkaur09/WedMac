@@ -18,7 +18,7 @@ import {
   Volume2,
 } from "lucide-react";
 import HoverShuffleImage from "@/components/common/HoverShuffleImage";
-import { motion, AnimatePresence,useAnimation  } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
@@ -51,12 +51,36 @@ interface MakeupType {
 }
 
 const imagePaths = [
-  { primary: "/images/new22.JPG", secondary: "/images/new24.JPG", label: "Party Makeup" },
-  { primary: "/images/img22.jpg", secondary: "/images/new22.JPG", label: "Bridal Makeup" },
-  { primary: "/images/img2.jpeg", secondary: "/images/img3.jpeg", label: "Airbrush Makeup" },
-  { primary: "/images/img8.jpg", secondary: "/images/new44.JPG", label: "Haldi Makeup" },
-  { primary: "/images/img21.jpg", secondary: "/images/img5.jpeg", label: "Nude Makeup" },
-  { primary: "/images/new27.JPG", secondary: "/images/new1.JPG", label: "Mehndi Makeup" },
+  {
+    primary: "/images/img10.jpg",
+    secondary: "/images/new12.PNG",
+    label: "Party Makeup",
+  },
+  {
+    primary: "/images/img22.jpg",
+    secondary: "/images/img10.jpg",
+    label: "Bridal Makeup",
+  },
+  {
+    primary: "/images/img2.jpeg",
+    secondary: "/images/img3.jpeg",
+    label: "Airbrush Makeup",
+  },
+  {
+    primary: "/images/img8.jpg",
+    secondary: "/images/new2.PNG",
+    label: "Haldi Makeup",
+  },
+  {
+    primary: "/images/img21.jpg",
+    secondary: "/images/img5.jpeg",
+    label: "Nude Makeup",
+  },
+  {
+    primary: "/images/img9.jpg",
+    secondary: "/images/new1.JPG",
+    label: "Mehndi Makeup",
+  },
 ];
 
 export default function HomePage() {
@@ -91,47 +115,47 @@ export default function HomePage() {
       setSelectedCity("");
     }
   }, [selectedState]);
- const sliderRef = useRef<HTMLDivElement>(null);
-const frameRef = useRef<number | null>(null);
-const [offset, setOffset] = useState(0);
-const [paused, setPaused] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number | null>(null);
+  const [offset, setOffset] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-// replace your existing RAF useEffect with this
-useEffect(() => {
-  // Only run marquee if we have more than 3 artists
-  if (!sliderRef.current) return;
-  if ((artists?.length ?? 0) <= 3) {
-    // ensure offset reset and stop animation
-    setOffset(0);
-    if (frameRef.current) {
-      cancelAnimationFrame(frameRef.current);
-      frameRef.current = null;
-    }
-    return;
-  }
-
-  const totalWidth = sliderRef.current.scrollWidth; // full duplicated width
-  let x = 0;
-
-  const tick = () => {
-    if (!paused) {
-      x -= 1; // speed px/frame
-      if (Math.abs(x) >= totalWidth / 2) {
-        x = 0;
+  // replace your existing RAF useEffect with this
+  useEffect(() => {
+    // Only run marquee if we have more than 3 artists
+    if (!sliderRef.current) return;
+    if ((artists?.length ?? 0) <= 3) {
+      // ensure offset reset and stop animation
+      setOffset(0);
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
       }
-      setOffset(x);
+      return;
     }
-    frameRef.current = requestAnimationFrame(tick);
-  };
 
-  frameRef.current = requestAnimationFrame(tick);
-  return () => {
-    if (frameRef.current) {
-      cancelAnimationFrame(frameRef.current);
-      frameRef.current = null;
-    }
-  };
-}, [artists, paused]);
+    const totalWidth = sliderRef.current.scrollWidth; // full duplicated width
+    let x = 0;
+
+    const tick = () => {
+      if (!paused) {
+        x -= 1; // speed px/frame
+        if (Math.abs(x) >= totalWidth / 2) {
+          x = 0;
+        }
+        setOffset(x);
+      }
+      frameRef.current = requestAnimationFrame(tick);
+    };
+
+    frameRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
+      }
+    };
+  }, [artists, paused]);
 
   // City options by state
 
@@ -146,9 +170,9 @@ useEffect(() => {
   const sliderImages = [
     "/images/hero1.JPG",
     "/images/hero2.JPG",
-    "/images/hero3.JPG",
+    "/images/img49.JPG",
     "/images/hero4.JPG",
-    "/images/hero5.JPG",
+    "/images/new2.PNG",
   ];
 
   const router = useRouter();
@@ -234,7 +258,6 @@ useEffect(() => {
       : []
   );
 
-
   const testimonials = [
     {
       name: "Anjali Sharma",
@@ -260,7 +283,7 @@ useEffect(() => {
       feedback:
         "The attention to detail was amazing. My party look was flawless and received so many compliments throughout the day!",
     },
-      {
+    {
       name: "Kavya Malhotra",
       title: "Bride – Lucknow",
       image: "/images/img5.jpeg",
@@ -270,113 +293,115 @@ useEffect(() => {
     },
   ];
   const viewportRef = useRef<HTMLDivElement | null>(null);
-const trackRef = useRef<HTMLDivElement | null>(null);
-const firstCardRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const firstCardRef = useRef<HTMLDivElement | null>(null);
 
-const [visibleCount, setVisibleCount] = useState<number>(3); // responsive visible cards
-const [cardWidth, setCardWidth] = useState<number>(300); // px width of each card (computed)
-const [slideIndex, setSlideIndex] = useState<number>(0); // 0..(testimonials.length*2 -1)
-const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
+  const [visibleCount, setVisibleCount] = useState<number>(3); // responsive visible cards
+  const [cardWidth, setCardWidth] = useState<number>(300); // px width of each card (computed)
+  const [slideIndex, setSlideIndex] = useState<number>(0); // 0..(testimonials.length*2 -1)
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
 
-// slides = duplicated array for seamless looping
-const slides = [...testimonials, ...testimonials];
+  // slides = duplicated array for seamless looping
+  const slides = [...testimonials, ...testimonials];
 
-// compute measurements & responsive visibleCount
-useEffect(() => {
-  const compute = () => {
-    const w = typeof window !== "undefined" ? window.innerWidth : 1200;
+  // compute measurements & responsive visibleCount
+  useEffect(() => {
+    const compute = () => {
+      const w = typeof window !== "undefined" ? window.innerWidth : 1200;
 
-    // determine visible count
-    let count = 1;
-    if (w >= 1024) count = 3;
-    else if (w >= 640) count = 2;
+      // determine visible count
+      let count = 1;
+      if (w >= 1024) count = 3;
+      else if (w >= 640) count = 2;
 
-    setVisibleCount(count);
+      setVisibleCount(count);
 
-    // compute card width based on viewport
-    const viewW = viewportRef.current?.clientWidth ?? Math.min(w, 1100);
-    const cardW = Math.floor(viewW / count);
-    setCardWidth(cardW);
+      // compute card width based on viewport
+      const viewW = viewportRef.current?.clientWidth ?? Math.min(w, 1100);
+      const cardW = Math.floor(viewW / count);
+      setCardWidth(cardW);
+    };
+
+    compute();
+
+    const onResize = () => compute();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []); // run only once on mount and on resize
+
+  // translate (px) derived from slideIndex * cardWidth (we move left)
+  const translate = -(slideIndex * cardWidth);
+
+  // helpers for manual nav
+  const manualNext = () => {
+    if (testimonials.length <= visibleCount) return;
+    setIsTransitioning(true);
+    setSlideIndex((s) => s + 1);
+  };
+  const manualPrev = () => {
+    if (testimonials.length <= visibleCount) return;
+    setIsTransitioning(true);
+    // if at 0, jump to duplicates end set with no-transition then move prev with transition
+    if (slideIndex === 0) {
+      // jump to originalLength (which is the same visual) without transition then decrement
+      const jumpTo = testimonials.length;
+      // set non-transition jump immediately
+      setIsTransitioning(false);
+      setSlideIndex(jumpTo);
+      // next tick, go one back with transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsTransitioning(true);
+          setSlideIndex(jumpTo - 1);
+        });
+      });
+    } else {
+      setSlideIndex((s) => s - 1);
+    }
   };
 
-  compute();
-
-  const onResize = () => compute();
-  window.addEventListener("resize", onResize);
-  return () => window.removeEventListener("resize", onResize);
-}, []); // run only once on mount and on resize
-
-
-// translate (px) derived from slideIndex * cardWidth (we move left)
-const translate = -(slideIndex * cardWidth);
-
-// helpers for manual nav
-const manualNext = () => {
-  if (testimonials.length <= visibleCount) return;
-  setIsTransitioning(true);
-  setSlideIndex((s) => s + 1);
-};
-const manualPrev = () => {
-  if (testimonials.length <= visibleCount) return;
-  setIsTransitioning(true);
-  // if at 0, jump to duplicates end set with no-transition then move prev with transition
-  if (slideIndex === 0) {
-    // jump to originalLength (which is the same visual) without transition then decrement
-    const jumpTo = testimonials.length;
-    // set non-transition jump immediately
-    setIsTransitioning(false);
-    setSlideIndex(jumpTo);
-    // next tick, go one back with transition
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+  // auto-advance interval (per-card)
+  useEffect(() => {
+    if (testimonials.length <= visibleCount) return;
+    const id = setInterval(() => {
+      if (!paused) {
         setIsTransitioning(true);
-        setSlideIndex(jumpTo - 1);
-      });
-    });
-  } else {
-    setSlideIndex((s) => s - 1);
-  }
-};
+        setSlideIndex((s) => s + 1);
+      }
+    }, 3500);
+    return () => clearInterval(id);
+  }, [testimonials.length, visibleCount, paused]);
 
-// auto-advance interval (per-card)
-useEffect(() => {
-  if (testimonials.length <= visibleCount) return;
-  const id = setInterval(() => {
-    if (!paused) {
-      setIsTransitioning(true);
-      setSlideIndex((s) => s + 1);
+  // when we reach the end of the first set, we need to snap back to index 0 (no transition)
+  function handleTransitionEnd() {
+    // when sliding forward: if we've just moved into the duplicated set past original length
+    if (slideIndex >= testimonials.length) {
+      // disable transition then snap to index 0 (same visual)
+      setIsTransitioning(false);
+      setSlideIndex(slideIndex - testimonials.length);
+      // re-enable transition next tick so subsequent moves animate
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsTransitioning(true);
+        });
+      });
     }
-  }, 3500);
-  return () => clearInterval(id);
-}, [testimonials.length, visibleCount, paused]);
-
-// when we reach the end of the first set, we need to snap back to index 0 (no transition)
-function handleTransitionEnd() {
-  // when sliding forward: if we've just moved into the duplicated set past original length
-  if (slideIndex >= testimonials.length) {
-    // disable transition then snap to index 0 (same visual)
-    setIsTransitioning(false);
-    setSlideIndex(slideIndex - testimonials.length);
-    // re-enable transition next tick so subsequent moves animate
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setIsTransitioning(true);
-      });
-    });
+    // when sliding backward: if index < 0 (we handle prev via manualPrev jump logic), else no-op
   }
-  // when sliding backward: if index < 0 (we handle prev via manualPrev jump logic), else no-op
-}
 
-// keep slideIndex in valid range defensively
-useEffect(() => {
-  if (testimonials.length === 0) return;
-  // normalize very large indices (safety)
-  if (slideIndex < 0) {
-    setSlideIndex(((slideIndex % testimonials.length) + testimonials.length) % testimonials.length);
-  } else if (slideIndex > testimonials.length * 2) {
-    setSlideIndex(slideIndex % testimonials.length);
-  }
-}, [slideIndex, testimonials.length]);
+  // keep slideIndex in valid range defensively
+  useEffect(() => {
+    if (testimonials.length === 0) return;
+    // normalize very large indices (safety)
+    if (slideIndex < 0) {
+      setSlideIndex(
+        ((slideIndex % testimonials.length) + testimonials.length) %
+          testimonials.length
+      );
+    } else if (slideIndex > testimonials.length * 2) {
+      setSlideIndex(slideIndex % testimonials.length);
+    }
+  }, [slideIndex, testimonials.length]);
   useEffect(() => {
     fetch(
       "https://api.wedmacindia.com/api/admin/master/list/?type=makeup_types"
@@ -485,96 +510,98 @@ useEffect(() => {
     }
   };
 
-// Add this helper (put it near top of the component, before useEffect)
-function hasTopTag(c: any): boolean {
-  if (!c) return false;
+  // Add this helper (put it near top of the component, before useEffect)
+  function hasTopTag(c: any): boolean {
+    if (!c) return false;
 
-  const tags: string[] = [];
+    const tags: string[] = [];
 
-  // tag could be array or string
-  if (Array.isArray(c.tag)) {
-    tags.push(...c.tag.map((t: any) => String(t || "").toLowerCase()));
-  } else if (typeof c.tag === "string" && c.tag.trim()) {
-    tags.push(c.tag.toLowerCase());
+    // tag could be array or string
+    if (Array.isArray(c.tag)) {
+      tags.push(...c.tag.map((t: any) => String(t || "").toLowerCase()));
+    } else if (typeof c.tag === "string" && c.tag.trim()) {
+      tags.push(c.tag.toLowerCase());
+    }
+
+    // also consider `tags` (alternative field name)
+    if (Array.isArray((c as any).tags)) {
+      tags.push(
+        ...(c as any).tags.map((t: any) => String(t || "").toLowerCase())
+      );
+    } else if (typeof (c as any).tags === "string" && (c as any).tags.trim()) {
+      tags.push(((c as any).tags as string).toLowerCase());
+    }
+
+    // portfolio_photos might have tag metadata too
+    if (Array.isArray(c.portfolio_photos)) {
+      c.portfolio_photos.forEach((p: any) => {
+        if (p && p.tag) tags.push(String(p.tag).toLowerCase());
+      });
+    }
+
+    return tags.includes("top");
   }
 
-  // also consider `tags` (alternative field name)
-  if (Array.isArray((c as any).tags)) {
-    tags.push(...(c as any).tags.map((t: any) => String(t || "").toLowerCase()));
-  } else if (typeof (c as any).tags === "string" && (c as any).tags.trim()) {
-    tags.push(((c as any).tags as string).toLowerCase());
-  }
-
-  // portfolio_photos might have tag metadata too
-  if (Array.isArray(c.portfolio_photos)) {
-    c.portfolio_photos.forEach((p: any) => {
-      if (p && p.tag) tags.push(String(p.tag).toLowerCase());
-    });
-  }
-
-  return tags.includes("top");
-}
-
-// Replace the existing fetch useEffect with this:
-useEffect(() => {
-  // Build filters based on selected tab
-  const filters: Record<string, string> = {};
-  if (selected !== "All") {
-    filters.state =
-      selected === "Mumbai" || selected === "Pune" ? "Maharashtra" : selected;
-    filters.city = selected;
-  }
-  setLoading(true);
-
-  fetch("https://api.wedmacindia.com/api/artists/cards/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filters }),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    })
-    .then((data) => {
-      // normalize possible response shapes
-      let cards: any[] = [];
-      if (Array.isArray(data)) cards = data;
-      else if (Array.isArray((data as any).results)) cards = (data as any).results;
-      else if (Array.isArray((data as any).data)) cards = (data as any).data;
-      else cards = [];
-
-      // Filter only artists that have 'top' tag (robust check)
-      const topCards = cards.filter(hasTopTag);
-
-      // Optional: limit results (uncomment if you want only first 3)
-      // setArtists(topCards.slice(0, 3));
-
-      setArtists(topCards);
-    })
-    .catch((err) => {
-      console.error("Artist fetch failed:", err);
-      toast.error("Failed to load artists");
-      setArtists([]);
-    })
-    .finally(() => {
-      setLoading(false);
-    });
-}, [selected]);
-
-
-function useIsMobile(breakpoint = 768) {
-  const [isMobile, setIsMobile] = useState(false);
-
+  // Replace the existing fetch useEffect with this:
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < breakpoint);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [breakpoint]);
+    // Build filters based on selected tab
+    const filters: Record<string, string> = {};
+    if (selected !== "All") {
+      filters.state =
+        selected === "Mumbai" || selected === "Pune" ? "Maharashtra" : selected;
+      filters.city = selected;
+    }
+    setLoading(true);
 
-  return isMobile;
-}
-const isMobile = useIsMobile();
+    fetch("https://api.wedmacindia.com/api/artists/cards/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filters }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        // normalize possible response shapes
+        let cards: any[] = [];
+        if (Array.isArray(data)) cards = data;
+        else if (Array.isArray((data as any).results))
+          cards = (data as any).results;
+        else if (Array.isArray((data as any).data)) cards = (data as any).data;
+        else cards = [];
+
+        // Filter only artists that have 'top' tag (robust check)
+        const topCards = cards.filter(hasTopTag);
+
+        // Optional: limit results (uncomment if you want only first 3)
+        // setArtists(topCards.slice(0, 3));
+
+        setArtists(topCards);
+      })
+      .catch((err) => {
+        console.error("Artist fetch failed:", err);
+        toast.error("Failed to load artists");
+        setArtists([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [selected]);
+
+  function useIsMobile(breakpoint = 768) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+      const check = () => setIsMobile(window.innerWidth < breakpoint);
+      check();
+      window.addEventListener("resize", check);
+      return () => window.removeEventListener("resize", check);
+    }, [breakpoint]);
+
+    return isMobile;
+  }
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -601,11 +628,14 @@ const isMobile = useIsMobile();
 
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-<h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
-             Be the Reason They Can’t<br/>Take Their Eyes Off You
+            <h1 className="text-[2.5rem] md:text-[3.5rem] Gilroy">
+              Be the Reason They Can’t
+              <br />
+              Take Their Eyes Off You
             </h1>
             <p className="text-lg md:text-xl font-gilroy font-400 opacity-90">
-         From weddings to celebrations, we design looks that turn admiration into memories.
+              From weddings to celebrations, we design looks that turn
+              admiration into memories.
             </p>
           </div>
         </section>
@@ -696,7 +726,7 @@ const isMobile = useIsMobile();
                   <HoverShuffleImage
                     primarySrc="/images/img4.jpeg"
                     alt="Bridal Makeup"
-                    secondarySrc="/images/new22.JPG"
+                    secondarySrc="/images/img10.jpg"
                   />
                   <div className="absolute bottom-4 w-full flex justify-center">
                     <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -714,7 +744,7 @@ const isMobile = useIsMobile();
                   <HoverShuffleImage
                     primarySrc="/images/img26.jpg"
                     alt="Bridal Makeup"
-                    secondarySrc="/images/new20.JPG"
+                    secondarySrc="/images/img21.jpg"
                   />
                   <div className="absolute bottom-4 w-full flex justify-center cursor-pointer">
                     <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -729,7 +759,7 @@ const isMobile = useIsMobile();
                   <HoverShuffleImage
                     primarySrc="/images/img8.jpg"
                     alt="Light Makeup"
-                    secondarySrc="/images/new21.JPG"
+                    secondarySrc="/images/new9.PNG"
                   />
                   <div className="absolute bottom-4 w-full flex justify-center">
                     <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -745,7 +775,7 @@ const isMobile = useIsMobile();
                 <HoverShuffleImage
                   primarySrc="/images/new3.PNG"
                   alt="Bridal Makeup"
-                  secondarySrc="/images/new24.JPG"
+                  secondarySrc="/images/new12.PNG"
                 />
                 <div className="absolute bottom-4 w-full flex justify-center">
                   <div className="bg-white text-black font-poppins group-hover:bg-pink-500 group-hover:text-white px-2 py-1.5 text-md flex items-center gap-2 transition-all duration-300">
@@ -798,275 +828,323 @@ const isMobile = useIsMobile();
             {/* Mobile Version */}
             <div className="block lg:hidden">
               <div className="grid grid-cols-2 gap-4">
-               {shuffledImages.map((img, index) => (
-  <div key={index} className="relative group cursor-pointer">
-    <div className="aspect-square">
-      <Image
-        src={img.primary}
-        alt={img.label}
-        width={300}
-        height={300}
-        className="w-full h-full object-cover rounded-lg"
-      />
-    </div>
-    <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
-      <span className="text-xs font-medium">{img.label}</span>
-      <ArrowUpRight className="w-3 h-3" />
-    </div>
-  </div>
-))}
-
+                {shuffledImages.map((img, index) => (
+                  <div key={index} className="relative group cursor-pointer">
+                    <div className="aspect-square">
+                      <Image
+                        src={img.primary}
+                        alt={img.label}
+                        width={300}
+                        height={300}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
+                      <span className="text-xs font-medium">{img.label}</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* Artist Profiles Section */}
-     {/* Artist Profiles Section */}
-<section className="py-8 bg-white">
-  <div className="container mx-auto px-4">
-    <div className="text-center mb-6">
-      <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
-        Artist Profiles
-      </h2>
+        {/* Artist Profiles Section */}
+        <section className="py-8 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-800">
+                Artist Profiles
+              </h2>
 
-      <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
-        {tabs.map((tab) => (
-          <div
-            key={tab}
-            className="relative cursor-pointer"
-            onClick={() => setSelected(tab)}
-          >
-            {selected === tab && (
-              <div className="absolute item-center -top-2.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-white shadow-md z-0 px-11 py-6 rounded-[25px] transition-colors"></div>
+              <div className="relative bg-[#EEEEEE] py-4 rounded-[30px] shadow-md w-fit mx-auto px-7 flex justify-center space-x-8 text-lg">
+                {tabs.map((tab) => (
+                  <div
+                    key={tab}
+                    className="relative cursor-pointer"
+                    onClick={() => setSelected(tab)}
+                  >
+                    {selected === tab && (
+                      <div className="absolute item-center -top-2.5 left-1/2 -translate-x-1/2 w-10 h-10 bg-white shadow-md z-0 px-11 py-6 rounded-[25px] transition-colors"></div>
+                    )}
+                    <span
+                      className={`relative z-10 px-2 font-[400] transition-colors text-sm sm:text-base ${
+                        selected === tab
+                          ? "text-rose-500"
+                          : "text-black hover:text-rose-500"
+                      }`}
+                    >
+                      {tab}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-center text-red-500 font-gilroy">
+              Top Rated Artist
+            </p>
+
+            {loading ? (
+              <p className="text-center">Loading...</p>
+            ) : (
+              <>
+                {/* CASE A: small count -> static centered row (no sliding) */}
+                {artists.length > 0 && artists.length <= 3 ? (
+                  <div className="flex justify-center px-4">
+                    <div className="md:flex block gap-6 px-4">
+                      {artists.map((artist) => (
+                        <div
+                          key={artist.id}
+                          className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col mb-2"
+                        >
+                          {/* same card markup as before (portfolio + info) */}
+                          <div className="flex gap-2 p-4 h-[250px]">
+                            <Image
+                              src={
+                                artist.portfolio_photos[0]?.url ||
+                              "/images/search3.png"
+                            
+                              }
+                              alt="Artist Work"
+                              width={250}
+                              height={220}
+                              className="rounded-lg object-cover w-[65%] h-full"
+                            />
+                            <div className="flex flex-col gap-2 w-[35%]">
+                              <Image
+                                src={
+                                  artist.portfolio_photos[1]?.url ||
+                              "/images/search3.png"
+                                }
+                                alt="Artist Work"
+                                width={100}
+                                height={120}
+                                className="rounded-lg object-cover w-full h-[130px]"
+                              />
+                              <Image
+                                src={
+                                  artist.portfolio_photos[2]?.url 
+                                  ||
+                              "/images/search3.png"
+                                }
+                                alt="Artist Work"
+                                width={100}
+                                height={90}
+                                className="rounded-lg object-cover w-full h-[88px]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center">
+                                <Image
+                                  src={
+                                    artist.profile_photo_url ||
+                                    "/placeholder.svg?height=50&width=50"
+                                  }
+                                  alt={artist.full_name}
+                                  width={56}
+                                  height={56}
+                                  className="w-14 h-14 rounded-full mr-4"
+                                />
+                                <div>
+                                  <h3 className="font-semibold">
+                                    {artist.full_name}
+                                  </h3>
+                                  <div className="flex items-center text-sm text-gray-500">
+                                    <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                                    <span>
+                                      {formatLocation(artist.location)}
+                                    </span>
+                                    <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                                      {artist.average_rating.toFixed(1)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => toggleSaveArtist(artist.id)}
+                                className="text-[#FF577F] hover:text-pink-600 transition"
+                              >
+                                <Bookmark
+                                  className={`w-6 h-6 cursor-pointer ${
+                                    savedArtists.includes(artist.id)
+                                      ? "fill-[#FF577F]"
+                                      : "stroke-[#FF577F]"
+                                  }`}
+                                />
+                              </button>
+                            </div>
+
+                            <div className="mt-auto flex space-x-2">
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedArtistId(artist.id);
+                                  setShowModal(true);
+                                }}
+                                className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                              >
+                                <span className="flex items-center gap-1">
+                                  Book Now
+                                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                </span>
+                              </Button>
+                              <Link
+                                href={`/makeup-artist/details/${artist.id}`}
+                                className="flex-1"
+                              >
+                                <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                                  View Profile
+                                  <ArrowUpRight className="w-4 h-4" />
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  /* CASE B: many cards -> existing sliding marquee (duplicate for seamless loop) */
+                  <div
+                    className="relative overflow-hidden"
+                    onMouseEnter={() => setPaused(true)}
+                    onMouseLeave={() => setPaused(false)}
+                  >
+                    <motion.div
+                      ref={sliderRef}
+                      className="flex space-x-6"
+                      style={{ x: offset }}
+                    >
+                      {[...artists, ...artists].map((artist, idx) => (
+                        <div
+                          key={`${artist.id}-${idx}`} // keep unique keys with idx for duplicated set
+                          className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+                        >
+                          <div className="flex gap-2 p-4 h-[250px]">
+                            <Image
+                              src={
+                                artist.portfolio_photos[0]?.url 
+                              }
+                              alt="Artist Work"
+                              width={250}
+                              height={220}
+                              className="rounded-lg object-cover w-[65%] h-full"
+                            />
+                            <div className="flex flex-col gap-2 w-[35%]">
+                              <Image
+                                src={
+                                  artist.portfolio_photos[1]?.url 
+                                }
+                                alt="Artist Work"
+                                width={100}
+                                height={120}
+                                className="rounded-lg object-cover w-full h-[130px]"
+                              />
+                              <Image
+                                src={
+                                  artist.portfolio_photos[2]?.url 
+                                }
+                                alt="Artist Work"
+                                width={100}
+                                height={90}
+                                className="rounded-lg object-cover w-full h-[88px]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center">
+                                <Image
+                                  src={
+                                    artist.profile_photo_url ||
+                                    "/placeholder.svg?height=50&width=50"
+                                  }
+                                  alt={artist.full_name}
+                                  width={56}
+                                  height={56}
+                                  className="w-14 h-14 rounded-full mr-4"
+                                />
+                                <div>
+                                  <h3 className="font-semibold">
+                                    {artist.full_name}
+                                  </h3>
+                                  <div className="flex items-center text-sm text-gray-500">
+                                    <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
+                                    <span>
+                                      {formatLocation(artist.location)}
+                                    </span>
+                                    <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
+                                      {artist.average_rating.toFixed(1)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => toggleSaveArtist(artist.id)}
+                                className="text-[#FF577F] hover:text-pink-600 transition"
+                              >
+                                <Bookmark
+                                  className={`w-6 h-6 cursor-pointer ${
+                                    savedArtists.includes(artist.id)
+                                      ? "fill-[#FF577F]"
+                                      : "stroke-[#FF577F]"
+                                  }`}
+                                />
+                              </button>
+                            </div>
+
+                            <div className="mt-auto flex space-x-2">
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedArtistId(artist.id);
+                                  setShowModal(true);
+                                }}
+                                className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
+                              >
+                                <span className="flex items-center gap-1">
+                                  Book Now
+                                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                </span>
+                              </Button>
+                              <Link
+                                href={`/makeup-artist/details/${artist.id}`}
+                                className="flex-1"
+                              >
+                                <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
+                                  View Profile
+                                  <ArrowUpRight className="w-4 h-4" />
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+                )}
+              </>
             )}
-            <span
-              className={`relative z-10 px-2 font-[400] transition-colors text-sm sm:text-base ${
-                selected === tab
-                  ? "text-rose-500"
-                  : "text-black hover:text-rose-500"
-              }`}
-            >
-              {tab}
-            </span>
+
+            <div className="mt-10 text-center">
+              <Link
+                href="/search"
+                className="text-rose-500 font-semibold hover:underline text-lg"
+              >
+                View All →
+              </Link>
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
-
-    <p className="text-center text-red-500 font-gilroy">Top Rated Artist</p>
-
-{loading ? (
-  <p className="text-center">Loading...</p>
-) : (
-  <>
-    {/* CASE A: small count -> static centered row (no sliding) */}
-    { artists.length > 0 && artists.length <= 3 ? (
-  <div className="flex justify-center px-4">
-        <div className="md:flex block gap-6 px-4">
-          {artists.map((artist) => (
-            <div
-              key={artist.id}
-              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col mb-2"
-            >
-              {/* same card markup as before (portfolio + info) */}
-              <div className="flex gap-2 p-4 h-[250px]">
-                <Image
-                  src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
-                  alt="Artist Work"
-                  width={250}
-                  height={220}
-                  className="rounded-lg object-cover w-[65%] h-full"
-                />
-                <div className="flex flex-col gap-2 w-[35%]">
-                  <Image
-                    src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
-                    alt="Artist Work"
-                    width={100}
-                    height={120}
-                    className="rounded-lg object-cover w-full h-[130px]"
-                  />
-                  <Image
-                    src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
-                    alt="Artist Work"
-                    width={100}
-                    height={90}
-                    className="rounded-lg object-cover w-full h-[88px]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center">
-                    <Image
-                      src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
-                      alt={artist.full_name}
-                      width={56}
-                      height={56}
-                      className="w-14 h-14 rounded-full mr-4"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{artist.full_name}</h3>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                        <span>{formatLocation(artist.location)}</span>
-                        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                          {artist.average_rating.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => toggleSaveArtist(artist.id)}
-                    className="text-[#FF577F] hover:text-pink-600 transition"
-                  >
-                    <Bookmark
-                      className={`w-6 h-6 cursor-pointer ${savedArtists.includes(artist.id) ? "fill-[#FF577F]" : "stroke-[#FF577F]"}`}
-                    />
-                  </button>
-                </div>
-
-                <div className="mt-auto flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedArtistId(artist.id);
-                      setShowModal(true);
-                    }}
-                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                  >
-                    <span className="flex items-center gap-1">
-                      Book Now
-                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    </span>
-                  </Button>
-                  <Link href={`/makeup-artist/details/${artist.id}`} className="flex-1">
-                    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                      View Profile
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    ) : (
-      /* CASE B: many cards -> existing sliding marquee (duplicate for seamless loop) */
-      <div
-        className="relative overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
-        <motion.div ref={sliderRef} className="flex space-x-6" style={{ x: offset }}>
-          {[...artists, ...artists].map((artist, idx) => (
-            <div
-              key={`${artist.id}-${idx}`} // keep unique keys with idx for duplicated set
-              className="min-w-[300px] max-w-[320px] bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
-            >
-            <div className="flex gap-2 p-4 h-[250px]">
-                <Image
-                  src={artist.portfolio_photos[0]?.url || "/images/search1.png"}
-                  alt="Artist Work"
-                  width={250}
-                  height={220}
-                  className="rounded-lg object-cover w-[65%] h-full"
-                />
-                <div className="flex flex-col gap-2 w-[35%]">
-                  <Image
-                    src={artist.portfolio_photos[1]?.url || "/images/search2.png"}
-                    alt="Artist Work"
-                    width={100}
-                    height={120}
-                    className="rounded-lg object-cover w-full h-[130px]"
-                  />
-                  <Image
-                    src={artist.portfolio_photos[2]?.url || "/images/search3.png"}
-                    alt="Artist Work"
-                    width={100}
-                    height={90}
-                    className="rounded-lg object-cover w-full h-[88px]"
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 px-4 pb-4 pt-0 flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center">
-                    <Image
-                      src={artist.profile_photo_url || "/placeholder.svg?height=50&width=50"}
-                      alt={artist.full_name}
-                      width={56}
-                      height={56}
-                      className="w-14 h-14 rounded-full mr-4"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{artist.full_name}</h3>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="w-4 h-4 mr-1 fill-[#FF577F] stroke-white" />
-                        <span>{formatLocation(artist.location)}</span>
-                        <span className="ml-2 bg-[#FF577F] text-white px-2 rounded-full text-xs">
-                          {artist.average_rating.toFixed(1)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => toggleSaveArtist(artist.id)}
-                    className="text-[#FF577F] hover:text-pink-600 transition"
-                  >
-                    <Bookmark
-                      className={`w-6 h-6 cursor-pointer ${savedArtists.includes(artist.id) ? "fill-[#FF577F]" : "stroke-[#FF577F]"}`}
-                    />
-                  </button>
-                </div>
-
-                <div className="mt-auto flex space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedArtistId(artist.id);
-                      setShowModal(true);
-                    }}
-                    className="flex-1 border border-[#FF577F] text-[#FF577F] rounded-sm group hover:bg-[#FF577F] hover:text-white flex items-center justify-center gap-1"
-                  >
-                    <span className="flex items-center gap-1">
-                      Book Now
-                      <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                    </span>
-                  </Button>
-                  <Link href={`/makeup-artist/details/${artist.id}`} className="flex-1">
-                    <Button className="w-full bg-[#FF577F] text-white rounded-sm hover:bg-pink-600 flex items-center justify-center gap-1">
-                      View Profile
-                      <ArrowUpRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    )}
-  </>
-)}
-
-
-    <div className="mt-10 text-center">
-      <Link
-        href="/search"
-        className="text-rose-500 font-semibold hover:underline text-lg"
-      >
-        View All →
-      </Link>
-    </div>
-  </div>
-</section>
-
+        </section>
 
         {/* Wedmac India Section */}
         <section className="py-20 ">
@@ -1130,10 +1208,12 @@ const isMobile = useIsMobile();
           <div className="absolute inset-0 " />
           <div className="max-w-4xl mx-auto px-4 text-start relative z-10">
             <h2 className="text-4xl md:text-5xl text-[#FF577F] font-bold mb-4">
-          We’d Love to Know You Better
+              We’d Love to Know You Better
             </h2>
             <p className="text-md mb-4 text-black opacity-90">
-Because your beauty deserves something unique — tell us a little about yourself            </p>
+              Because your beauty deserves something unique — tell us a little
+              about yourself{" "}
+            </p>
 
             <form
               onSubmit={handleHelpSubmit}
@@ -1144,8 +1224,7 @@ Because your beauty deserves something unique — tell us a little about yoursel
                   placeholder="Name"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpName}
-                    maxLength={20}
-
+                  maxLength={20}
                   onChange={(e) => setHelpName(e.target.value)}
                 />
                 {helpErrors.name && (
@@ -1157,8 +1236,7 @@ Because your beauty deserves something unique — tell us a little about yoursel
                   placeholder="Number"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpMobile}
-                    maxLength={10}
-
+                  maxLength={10}
                   onChange={(e) => setHelpMobile(e.target.value)}
                 />
                 {helpErrors.mobile && (
@@ -1172,8 +1250,7 @@ Because your beauty deserves something unique — tell us a little about yoursel
                   placeholder="Message ( 50 words max )"
                   className="bg-white/90 text-gray-900 h-9 border-0 backdrop-blur-sm w-full"
                   value={helpMessage}
-                    maxLength={300}
-
+                  maxLength={300}
                   onChange={(e) => setHelpMessage(e.target.value)}
                 />
               </div>
@@ -1336,94 +1413,109 @@ Because your beauty deserves something unique — tell us a little about yoursel
         </section>
 
         {/* Wedmac Testimonials Section */}
-     <section className="py-12 px-2 bg-white md:mb-20">
-  <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
-    <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
-      Our Happy Clients Speak For Us
-    </h2>
-    <h2 className="font-gilroy text-3xl font-[800] text-center mb-8">
-      Wedmac
-    </h2>
+        <section className="py-12 px-2 bg-white md:mb-20">
+          <div className="container mx-auto px-4 border border-[#D5D5D5] p-4 rounded-lg">
+            <h2 className="text-lg font-gilroy font-[200] text-[#FF577F] text-center">
+              Our Happy Clients Speak For Us
+            </h2>
+            <h2 className="font-gilroy text-3xl font-[800] text-center mb-8">
+              Wedmac
+            </h2>
 
-    <div
-      className="relative flex items-center justify-center"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      {/* Left arrow */}
-      <button
-        onClick={() => manualPrev()}
-        className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
-        aria-label="Previous testimonial"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </button>
-
-      {/* Carousel viewport */}
-      <div className="w-full overflow-hidden px-4 lg:px-8">
-        <div
-          ref={viewportRef}
-          className="relative"
-          style={{ width: "100%" }}
-        >
-          <div
-            ref={trackRef}
-            className="flex will-change-transform"
-            onTransitionEnd={handleTransitionEnd}
-            style={{
-              transform: `translateX(${translate}px)`,
-              transition: isTransitioning ? "transform 600ms ease" : "none",
-            }}
-          >
-            {slides.map((client, idx) => (
-              <div
-                key={idx}
-                ref={idx === 0 ? firstCardRef : undefined}
-                className="flex-shrink-0 p-2"
-                style={{ width: `${cardWidth}px` }}
+            <div
+              className="relative flex items-center justify-center"
+              onMouseEnter={() => setPaused(true)}
+              onMouseLeave={() => setPaused(false)}
+            >
+              {/* Left arrow */}
+              <button
+                onClick={() => manualPrev()}
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
+                aria-label="Previous testimonial"
               >
-                <div className="relative w-full h-[430px] overflow-hidden rounded-2xl">
-                  <Image src={client.image} alt={client.name} fill className="object-cover w-full h-full" />
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] h-[200px] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
-                    <h3 className="font-semibold text-md font-gilroy">{client.name}</h3>
-                    <p className="text-[10px] font-gilroy text-[#1E1E1E]">{client.title}</p>
-                    <p className="font-gilroy text-[#1E1E1E] md:text-sm text-xs my-3">"{client.feedback}"</p>
-                    <div className="flex justify-center text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400" />
-                      ))}
-                    </div>
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+
+              {/* Carousel viewport */}
+              <div className="w-full overflow-hidden px-4 lg:px-8">
+                <div
+                  ref={viewportRef}
+                  className="relative"
+                  style={{ width: "100%" }}
+                >
+                  <div
+                    ref={trackRef}
+                    className="flex will-change-transform"
+                    onTransitionEnd={handleTransitionEnd}
+                    style={{
+                      transform: `translateX(${translate}px)`,
+                      transition: isTransitioning
+                        ? "transform 600ms ease"
+                        : "none",
+                    }}
+                  >
+                    {slides.map((client, idx) => (
+                      <div
+                        key={idx}
+                        ref={idx === 0 ? firstCardRef : undefined}
+                        className="flex-shrink-0 p-2"
+                        style={{ width: `${cardWidth}px` }}
+                      >
+                        <div className="relative w-full h-[430px] overflow-hidden rounded-2xl">
+                          <Image
+                            src={client.image}
+                            alt={client.name}
+                            fill
+                            className="object-cover w-full h-full"
+                          />
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] h-[200px] bg-white rounded-2xl shadow-xl px-4 py-6 text-center">
+                            <h3 className="font-semibold text-md font-gilroy">
+                              {client.name}
+                            </h3>
+                            <p className="text-[10px] font-gilroy text-[#1E1E1E]">
+                              {client.title}
+                            </p>
+                            <p className="font-gilroy text-[#1E1E1E] md:text-sm text-xs my-3">
+                              "{client.feedback}"
+                            </p>
+                            <div className="flex justify-center text-yellow-400">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="w-4 h-4 fill-yellow-400"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
+
+              {/* Right arrow */}
+              <button
+                onClick={() => manualNext()}
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
+                aria-label="Next testimonial"
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Right arrow */}
-      <button
-        onClick={() => manualNext()}
-        className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md z-10"
-        aria-label="Next testimonial"
-      >
-        <ArrowRight className="w-5 h-5" />
-      </button>
-    </div>
-  </div>
-</section>
-
+        </section>
 
         {/* Footer */}
         {showModal && selectedArtistId && (
-      <BookModal
-        artistId={selectedArtistId}   // ✅ ab requested_artist sahi id jaegi
-        onClose={() => {
-          setShowModal(false);
-          setSelectedArtistId(null);
-        }}
-      />
-    )}
+          <BookModal
+            artistId={selectedArtistId} // ✅ ab requested_artist sahi id jaegi
+            onClose={() => {
+              setShowModal(false);
+              setSelectedArtistId(null);
+            }}
+          />
+        )}
       </div>
     </>
   );

@@ -39,9 +39,9 @@ type Comment = {
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
-  "/images/hero3.JPG",
+  "/images/img49.JPG",
   "/images/hero4.JPG",
-  "/images/hero5.JPG",
+  "/images/new2.PNG",
 ];
 
 export default function BlogDetailsPage() {
@@ -69,7 +69,9 @@ export default function BlogDetailsPage() {
   const [submitting, setSubmitting] = useState(false);
 
   // NEW: deleting comment state
-  const [deletingCommentId, setDeletingCommentId] = useState<number | null>(null);
+  const [deletingCommentId, setDeletingCommentId] = useState<number | null>(
+    null
+  );
 
   // ✅ Handle input
   function handleChange(
@@ -102,13 +104,16 @@ export default function BlogDetailsPage() {
           "Unknown error";
 
         if (errorMsg.toLowerCase().includes("otp")) {
-          await fetch(`https://api.wedmacindia.com/api/artist-comments/send-otp/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              phone_number: commentForm.phone_number,
-            }),
-          });
+          await fetch(
+            `https://api.wedmacindia.com/api/artist-comments/send-otp/`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                phone_number: commentForm.phone_number,
+              }),
+            }
+          );
           setOtpRequired(true);
           toast.success("OTP Sent! Please check your phone.");
         } else {
@@ -160,7 +165,9 @@ export default function BlogDetailsPage() {
         process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
       const token =
         process.env.NEXT_PUBLIC_BLOG_TOKEN ||
-        (typeof window !== "undefined" ? sessionStorage.getItem("accessToken") : null);
+        (typeof window !== "undefined"
+          ? sessionStorage.getItem("accessToken")
+          : null);
 
       const url = `${apiBase}/api/blogs/get/${pid}/`;
       console.debug("🔎 Fetching blog by project_id:", url);
@@ -252,7 +259,9 @@ export default function BlogDetailsPage() {
       return;
     }
 
-    const proceed = window.confirm("Are you sure you want to delete this comment?");
+    const proceed = window.confirm(
+      "Are you sure you want to delete this comment?"
+    );
     if (!proceed) return;
 
     // ask for phone number as required by API
@@ -267,7 +276,8 @@ export default function BlogDetailsPage() {
 
     setDeletingCommentId(commentId);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
+      const apiBase =
+        process.env.NEXT_PUBLIC_BLOG_API_BASE || "https://api.wedmacindia.com";
       const url = `${apiBase}/api/blogs/delete-comment/${projectId}/${commentId}/`;
 
       const resp = await fetch(url, {
@@ -279,7 +289,8 @@ export default function BlogDetailsPage() {
       const payload = await resp.json().catch(() => null);
 
       if (!resp.ok) {
-        const msg = payload?.detail || payload?.message || `Failed: ${resp.status}`;
+        const msg =
+          payload?.detail || payload?.message || `Failed: ${resp.status}`;
         toast.error(msg);
         return;
       }
@@ -316,20 +327,23 @@ export default function BlogDetailsPage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
-                      Be the Reason They Can’t<br/>Take Their Eyes Off You
-
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+            Be the Reason They Can’t
+            <br />
+            Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-                   From weddings to celebrations, we design looks that turn admiration into memories.
-
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
           </p>
         </div>
       </section>
 
       <section className="py-12 -mt-20 relative z-30 px-4">
         <div className="max-w-sm mx-auto bg-white rounded-lg py-4 shadow-md">
-          <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">Blog</h1>
+          <h1 className="text-center font-poppins text-[#FF577F] text-2xl font-[800]">
+            Blog
+          </h1>
         </div>
       </section>
 
@@ -360,19 +374,29 @@ export default function BlogDetailsPage() {
             {/* Middle: Blog Post Content */}
             <div className="lg:col-span-2">
               {/* Dynamic category */}
-              <Badge className="bg-pink-500 rounded-md text-white mb-4">{post?.category ?? "Print Design"}</Badge>
+              <Badge className="bg-pink-500 rounded-md text-white mb-4">
+                {post?.category ?? "Print Design"}
+              </Badge>
 
               {/* Dynamic title */}
-              <h2 className="text-4xl font-inter font-bold break-all mb-4">{post?.title ?? "Growing a distributed product design team."}</h2>
+              <h2 className="text-4xl font-inter font-bold break-all mb-4">
+                {post?.title ?? "Growing a distributed product design team."}
+              </h2>
 
               {/* Dynamic meta */}
-              <p className="text-gray-600 text-xs mb-8">{post?.author_name ?? "Jan Blomqvist"} | {formatDate(post?.created_on)} | in {post?.category ?? "Print Design"}</p>
+              <p className="text-gray-600 text-xs mb-8">
+                {post?.author_name ?? "Jan Blomqvist"} |{" "}
+                {formatDate(post?.created_on)} | in{" "}
+                {post?.category ?? "Print Design"}
+              </p>
 
               {/* Dynamic content */}
               <div className="prose prose-lg max-w-none text-[#6c757d] break-words  font-inter leading-8 space-y-6 mb-8">
                 {loading && <p>Loading post content…</p>}
                 {error && <p className="text-red-600">Error: {error}</p>}
-                {!loading && !error && post && <>{renderContent(post.content)}</>}
+                {!loading && !error && post && (
+                  <>{renderContent(post.content)}</>
+                )}
 
                 {/* fallback static content if API not returned */}
               </div>
@@ -380,36 +404,56 @@ export default function BlogDetailsPage() {
               {post?.photos && post.photos.length > 0 && (
                 <div className="flex gap-4 mb-8">
                   <div className="flex-1">
-                    <Image src={post.photos[0]} alt={`Photo 1`} width={600} height={700} className="rounded-lg object-cover w-full h-full" />
+                    <Image
+                      src={post.photos[0]}
+                      alt={`Photo 1`}
+                      width={600}
+                      height={700}
+                      className="rounded-lg object-cover w-full h-full"
+                    />
                   </div>
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 mb-2 break-all border-y border-gray-200 py-5">{renderHashtags(post?.hashtags)}</div>
+              <div className="flex flex-wrap gap-2 mb-2 break-all border-y border-gray-200 py-5">
+                {renderHashtags(post?.hashtags)}
+              </div>
 
               <div className="flex items-center gap-4 p-2 mb-2">
                 <div>
-                  <h3 className="text-xl font-inter font-[500] mb-3">BY {post?.author_name ?? "Jan Blomqvist"}, {formatDate(post?.created_on)}</h3>
+                  <h3 className="text-xl font-inter font-[500] mb-3">
+                    BY {post?.author_name ?? "Jan Blomqvist"},{" "}
+                    {formatDate(post?.created_on)}
+                  </h3>
                 </div>
               </div>
 
               {/* Comments Section (static) */}
               <div className="mb-12">
-                <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">{comments.length} comments</h3>
+                <h3 className="text-lg font-[600] font-inter mb-6 border-b border-gray-200 pb-2">
+                  {comments.length} comments
+                </h3>
                 <div className="space-y-8">
                   {comments.map((c, idx) => (
-                    <div key={c.id ?? idx} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                    <div
+                      key={c.id ?? idx}
+                      className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0"
+                    >
                       <div className="mb-2">
                         <h4 className="font-semibold font-inter">{c.name}</h4>
-                        <p className="text-sm text-gray-500 py-1">{c.location} • {formatDate(c.created_at)}</p>
+                        <p className="text-sm text-gray-500 py-1">
+                          {c.location} • {formatDate(c.created_at)}
+                        </p>
                       </div>
-                      <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">{c.comment}</p>
+                      <p className="font-inter break-words text-[#6c757d] leading-8 mb-3">
+                        {c.comment}
+                      </p>
 
                       {/* <div className="flex gap-2"> */}
-                        {/* <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(c.comment || ""); toast.success("Comment copied") }}>Copy</Button> */}
+                      {/* <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard?.writeText(c.comment || ""); toast.success("Comment copied") }}>Copy</Button> */}
 
-                        {/* Delete button (visible for all; server will decide auth) */}
-                        {/* <Button size="sm" className="text-white bg-[#FF577F] hover:bg-[#FF3D68]" onClick={() => handleDeleteComment(c.id)} disabled={deletingCommentId === c.id}>
+                      {/* Delete button (visible for all; server will decide auth) */}
+                      {/* <Button size="sm" className="text-white bg-[#FF577F] hover:bg-[#FF3D68]" onClick={() => handleDeleteComment(c.id)} disabled={deletingCommentId === c.id}>
                           {deletingCommentId === c.id ? "Deleting..." : "Delete"}
                         </Button> */}
                       {/* </div> */}
@@ -420,24 +464,67 @@ export default function BlogDetailsPage() {
 
               {/* Add Comment Form */}
               <div>
-                <h3 className="text-2xl font-[600] font-inter mb-6">Add comment</h3>
+                <h3 className="text-2xl font-[600] font-inter mb-6">
+                  Add comment
+                </h3>
 
-                <Input name="name" placeholder="Your Name" value={commentForm.name} onChange={handleChange} className="mb-3" />
-                <Input name="phone_number" placeholder="Phone Number" value={commentForm.phone_number} onChange={handleChange} className="mb-3" />
-                <Input name="location" placeholder="Location" value={commentForm.location} onChange={handleChange} className="mb-3" />
+                <Input
+                  name="name"
+                  placeholder="Your Name"
+                  value={commentForm.name}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
+                <Input
+                  name="phone_number"
+                  placeholder="Phone Number"
+                  value={commentForm.phone_number}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
+                <Input
+                  name="location"
+                  placeholder="Location"
+                  value={commentForm.location}
+                  onChange={handleChange}
+                  className="mb-3"
+                />
 
-                {otpRequired && <Input name="otp" placeholder="Enter OTP" value={commentForm.otp} onChange={handleChange} className="mb-3" />}
+                {otpRequired && (
+                  <Input
+                    name="otp"
+                    placeholder="Enter OTP"
+                    value={commentForm.otp}
+                    onChange={handleChange}
+                    className="mb-3"
+                  />
+                )}
 
-                <Textarea name="comment" placeholder="Your message..." rows={5} value={commentForm.comment} onChange={handleChange} className="mb-4" />
+                <Textarea
+                  name="comment"
+                  placeholder="Your message..."
+                  rows={5}
+                  value={commentForm.comment}
+                  onChange={handleChange}
+                  className="mb-4"
+                />
 
-                <Button className="bg-pink-500 hover:bg-pink-600 text-white" disabled={submitting} onClick={handleSubmit}>{submitting ? "Submitting..." : "Submit Comment"}</Button>
+                <Button
+                  className="bg-pink-500 hover:bg-pink-600 text-white"
+                  disabled={submitting}
+                  onClick={handleSubmit}
+                >
+                  {submitting ? "Submitting..." : "Submit Comment"}
+                </Button>
               </div>
             </div>
 
             {/* Right Sidebar: Popular Topics & Sidebar Posts */}
             <div className="space-y-8 hidden lg:block">
               <div className="border border-[#D5D5D5] rounded-xl p-4">
-                <h3 className="text-xl font-inter font-[500] mb-4">Popular Topics:</h3>
+                <h3 className="text-xl font-inter font-[500] mb-4">
+                  Popular Topics:
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {[
                     "Life Style",
@@ -447,7 +534,13 @@ export default function BlogDetailsPage() {
                     "Recipe",
                     "Design",
                   ].map((topic, index) => (
-                    <Badge key={index} variant="outline" className="bg-gray-100 font-inter rounded-md text-[#212529] hover:bg-pink-100 hover:text-pink-600 cursor-pointer">{topic}</Badge>
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="bg-gray-100 font-inter rounded-md text-[#212529] hover:bg-pink-100 hover:text-pink-600 cursor-pointer"
+                    >
+                      {topic}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -455,19 +548,37 @@ export default function BlogDetailsPage() {
               {post?.photos && post.photos.length >= 5 && (
                 <div className="space-y-6">
                   <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 1</p>
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
+                      Banner 1
+                    </p>
                     <div className="grid grid-cols-2 gap-2">
                       {post.photos.slice(0, 2).map((imgSrc: any, idx: any) => (
-                        <Image key={idx} src={imgSrc} alt={`Banner 1 Photo ${idx + 1}`} width={300} height={200} className="w-full h-full object-cover rounded-md" />
+                        <Image
+                          key={idx}
+                          src={imgSrc}
+                          alt={`Banner 1 Photo ${idx + 1}`}
+                          width={300}
+                          height={200}
+                          className="w-full h-full object-cover rounded-md"
+                        />
                       ))}
                     </div>
                   </Card>
 
                   <Card className="overflow-hidden border border-[#D5D5D5] rounded-xl p-4">
-                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">Banner 2</p>
+                    <p className="font-inter text-left text-sm text-[#6c757d] mb-2">
+                      Banner 2
+                    </p>
                     <div className="grid grid-cols-3 gap-2">
                       {post.photos.slice(2, 5).map((imgSrc: any, idx: any) => (
-                        <Image key={idx} src={imgSrc} alt={`Banner 2 Photo ${idx + 1}`} width={300} height={200} className="w-full h-full object-cover rounded-md" />
+                        <Image
+                          key={idx}
+                          src={imgSrc}
+                          alt={`Banner 2 Photo ${idx + 1}`}
+                          width={300}
+                          height={200}
+                          className="w-full h-full object-cover rounded-md"
+                        />
                       ))}
                     </div>
                   </Card>

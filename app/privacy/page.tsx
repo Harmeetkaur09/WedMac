@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
-  "/images/hero3.JPG",
+  "/images/img49.JPG",
   "/images/hero4.JPG",
-  "/images/hero5.JPG",
+  "/images/new2.PNG",
 ];
 export default function Privacy() {
   const [current, setCurrent] = useState(0);
@@ -41,14 +41,15 @@ export default function Privacy() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center justify-center h-full">
-<h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
+          <h1 className="text-[3.5rem] md:text-[3.5rem] Gilroy">
             Be the Reason They Can’t
             <br />
             Take Their Eyes Off You
           </h1>
           <p className="text-md md:text-xl font-gilroy font-400 opacity-90">
-                   From weddings to celebrations, we design looks that turn admiration into memories.
-</p>
+            From weddings to celebrations, we design looks that turn admiration
+            into memories.
+          </p>
         </div>
       </section>
 

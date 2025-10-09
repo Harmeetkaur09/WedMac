@@ -9,9 +9,9 @@ import { useEffect, useState } from "react";
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
-  "/images/hero3.JPG",
+  "/images/img49.JPG",
   "/images/hero4.JPG",
-  "/images/hero5.JPG",
+  "/images/new2.PNG",
 ];
 
 type ApiPost = {

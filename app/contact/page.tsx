@@ -9,9 +9,9 @@ import toast, { Toaster } from "react-hot-toast";
 const sliderImages = [
   "/images/hero1.JPG",
   "/images/hero2.JPG",
-  "/images/hero3.JPG",
+  "/images/img49.JPG",
   "/images/hero4.JPG",
-  "/images/hero5.JPG",
+  "/images/new2.PNG",
 ];
 export default function ContactPage() {
   const [name, setName] = useState("");
