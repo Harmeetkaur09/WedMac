@@ -11,9 +11,9 @@ export default function Header() {
   return (
     <>
       {/* Top Banner */}
-      <div className="bg-[#FF577F] fixed left-0 right-0 z-50 text-white text-center py-2 text-sm">
+      {/* <div className="bg-[#FF577F] fixed left-0 right-0 z-50 text-white text-center py-2 text-sm">
         Get $20 Off Your First Purchase - Shop Now & Save!
-      </div>
+      </div> */}
 
       {/* Main Header */}
       <header className="bg-white shadow-sm">
