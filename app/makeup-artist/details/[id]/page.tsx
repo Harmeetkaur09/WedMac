@@ -658,7 +658,7 @@ useEffect(() => {
                         covid vaccinated
                       </p>
                    
-<p className="text-[#8D8D8D] text-md mb-4">
+<p className="text-[#8D8D8D] text-md mb-6">
   {String(artist.trial_available) === "true" ? "Paid trial" : String(artist.trial_available) === "false" ? "No Trial" : "Free Trial"}
 </p>
 
