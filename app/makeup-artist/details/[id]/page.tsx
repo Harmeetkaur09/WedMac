@@ -40,6 +40,7 @@ interface ArtistDetail {
     updated_at?: string;
   }[];
   payment_methods: boolean;
+  trial_available: boolean | string;
   travel_policy: string;
   location: any;
   id: number;
@@ -656,10 +657,10 @@ useEffect(() => {
                       <p className="text-[#8D8D8D] font-[600] text-md mb-2">
                         covid vaccinated
                       </p>
-                      <p className="text-[#8D8D8D] text-md mb-2">
-                        Get 10% off on your first booking
-                      </p>
-                      <p className="text-[#8D8D8D] text-md mb-2">Free Trail</p>
+                   
+<p className="text-[#8D8D8D] text-md mb-2">
+  {String(artist.trial_available) === "true" ? "Paid trial" : String(artist.trial_available) === "false" ? "No Trial" : "Free Trial"}
+</p>
 
                       {/* 👉 Social Buttons */}
                       <div className="grid grid-cols-2 gap-2 mb-4 w-full md:w-[400px]">
@@ -1149,7 +1150,7 @@ useEffect(() => {
                             <Image
                               src={
                                 suggestions[currentIndex].portfolio_photos[0]
-                                  ?.url || "/images/protfolio1.JPG"
+                                  ?.url || "/images/search3.png"
                               }
                               alt={suggestions[currentIndex].full_name}
                               width={300}
