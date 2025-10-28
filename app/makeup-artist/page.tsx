@@ -537,7 +537,7 @@ export default function MakeupArtistPagesPage() {
                               alt="Artist Work"
                               width={100}
                               height={120}
-                              className="rounded-lg object-cover w-full flex-1"
+                              className="rounded-lg object-cover w-full h-[102px] flex-1"
                             />
                             <Image
                               src={

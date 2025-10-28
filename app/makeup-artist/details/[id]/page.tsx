@@ -476,7 +476,7 @@ useEffect(() => {
     if (suggestions.length === 0) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % suggestions.length);
-    }, 5000);
+    }, 50000);
     return () => clearInterval(timer);
   }, [suggestions]);
 
