@@ -263,9 +263,9 @@ export default function MakeupArtistDetailPage() {
     "https://x.com/wedmacindia?s=21",
   ];
   const whatsappLinks = [
-    "https://wa.me/911234567890", // India
-    "https://wa.me/441234567890", // UK
-    "https://wa.me/19876543210", // US
+    "https://wa.me/919915380534", // India
+    "https://wa.me/919915380534", // UK
+    "https://wa.me/919915380534", // US
     // aur bhi add kar lo
   ];
   const WhatsAppIcon = (props: any) => (
