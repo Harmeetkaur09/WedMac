@@ -476,7 +476,7 @@ useEffect(() => {
     if (suggestions.length === 0) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % suggestions.length);
-    }, 50000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [suggestions]);
 
@@ -1155,7 +1155,7 @@ useEffect(() => {
                               alt={suggestions[currentIndex].full_name}
                               width={300}
                               height={200}
-className="w-full h-48 object-cover object-[center_80%] rounded-lg"
+className="w-full h-48 object-cover object-[center_13%] rounded-lg"
                             />
                             <Badge className="absolute top-2 left-2 bg-pink-500 text-white text-xs">
                               Popular
